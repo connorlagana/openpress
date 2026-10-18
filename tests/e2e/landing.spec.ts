@@ -3,7 +3,14 @@ import { expect, test } from "@playwright/test";
 test("landing: prompt builder produces a prompt, demo finishes, install tabs switch", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Websites your AI agent");
-  await expect(page.getByText(/It.s live at the-engineering-journal/)).toBeVisible({ timeout: 10_000 });
+  // Scroll through the pinned story: the agent panel ends with the live URL.
+  const story = page.locator("#how");
+  const box = (await story.boundingBox())!;
+  for (let y = 0; y <= box.height; y += 400) {
+    await page.mouse.wheel(0, 400);
+    await page.waitForTimeout(30);
+  }
+  await expect(page.getByText(/Live at field-notes\./)).toHaveCSS("opacity", "1");
 
   const builder = page.locator("#prompt");
   await builder.getByRole("button", { name: "A portfolio" }).click();
@@ -25,9 +32,12 @@ test("landing: prompt builder produces a prompt, demo finishes, install tabs swi
   expect(await llms.text()).toContain("- publish_post:");
 });
 
-test("landing has no horizontal scroll on a phone", async ({ page }) => {
+test("landing has no horizontal scroll on a phone, and a static story with reduced motion", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBe(0);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Folio turns every screen into a tool call." })).toBeVisible();
 });
