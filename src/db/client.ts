@@ -19,11 +19,29 @@ const g = globalThis as unknown as { __folioDb?: Promise<Db> };
  * PGlite databases are migrated automatically on first use.
  */
 export function getDb(): Promise<Db> {
+  if (process.env.CF_WORKER === "1") return getWorkerDb();
   g.__folioDb ??= createDb().catch((err) => {
     g.__folioDb = undefined;
     throw err;
   });
   return g.__folioDb;
+}
+
+// Cloudflare Workers forbid sharing sockets across requests, so the client is
+// scoped to the request's ExecutionContext. Uses Hyperdrive when bound.
+const workerDbs = new WeakMap<object, Promise<Db>>();
+async function getWorkerDb(): Promise<Db> {
+  const { getCloudflareContext } = await import("@opennextjs/cloudflare");
+  const { env, ctx } = getCloudflareContext();
+  let db = workerDbs.get(ctx);
+  if (!db) {
+    const hyperdrive = (env as { HYPERDRIVE?: { connectionString: string } }).HYPERDRIVE;
+    const url = hyperdrive?.connectionString ?? process.env.DATABASE_URL!;
+    const client = postgres(url, { prepare: false, max: 1, fetch_types: false });
+    db = Promise.resolve(drizzlePostgres(client, { schema }));
+    workerDbs.set(ctx, db);
+  }
+  return db;
 }
 
 async function createDb(): Promise<Db> {
@@ -37,11 +55,11 @@ async function createDb(): Promise<Db> {
     if (location === "memory") client = new PGlite();
     else {
       const { mkdirSync } = await import("node:fs");
-      mkdirSync(path.dirname(path.resolve(location)), { recursive: true });
-      client = new PGlite(path.resolve(location));
+      mkdirSync(path.dirname(path.resolve(/*turbopackIgnore: true*/ location)), { recursive: true });
+      client = new PGlite(path.resolve(/*turbopackIgnore: true*/ location));
     }
     const db = drizzle(client, { schema });
-    await migrate(db, { migrationsFolder: path.join(process.cwd(), "drizzle") });
+    await migrate(db, { migrationsFolder: path.join(/*turbopackIgnore: true*/ process.cwd(), "drizzle") });
     // The pglite and postgres-js drivers share the same query-builder surface.
     return db as unknown as Db;
   }

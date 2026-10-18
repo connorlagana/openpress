@@ -47,7 +47,9 @@ async function handle(req: Request): Promise<Response> {
 }
 
 function rateLimited(e: unknown) {
-  const retry = e instanceof AppError ? String(e.details?.retryAfterSeconds ?? 60) : "60";
+  // Only genuine limit hits become 429; infrastructure errors must surface as 5xx.
+  if (!(e instanceof AppError) || e.code !== "RATE_LIMITED") throw e;
+  const retry = String(e.details?.retryAfterSeconds ?? 60);
   return json({ jsonrpc: "2.0", error: { code: -32029, message: (e as Error).message }, id: null }, { status: 429, cors: true, headers: { "retry-after": retry } });
 }
 

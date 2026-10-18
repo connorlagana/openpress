@@ -15,8 +15,8 @@ class LocalStorage implements Storage {
   private async paths(key: string) {
     const path = await import("node:path");
     if (key.includes("..")) throw new Error("bad key");
-    const root = path.resolve(process.env.LOCAL_MEDIA_DIR ?? ".data/media");
-    return { file: path.join(root, key), meta: path.join(root, key + ".type") };
+    const root = path.resolve(/*turbopackIgnore: true*/ process.env.LOCAL_MEDIA_DIR ?? ".data/media");
+    return { file: path.join(/*turbopackIgnore: true*/ root, key), meta: path.join(/*turbopackIgnore: true*/ root, key + ".type") };
   }
   async put(key: string, body: Uint8Array, contentType: string) {
     const fs = await import("node:fs/promises");

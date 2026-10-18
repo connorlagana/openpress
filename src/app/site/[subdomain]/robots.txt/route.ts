@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { config } from "@/lib/config";
 import { getPublicSite } from "@/server/public/data";
 

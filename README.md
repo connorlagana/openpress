@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Folio
 
-## Getting Started
+Free website hosting that AI agents can operate. Sign up, pick a template, connect Claude / ChatGPT / Cursor / any MCP client, and ask it to write and publish.
 
-First, run the development server:
+- **Remote MCP server** (Streamable HTTP) with OAuth 2.1 + PKCE + dynamic client registration, or API keys
+- **20 tools**: sites, posts/pages, publishing, media, templates, themes, SEO, analytics
+- **Public sites** on `<name>.<your-domain>` with three templates, RSS, sitemaps, Open Graph, JSON-LD
+- **Dashboard** for humans: editor with preview, media, appearance, settings, analytics, agent permissions
+- **Multi-tenant security**: Postgres row-level security, scoped per-site agent grants, confirmation for destructive actions, audit log
+
+## Local development
+
+Requirements: Node 22+, pnpm 10. No Docker: the dev database is embedded Postgres (PGlite) stored in `.data/`.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+cp .env.example .env.local      # defaults work as-is for local dev
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Dashboard: http://localhost:3000
+- Your sites: http://&lt;subdomain&gt;.localhost:3000 (browsers resolve `*.localhost` automatically)
+- MCP endpoint: http://localhost:3000/mcp
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Try it with the MCP Inspector: `npx @modelcontextprotocol/inspector`, transport "Streamable HTTP", URL `http://localhost:3000/mcp`. It will walk through OAuth against your local account. Or create an API key in Dashboard → Agents and send `Authorization: Bearer fol_key_…`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Reset local data: stop the server and delete `.data/`.
 
-## Learn More
+## Tests
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+pnpm test        # 66 unit + integration tests (real Postgres engine via PGlite, real route handlers, official MCP SDK client)
+pnpm test:e2e    # Playwright: signup → site → OAuth connect → agent publishes → public page (first run: npx playwright install chromium)
+pnpm check       # typecheck + lint + tests
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Docs
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- [AGENTS.md](AGENTS.md) — architecture, conventions, commands (start here if you're changing code)
+- [docs/MCP.md](docs/MCP.md) — connecting clients, tools, permissions, confirmation flow
+- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) — Supabase + Cloudflare Workers + R2, costs
+- [docs/SECURITY.md](docs/SECURITY.md) — security model and known limitations
+- [PLAN.md](PLAN.md) — what's done, partial, and next
 
-## Deploy on Vercel
+## Status
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MVP. The milestone flow (register → create site → connect agent → publish → visit) passes end-to-end locally. Production deployment has been built and smoke-tested in the local Workers runtime but **not yet verified against live Supabase/R2/Cloudflare**, and some items are intentionally out of scope (email verification, password reset, custom domains). See PLAN.md and docs/SECURITY.md before calling it production-ready.
