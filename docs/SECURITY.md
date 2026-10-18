@@ -9,7 +9,7 @@ OpenPress is multi-tenant hosting operated by third-party AI agents. We assume: 
 **Tenant isolation**
 - Every user-scoped query runs inside `withUser()`: a transaction that switches to the `folio_app` role (no `BYPASSRLS`) and sets `app.user_id`. RLS policies (`drizzle/0001_rls_and_seed.sql`) restrict every table to sites the user is a member of. Tests prove raw SQL as user B cannot read or write user A's rows.
 - Service-layer checks run on top (defence in depth). Agent site restrictions (`agent_connection_sites`) are enforced in services.
-- Privileged queries exist only in auth/OAuth (`src/server/auth`, `src/server/oauth`), public rendering (`src/server/public`, published content only), rate limiting, analytics ingestion and operator scripts.
+- Privileged queries exist only in auth/OAuth (`src/server/auth`, `src/server/oauth`), public rendering (`src/server/public`, published content only), rate limiting, analytics ingestion, admin-only platform analytics and operator scripts.
 
 **Agents (MCP)**
 - OAuth 2.1 with PKCE S256 only, exact redirect URI match, codes single-use (replay revokes issued tokens), 1h access tokens, rotating refresh tokens with reuse detection, revocation endpoint. Only token hashes are stored.

@@ -21,7 +21,7 @@ export default async function AnalyticsPage({ params, searchParams }: PageProps<
             <dd className="text-2xl font-semibold tabular-nums">{a.pageviews.toLocaleString()}</dd>
           </div>
           <div>
-            <dt className="text-xs text-muted-foreground">Visitors</dt>
+            <dt className="text-xs text-muted-foreground">Daily unique visitors</dt>
             <dd className="text-2xl font-semibold tabular-nums">{a.uniqueVisitors.toLocaleString()}</dd>
           </div>
         </dl>
@@ -57,6 +57,7 @@ export default async function AnalyticsPage({ params, searchParams }: PageProps<
           <div className="grid gap-8 md:grid-cols-2">
             <Table title="Top pages" rows={a.topPages.map((p) => [p.path, p.pageviews])} />
             <Table title="Sources" rows={a.referrers.map((r) => [r.category, r.pageviews])} />
+            <Table title="Top referring domains" rows={a.topReferrers.map((r) => [r.host, r.pageviews])} />
           </div>
           <p className="text-xs text-muted-foreground">{a.note}</p>
         </>
@@ -70,6 +71,7 @@ function Table({ title, rows }: { title: string; rows: [string, number][] }) {
   return (
     <div>
       <h2 className="mb-2 text-sm font-medium">{title}</h2>
+      {rows.length === 0 && <p className="text-sm text-muted-foreground">No data for this period.</p>}
       <ul className="space-y-1">
         {rows.map(([k, v]) => (
           <li key={k} className="relative flex justify-between rounded px-2 py-1 text-sm">

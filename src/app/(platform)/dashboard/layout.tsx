@@ -19,6 +19,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             </NavLink>
             <NavLink href="/dashboard/agents">Agents</NavLink>
             <NavLink href="/dashboard/account">Account</NavLink>
+            {user.isAdmin && <NavLink href="/dashboard/analytics">Analytics</NavLink>}
           </nav>
           <div className="ml-auto flex items-center gap-3 text-sm">
             <span className="hidden text-muted-foreground sm:inline">{user.email}</span>

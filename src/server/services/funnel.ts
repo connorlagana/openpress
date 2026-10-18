@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { sql } from "drizzle-orm";
 import { getDb, rowsOf } from "@/db/client";
 
@@ -9,12 +10,13 @@ export type FunnelRow = { source: string; signups: number; createdSite: number; 
  * source with a "total" row. Operator-only (privileged connection).
  */
 export async function signupFunnel(days = 30): Promise<FunnelRow[]> {
+  const span = z.number().int().min(1).max(365).parse(days);
   const db = await getDb();
   const rows = rowsOf<Record<string, string | number | null>>(
     await db.execute(sql`
       with u as (
         select id, created_at, coalesce(signup_source, 'direct') as src from users
-        where created_at > now() - make_interval(days => ${days})
+        where created_at >= current_date - ${span - 1}::int
       ),
       f as (
         select u.src,
