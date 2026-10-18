@@ -10,17 +10,19 @@ test("landing: prompt builder produces a prompt, demo finishes, install tabs swi
     await page.mouse.wheel(0, 400);
     await page.waitForTimeout(30);
   }
-  await expect(page.getByText(/Live at field-notes\./)).toHaveCSS("opacity", "1");
+  await expect(story.getByText("● Live")).toHaveCSS("opacity", "1");
+  await expect(story.getByText("Draft", { exact: true })).toHaveCSS("opacity", "0");
 
   const builder = page.locator("#prompt");
-  await builder.getByRole("button", { name: "A portfolio" }).click();
+  await builder.getByRole("button", { name: "Portfolio", exact: true }).click();
   await builder.getByPlaceholder("The Engineering Journal").fill("Ada Lovelace");
   await builder.getByPlaceholder(/how AI is changing/).fill("my work on the Analytical Engine");
-  await builder.getByRole("button", { name: "Next" }).click();
-  await builder.getByRole("button", { name: "Bold and modern" }).click();
+  await builder.getByRole("button", { name: "Bold" }).click();
   await builder.getByRole("button", { name: "Let me review first" }).click();
-  const prompt = builder.getByText(/^Use Folio to create/);
+  await expect(builder.locator(".ms")).toContainText("my work on the Analytical Engine");
+  const prompt = builder.locator("[data-prompt]");
   await expect(prompt).toContainText('called "Ada Lovelace" with the portfolio template');
+  await expect(prompt).toContainText("bold and modern");
   await expect(prompt).toContainText("save it as a draft");
 
   const connect = page.locator("#connect");
@@ -39,5 +41,7 @@ test("landing has no horizontal scroll on a phone, and a static story with reduc
   expect(overflow).toBe(0);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.reload();
-  await expect(page.getByRole("heading", { name: "Folio turns every screen into a tool call." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "One prompt. Six tool calls. A live site." })).toBeVisible();
+  // Static story shows the finished site.
+  await expect(page.locator("#how").getByText("● Live")).toHaveCSS("opacity", "1");
 });

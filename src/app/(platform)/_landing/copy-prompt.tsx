@@ -3,8 +3,8 @@
 import { Check, Copy } from "lucide-react";
 import { useState } from "react";
 
-/** A prompt the visitor pastes into their agent. Doubles as the primary call to action. */
-export function CopyPrompt({ prompt, label = "Paste into your agent" }: { prompt: string; label?: string }) {
+/** A prompt the visitor pastes into their agent. Doubles as the primary call to action. `children` overrides how the text renders. */
+export function CopyPrompt({ prompt, label = "Paste into your agent", children }: { prompt: string; label?: string; children?: React.ReactNode }) {
   const [copied, setCopied] = useState(false);
   return (
     <div className="rounded-xl border bg-background">
@@ -23,7 +23,9 @@ export function CopyPrompt({ prompt, label = "Paste into your agent" }: { prompt
           {copied ? "Copied" : "Copy"}
         </button>
       </div>
-      <p className="px-3 py-3 font-mono text-[13px] leading-relaxed">{prompt}</p>
+      <p data-prompt className="px-3 py-3 font-mono text-[13px] leading-relaxed">
+        {children ?? prompt}
+      </p>
     </div>
   );
 }

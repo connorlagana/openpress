@@ -55,8 +55,8 @@ export default async function Landing() {
   const mcpUrl = mcpResourceUrl();
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="fixed inset-x-0 top-3 z-30 flex justify-center px-3">
-        <nav className="lp-shadow flex items-center gap-1 rounded-2xl bg-background/85 py-1.5 pr-1.5 pl-3 text-sm backdrop-blur" aria-label="Main">
+      <header className="fixed inset-x-0 top-0 z-30 border-b border-transparent bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/70">
+        <nav className="mx-auto flex h-14 max-w-[1180px] items-center gap-1 px-6 text-sm" aria-label="Main">
           <Link href="/" className="mr-2 flex items-center gap-2 font-semibold tracking-tight">
             <span className="size-2.5 rounded-full bg-signal ring-3 ring-signal/20" aria-hidden />
             {config.appName}
@@ -70,7 +70,7 @@ export default async function Landing() {
           <a href="#faq" className="hidden rounded-lg px-2.5 py-1.5 text-muted-foreground hover:text-foreground sm:inline">
             FAQ
           </a>
-          <span className="mx-1.5 hidden h-5 w-px bg-border sm:block" aria-hidden />
+          <span className="flex-1" aria-hidden />
           {user ? (
             <Link href="/dashboard" className={buttonVariants({ size: "sm" })}>
               Dashboard
@@ -89,19 +89,21 @@ export default async function Landing() {
       </header>
 
       <main className="flex-1">
-        <Hero appName={config.appName} ctaHref={user ? "/dashboard" : "/signup"} ctaLabel={user ? "Open dashboard" : "Create a free site"} prompt={HERO_PROMPT} />
+        <Hero appName={config.appName} rootDomain={config.rootDomain} ctaHref={user ? "/dashboard" : "/signup"} ctaLabel={user ? "Open dashboard" : "Create a free site"} prompt={HERO_PROMPT} />
         <Story rootDomain={config.rootDomain} />
 
         {/* Prompt builder */}
-        <section id="prompt" className="mx-auto grid max-w-6xl gap-10 px-6 py-20 lg:grid-cols-[1fr_1.2fr]">
-          <Reveal>
-            <SectionHead eyebrow="START HERE" title="Four questions. One prompt.">
-              Answer a few questions and get a prompt that builds your whole site. Paste it into your agent after you connect it.
-            </SectionHead>
-          </Reveal>
-          <Reveal delay={120}>
-            <PromptBuilder appName={config.appName} />
-          </Reveal>
+        <section id="prompt" className="border-t">
+          <div className="mx-auto max-w-6xl px-6 py-20">
+            <Reveal>
+              <SectionHead eyebrow="START HERE" title="Describe it. Watch it take shape.">
+                Pick a few options and get the prompt that builds it. Paste it into your agent after you connect it.
+              </SectionHead>
+            </Reveal>
+            <Reveal className="mt-10" delay={120}>
+              <PromptBuilder appName={config.appName} rootDomain={config.rootDomain} />
+            </Reveal>
+          </div>
         </section>
 
         {/* Comparison */}
