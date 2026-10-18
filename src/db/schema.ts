@@ -43,6 +43,8 @@ export const users = pgTable(
     isAdmin: boolean("is_admin").notNull().default(false),
     suspendedAt: timestamp("suspended_at", { withTimezone: true }),
     suspensionReason: text("suspension_reason"),
+    /** Where the signup came from, e.g. "site:field-notes" (a site's footer link) or "utm:newsletter". */
+    signupSource: text("signup_source"),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },

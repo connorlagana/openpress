@@ -24,12 +24,15 @@ const PREVIEW: Record<string, string> = {
   portfolio: "bg-[#f0fdfa] [&_i]:bg-[#0f766e]",
 };
 
-export function OnboardingForm({ rootDomain, templates }: { rootDomain: string; templates: { id: string; name: string; description: string }[] }) {
-  const [name, setName] = useState("");
-  const [sub, setSub] = useState("");
-  const [subEdited, setSubEdited] = useState(false);
+/** "field-notes" → "Field Notes" */
+const titleFrom = (sub: string) => sub.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+
+export function OnboardingForm({ claimed, rootDomain, templates }: { claimed?: string; rootDomain: string; templates: { id: string; name: string; description: string }[] }) {
+  const [name, setName] = useState(claimed ? titleFrom(claimed) : "");
+  const [sub, setSub] = useState(claimed ?? "");
+  const [subEdited, setSubEdited] = useState(!!claimed);
   const [template, setTemplate] = useState("editorial");
-  const [availability, setAvailability] = useState<{ ok: boolean; message: string; sub: string } | null>(null);
+  const [availability, setAvailability] = useState<{ ok: boolean; message: string; suggestion?: string; sub: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
   const effectiveSub = subEdited ? sub : toSubdomain(name);
@@ -80,6 +83,21 @@ export function OnboardingForm({ rootDomain, templates }: { rootDomain: string; 
         </div>
         <p id="subdomain-status" aria-live="polite" className={cn("text-xs", status?.ok ? "text-signal" : status ? "text-destructive" : "text-muted-foreground")}>
           {status ? status.message : "Lowercase letters, numbers and hyphens."}
+          {status?.suggestion ? (
+            <>
+              {" · "}
+              <button
+                type="button"
+                className="underline underline-offset-2"
+                onClick={() => {
+                  setSubEdited(true);
+                  setSub(status.suggestion!);
+                }}
+              >
+                use {status.suggestion}
+              </button>
+            </>
+          ) : null}
         </p>
       </div>
       <fieldset className="space-y-3">

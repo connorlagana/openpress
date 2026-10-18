@@ -35,7 +35,7 @@ export async function signUpAndCreateSite(page: Page, opts: { siteName: string; 
   if (opts.template) await page.getByText(opts.template, { exact: true }).click();
   await expect(page.getByText("Available")).toBeVisible();
   await page.getByRole("button", { name: "Create site" }).click();
-  await expect(page).toHaveURL(/\/dashboard\/agents\?welcome=/);
+  await expect(page).toHaveURL(/\/onboarding\/connect\?site=/);
 }
 
 /** Run the real OAuth flow: SDK client discovers + registers, the signed-in browser approves. */

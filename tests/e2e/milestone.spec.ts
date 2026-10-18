@@ -6,6 +6,8 @@ test("sign up → create site → connect MCP client via OAuth → agent publish
   const sub = `journal-${Date.now().toString(36)}`;
   await signUpAndCreateSite(page, { siteName: "The Engineering Journal", subdomain: sub });
   await expect(page.getByText("Now connect your agent")).toBeVisible();
+  const connectUrl = page.url();
+  await expect(page.getByText("Waiting for your agent to connect")).toBeVisible();
   const mcpUrl = `${baseURL}/mcp`;
   await expect(page.getByText(mcpUrl).first()).toBeVisible();
 
@@ -59,6 +61,19 @@ test("sign up → create site → connect MCP client via OAuth → agent publish
   // Next.js permanentRedirect() emits 308, which search engines treat like 301.
   expect(old.status()).toBe(308);
   expect(old.headers()["location"]).toContain("/blog/ai-and-software-engineers");
+
+  // The public site's footer credits OpenPress with an attributed link, and the landing page credits the site back.
+  await page.goto(liveUrl.replace(/\/blog\/.*/, "/"));
+  const footer = page.getByRole("link", { name: /Published with/ });
+  await expect(footer).toHaveAttribute("href", new RegExp(`\\?ref=${sub}&`));
+  await page.goto(`/?ref=${sub}&utm_source=site`);
+  await expect(page.getByText("was built and published by an AI agent")).toBeVisible();
+  await expect.poll(async () => (await page.context().cookies()).find((c) => c.name === "op_ref")?.value).toBe(`site:${sub}`);
+
+  // The onboarding screen noticed both the connection and the first publish.
+  await page.goto(connectUrl);
+  await expect(page.getByText("E2E Agent connected")).toBeVisible();
+  await expect(page.getByText("First post published")).toBeVisible();
 
   // 7. The dashboard shows the agent-written post as published and the connection.
   await page.goto(`/dashboard/sites/${sites[0].id}`);

@@ -3,16 +3,18 @@ import { ClientTabs } from "@/components/app/client-tabs";
 import { buttonVariants } from "@/components/ui/button";
 import { clientInstructions } from "@/lib/clients";
 import { config } from "@/lib/config";
+import { SUBDOMAIN_RE } from "@/lib/slug";
 import { getCurrentUser } from "@/server/auth/session";
+import { getPublicSite } from "@/server/public/data";
 import { mcpResourceUrl } from "@/server/oauth/oauth";
+import { ClaimName } from "./_landing/claim";
 import { Compare } from "./_landing/compare";
 import { Hero } from "./_landing/hero";
-import { PromptBuilder } from "./_landing/prompt-builder";
+import { Examples } from "./_landing/examples";
+import { RememberRef } from "./_landing/ref";
 import { Reveal } from "./_landing/reveal";
 import { Story } from "./_landing/story";
 import "./_landing/landing.css";
-
-const HERO_PROMPT = `Create a minimalist blog on ${config.appName} called "Field Notes". Write a first post introducing it, add a fitting image, optimize it for search and publish it.`;
 
 const FEATURES = [
   { title: "20 MCP tools", body: "Sites, posts, pages, media, templates, themes, SEO and analytics. Typed inputs and outputs, clear errors." },
@@ -50,9 +52,25 @@ function SectionHead({ eyebrow, title, children }: { eyebrow?: string; title: st
   );
 }
 
-export default async function Landing() {
-  const user = await getCurrentUser();
+/** Visitors arriving from a site's "Published with" footer link (?ref=<subdomain>) or a campaign (?utm_source=…). */
+async function attribution(params: Record<string, string | string[] | undefined>) {
+  const ref = typeof params.ref === "string" && SUBDOMAIN_RE.test(params.ref) ? params.ref : undefined;
+  const site = ref ? await getPublicSite(ref) : null;
+  const utm = typeof params.utm_source === "string" ? params.utm_source.toLowerCase().replace(/[^a-z0-9_-]/g, "").slice(0, 40) : "";
+  return { site, source: site ? `site:${site.subdomain}` : utm && utm !== "site" ? `utm:${utm}` : undefined };
+}
+
+export default async function Landing({ searchParams }: PageProps<"/">) {
+  const [user, ref] = await Promise.all([getCurrentUser(), searchParams.then(attribution)]);
   const mcpUrl = mcpResourceUrl();
+  const banner = ref.site ? (
+    <a href={config.siteUrl(ref.site.subdomain)} className="lp-shadow inline-flex max-w-full items-center gap-2 rounded-full bg-background px-3 py-1 text-[13px]">
+      <span className="size-2 flex-none rounded-full bg-signal" aria-hidden />
+      <span className="truncate">
+        <b className="font-medium">{ref.site.name}</b> <span className="text-muted-foreground">was built and published by an AI agent on {config.appName}</span>
+      </span>
+    </a>
+  ) : undefined;
   return (
     <div className="flex min-h-screen flex-col">
       <header className="fixed inset-x-0 top-0 z-30 border-b border-transparent bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/70">
@@ -89,19 +107,20 @@ export default async function Landing() {
       </header>
 
       <main className="flex-1">
-        <Hero appName={config.appName} rootDomain={config.rootDomain} ctaHref={user ? "/dashboard" : "/signup"} ctaLabel={user ? "Open dashboard" : "Create a free site"} prompt={HERO_PROMPT} />
+        {ref.source ? <RememberRef source={ref.source} /> : null}
+        <Hero appName={config.appName} rootDomain={config.rootDomain} signedIn={!!user} banner={banner} />
         <Story rootDomain={config.rootDomain} />
 
-        {/* Prompt builder */}
+        {/* Example prompts */}
         <section id="prompt" className="border-t">
           <div className="mx-auto max-w-6xl px-6 py-20">
             <Reveal>
-              <SectionHead eyebrow="START HERE" title="Describe it. Watch it take shape.">
-                Pick a few options and get the prompt that builds it. Paste it into your agent after you connect it.
+              <SectionHead eyebrow="START HERE" title="Copy a prompt. Get a site.">
+                Paste one into your agent once it&rsquo;s connected, or write your own. Your agent fills in the rest.
               </SectionHead>
             </Reveal>
             <Reveal className="mt-10" delay={120}>
-              <PromptBuilder appName={config.appName} rootDomain={config.rootDomain} />
+              <Examples appName={config.appName} rootDomain={config.rootDomain} />
             </Reveal>
           </div>
         </section>
@@ -139,8 +158,8 @@ export default async function Landing() {
         <section id="connect" className="border-t bg-muted/20">
           <div className="mx-auto grid max-w-6xl gap-10 px-6 py-20 lg:grid-cols-[1fr_1.3fr]">
             <Reveal>
-              <SectionHead eyebrow="CONNECT" title="One URL for every agent.">
-                Add the server to your client, sign in, and approve what it may do. Same URL for every client.
+              <SectionHead eyebrow="CONNECT" title="Already have an agent? Start there.">
+                Add this URL to your client. If you don&rsquo;t have an account yet, you&rsquo;ll create one in the sign-in window, then your agent can build the site for you.
               </SectionHead>
             </Reveal>
             <Reveal className="min-w-0" delay={120}>
@@ -199,11 +218,15 @@ export default async function Landing() {
 
         {/* Closing CTA */}
         <section className="border-t">
-          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-6 px-6 py-16">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-start justify-between gap-6 px-6 py-16">
             <h2 className="text-2xl font-semibold tracking-tight">Your agent is ready to publish.</h2>
-            <Link href={user ? "/dashboard" : "/signup"} className={buttonVariants({ size: "lg" })}>
-              {user ? "Open dashboard" : "Create a free site"}
-            </Link>
+            {user ? (
+              <Link href="/dashboard" className={buttonVariants({ size: "lg" })}>
+                Open dashboard
+              </Link>
+            ) : (
+              <ClaimName rootDomain={config.rootDomain} signedIn={false} />
+            )}
           </div>
         </section>
       </main>

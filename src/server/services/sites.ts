@@ -65,6 +65,15 @@ export async function isSubdomainAvailable(sub: string): Promise<boolean> {
   return Number(r?.n ?? 0) === 0;
 }
 
+/** Availability for a wished-for subdomain, with a free alternative when it's taken. Safe to expose publicly. */
+export async function checkSubdomain(input: string): Promise<{ ok: boolean; message: string; suggestion?: string }> {
+  const sub = input.trim().toLowerCase();
+  const err = validateSubdomain(sub);
+  if (err) return { ok: false, message: err };
+  if (await isSubdomainAvailable(sub)) return { ok: true, message: "Available" };
+  return { ok: false, message: "Already taken", suggestion: await pickSubdomain(sub) };
+}
+
 async function pickSubdomain(name: string): Promise<string> {
   let base = slugify(name, 28).replace(/^-|-$/g, "");
   if (base.length < 3) base = `${base}-site`.replace(/^-/, "");

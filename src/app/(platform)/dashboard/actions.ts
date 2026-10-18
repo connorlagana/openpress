@@ -9,11 +9,11 @@ import { deleteAllSessions } from "@/server/auth/accounts";
 import { requireActor, setSessionCookie } from "@/server/auth/session";
 import { createApiKey } from "@/server/oauth/oauth";
 import { changePassword, updateProfile } from "@/server/services/account";
-import { revokeConnection, updateConnection } from "@/server/services/agents";
+import { onboardingStatus, revokeConnection, updateConnection } from "@/server/services/agents";
 import { setTemplate, updateTheme } from "@/server/services/appearance";
 import { deleteMedia } from "@/server/services/media";
 import { createPost, deletePost, setPublished, updatePost } from "@/server/services/posts";
-import { createSite, deleteSite, isSubdomainAvailable, updateSiteSettings, validateSubdomain } from "@/server/services/sites";
+import { checkSubdomain, createSite, deleteSite, updateSiteSettings } from "@/server/services/sites";
 import type { Scope } from "@/server/actor";
 
 export type ActionResult<T = undefined> = { ok: true; data?: T } | { ok: false; error: string };
@@ -29,19 +29,20 @@ async function attempt<T>(fn: () => Promise<T>): Promise<ActionResult<T>> {
 }
 
 // ---------- Onboarding ----------
-export async function checkSubdomainAction(sub: string): Promise<{ ok: boolean; message: string }> {
+export async function checkSubdomainAction(sub: string): Promise<{ ok: boolean; message: string; suggestion?: string }> {
   await requireActor();
-  const v = sub.trim().toLowerCase();
-  const err = validateSubdomain(v);
-  if (err) return { ok: false, message: err };
-  return (await isSubdomainAvailable(v)) ? { ok: true, message: "Available" } : { ok: false, message: "Already taken" };
+  return checkSubdomain(sub);
 }
 
 export async function createSiteAction(input: { name: string; subdomain?: string; template: string }) {
   const actor = await requireActor();
   const res = await attempt(() => createSite(actor, { name: input.name, subdomain: input.subdomain || undefined, template: input.template as "editorial" }));
   if (!res.ok) return res;
-  redirect(`/dashboard/agents?welcome=${res.data!.id}`);
+  redirect(`/onboarding/connect?site=${res.data!.id}`);
+}
+
+export async function onboardingStatusAction(siteId: string) {
+  return onboardingStatus(await requireActor(), siteId);
 }
 
 // ---------- Posts ----------

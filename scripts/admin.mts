@@ -5,9 +5,11 @@
 //   pnpm admin suspend-user <email> "<reason>"   (also revokes agent access + sessions)
 //   pnpm admin unsuspend-user <email>
 //   pnpm admin resolve-report <id> actioned|dismissed
+//   pnpm admin funnel [days]                signup → site → agent → publish, by signup source
 import { and, eq, isNull, sql } from "drizzle-orm";
 import { getDb } from "../src/db/client";
 import { abuseReports, agentConnections, agentTokens, sessions, sites, users } from "../src/db/schema";
+import { signupFunnel } from "../src/server/services/funnel";
 
 const [cmd, arg, extra] = process.argv.slice(2);
 const db = await getDb();
@@ -19,6 +21,12 @@ async function userByEmail(email: string) {
 }
 
 switch (cmd) {
+  case "funnel": {
+    const pct = (n: number, d: number) => (d ? `${n} (${Math.round((n / d) * 100)}%)` : "0");
+    const rows = await signupFunnel(Number(arg) || 30);
+    console.table(rows.map((r) => ({ source: r.source, signups: r.signups, site: pct(r.createdSite, r.signups), "agent used": pct(r.agentUsed, r.signups), published: pct(r.published, r.signups), "published <24h": pct(r.published24h, r.signups) })));
+    break;
+  }
   case "reports": {
     const rows = await db
       .select({ id: abuseReports.id, url: abuseReports.url, reason: abuseReports.reason, details: abuseReports.details, createdAt: abuseReports.createdAt, subdomain: sites.subdomain })

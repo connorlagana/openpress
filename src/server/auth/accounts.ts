@@ -13,6 +13,8 @@ export const signUpInput = z.object({
   email: z.string().trim().toLowerCase().email().max(254),
   password: z.string().min(10, "Use at least 10 characters").max(200),
   name: z.string().trim().max(80).optional(),
+  /** Attribution only; anything malformed is dropped rather than failing signup. */
+  signupSource: z.string().regex(/^(site|utm):[a-z0-9_-]{1,40}$/).optional().catch(undefined),
 });
 
 export async function createUser(input: z.input<typeof signUpInput>): Promise<User> {
@@ -22,7 +24,7 @@ export async function createUser(input: z.input<typeof signUpInput>): Promise<Us
   if (existing) throw new AppError("CONFLICT", "An account with that email already exists. Try signing in.");
   const [user] = await db
     .insert(users)
-    .values({ email: data.email, passwordHash: await hashPassword(data.password), name: data.name || null })
+    .values({ email: data.email, passwordHash: await hashPassword(data.password), name: data.name || null, signupSource: data.signupSource ?? null })
     .returning();
   return user;
 }

@@ -13,32 +13,15 @@ import { ConnectionActions, NewApiKey } from "./agents-client";
 
 export const metadata: Metadata = { title: "Agents" };
 
-export default async function AgentsPage({ searchParams }: PageProps<"/dashboard/agents">) {
+export default async function AgentsPage() {
   const actor = await requireActor();
-  const welcome = (await searchParams).welcome;
   const [connections, sites] = await Promise.all([listConnections(actor), listSites(actor)]);
   const mcpUrl = mcpResourceUrl();
-  const newSite = typeof welcome === "string" ? sites.find((s) => s.id === welcome) : undefined;
   const siteOptions = sites.map((s) => ({ id: s.id, name: s.name }));
 
   return (
     <>
-      {newSite ? (
-        <div className="mb-8 rounded-xl border bg-muted/30 p-5">
-          <p className="font-mono text-xs text-muted-foreground">Step 2 of 2</p>
-          <h1 className="mt-1 text-xl font-semibold tracking-tight">
-            <a href={newSite.url} target="_blank" rel="noreferrer" className="underline-offset-4 hover:underline">
-              {newSite.url.replace(/^https?:\/\//, "")}
-            </a>{" "}
-            is live. Now connect your agent.
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Then try: <span className="italic text-foreground">&ldquo;Write a short welcome post for {newSite.name}, add a fitting image, and publish it.&rdquo;</span>
-          </p>
-        </div>
-      ) : (
-        <PageHeader title="Agents" description="Connect any MCP-compatible AI agent. It can only do what you allow here." />
-      )}
+      <PageHeader title="Agents" description="Connect any MCP-compatible AI agent. It can only do what you allow here." />
 
       <Section title="MCP server URL" description="The same URL works for every client. Sign-in happens with OAuth.">
         <div className="flex flex-wrap items-center gap-2">

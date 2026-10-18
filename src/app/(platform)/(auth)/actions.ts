@@ -1,6 +1,6 @@
 "use server";
 
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { config } from "@/lib/config";
@@ -8,6 +8,9 @@ import { AppError } from "@/lib/errors";
 import { authenticate, createUser } from "@/server/auth/accounts";
 import { clearSession, clientIp, setSessionCookie } from "@/server/auth/session";
 import { rateLimit } from "@/server/services/ratelimit";
+
+/** First-touch attribution cookie, set on the landing page (see _landing/ref.tsx). */
+const REF_COOKIE = "op_ref";
 
 export type FormState = { error?: string; fields?: Record<string, string> } | null;
 
@@ -24,7 +27,8 @@ export async function signUpAction(_prev: FormState, form: FormData): Promise<Fo
   if (form.get("website")) return { error: "Something went wrong. Please try again.", fields };
   try {
     await rateLimit(`signup:ip:${ip}`, 5, 3600);
-    const user = await createUser({ email: fields.email, password: String(form.get("password") ?? ""), name: fields.name });
+    const signupSource = (await cookies()).get(REF_COOKIE)?.value;
+    const user = await createUser({ email: fields.email, password: String(form.get("password") ?? ""), name: fields.name, signupSource });
     await setSessionCookie(user.id);
   } catch (e) {
     if (e instanceof AppError) return { error: e.message, fields };

@@ -78,7 +78,8 @@ export function SiteFooter({ site }: { site: PublicSite }) {
           </nav>
         ) : null}
         <div className="fs-powered">
-          <a href={config.appUrl}>Published with {config.appName}</a>
+          {/* Attributed so visitors who follow it land on a page about this site (see the landing page's ref banner). */}
+          <a href={`${config.appUrl}/?ref=${site.subdomain}&utm_source=site&utm_medium=footer`}>Published with {config.appName}</a>
         </div>
       </div>
     </footer>

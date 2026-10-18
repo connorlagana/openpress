@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("landing: prompt builder produces a prompt, demo finishes, install tabs switch", async ({ page }) => {
+test("landing: story finishes, example prompts render, install tabs switch", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Websites your AI agent");
   // Scroll through the pinned story: the agent panel ends with the live URL.
@@ -13,17 +13,9 @@ test("landing: prompt builder produces a prompt, demo finishes, install tabs swi
   await expect(story.getByText("● Live")).toHaveCSS("opacity", "1");
   await expect(story.getByText("Draft", { exact: true })).toHaveCSS("opacity", "0");
 
-  const builder = page.locator("#prompt");
-  await builder.getByRole("button", { name: "Portfolio", exact: true }).click();
-  await builder.getByPlaceholder("The Engineering Journal").fill("Ada Lovelace");
-  await builder.getByPlaceholder(/how AI is changing/).fill("my work on the Analytical Engine");
-  await builder.getByRole("button", { name: "Bold" }).click();
-  await builder.getByRole("button", { name: "Let me review first" }).click();
-  await expect(builder.locator(".ms")).toContainText("my work on the Analytical Engine");
-  const prompt = builder.locator("[data-prompt]");
-  await expect(prompt).toContainText('called "Ada Lovelace" with the portfolio template');
-  await expect(prompt).toContainText("bold and modern");
-  await expect(prompt).toContainText("save it as a draft");
+  const examples = page.locator("#prompt");
+  await expect(examples.locator("[data-prompt]")).toHaveCount(3);
+  await expect(examples.locator("[data-prompt]").first()).toContainText('Use OpenPress to start a travel blog');
 
   const connect = page.locator("#connect");
   await connect.getByRole("tab", { name: "Cursor" }).click();

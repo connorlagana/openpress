@@ -26,6 +26,7 @@ MCP-native website hosting: users connect their own AI agent (Claude, ChatGPT, C
 | New migration from schema change | edit `src/db/schema.ts` → `pnpm db:generate` |
 | Apply migrations to Postgres | `DATABASE_URL=postgres://… pnpm db:migrate` |
 | Abuse tooling | `pnpm admin reports`, `pnpm admin suspend-site <sub> "<reason>"` |
+| Activation funnel (signup → site → agent → publish, by source) | `DATABASE_URL=… pnpm admin funnel [days]` |
 | Cloudflare build / preview / deploy | `pnpm preview:cf`, `pnpm deploy:cf` |
 
 ## Architecture (where things live)
@@ -40,6 +41,7 @@ MCP-native website hosting: users connect their own AI agent (Claude, ChatGPT, C
 - `src/app/site/[subdomain]/**` — public sites. Reached through a host-based rewrite in `next.config.ts` (`<sub>.<ROOT_DOMAIN>/x` → `/site/<sub>/x`).
 - `src/templates/` — template registry (default theme + homepage blocks) and React components. Add a template = add a registry entry + homepage component in `HOMEPAGES`.
 - `src/app/(platform)/**` — marketing, auth, onboarding, dashboard.
+- Acquisition path: landing "claim your name" box (`/api/subdomain`) → `/signup?site=` → `/onboarding?site=` → `/onboarding/connect` (polls `onboardingStatus` until the agent connects and publishes). Agent-first visitors hit `/oauth/authorize` → `/signup?next=…` → consent. Site footers link back with `?ref=<sub>`; the landing page stores first-touch `op_ref`, saved as `users.signup_source`.
 
 ## Conventions
 

@@ -2,6 +2,7 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import * as asMeta from "@/app/.well-known/oauth-authorization-server/route";
 import * as prMeta from "@/app/.well-known/oauth-protected-resource/[[...path]]/route";
+import * as subdomainRoute from "@/app/api/subdomain/route";
 import * as mcpRoute from "@/app/mcp/route";
 import * as register from "@/app/oauth/register/route";
 import * as revoke from "@/app/oauth/revoke/route";
@@ -35,6 +36,7 @@ export const appFetch = async (input: string | URL | Request, init?: RequestInit
   if (p === "/oauth/register") return pick(register);
   if (p === "/oauth/token") return pick(token);
   if (p === "/oauth/revoke") return pick(revoke);
+  if (p === "/api/subdomain") return pick(subdomainRoute);
   return new Response("not found", { status: 404 });
 };
 

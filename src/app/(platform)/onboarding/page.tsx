@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { config } from "@/lib/config";
+import { SUBDOMAIN_RE } from "@/lib/slug";
 import { requireActor } from "@/server/auth/session";
 import { listTemplates } from "@/server/services/appearance";
 import { listSites } from "@/server/services/sites";
@@ -9,8 +10,9 @@ import { OnboardingForm } from "./onboarding-form";
 
 export const metadata: Metadata = { title: "Create your site" };
 
-export default async function OnboardingPage() {
+export default async function OnboardingPage({ searchParams }: PageProps<"/onboarding">) {
   const actor = await requireActor();
+  const claimed = (await searchParams).site;
   if ((await listSites(actor)).length) redirect("/dashboard");
   return (
     <div className="flex min-h-screen flex-col">
@@ -23,7 +25,7 @@ export default async function OnboardingPage() {
         <p className="font-mono text-xs text-muted-foreground">Step 1 of 2</p>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">Name your site</h1>
         <p className="mt-1 text-sm text-muted-foreground">You can change everything later, or ask your agent to.</p>
-        <OnboardingForm rootDomain={config.rootDomain} templates={listTemplates().map(({ id, name, description }) => ({ id, name, description }))} />
+        <OnboardingForm claimed={typeof claimed === "string" && SUBDOMAIN_RE.test(claimed) ? claimed : undefined} rootDomain={config.rootDomain} templates={listTemplates().map(({ id, name, description }) => ({ id, name, description }))} />
       </main>
     </div>
   );

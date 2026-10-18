@@ -1,7 +1,7 @@
 import { and, desc, eq, inArray, isNull } from "drizzle-orm";
 import { z } from "zod";
 import { withUser } from "@/db/client";
-import { agentConnectionSites, agentConnections, agentTokens, auditLogs, oauthClients, sites } from "@/db/schema";
+import { agentConnectionSites, agentConnections, agentTokens, auditLogs, oauthClients, posts, sites } from "@/db/schema";
 import { AppError, notFound } from "@/lib/errors";
 import { ALL_SCOPES, type Actor, type Scope } from "../actor";
 import { audit } from "./audit";
@@ -9,6 +9,33 @@ import { audit } from "./audit";
 /** Dashboard-only: agents cannot manage their own permissions. */
 function assertHuman(actor: Actor) {
   if (actor.kind !== "user") throw new AppError("FORBIDDEN", "Agent connections can only be managed from the dashboard.");
+}
+
+/**
+ * Progress for the post-signup connect screen: has any agent connected (and
+ * made a call), and has anything been published on the new site yet?
+ */
+export async function onboardingStatus(actor: Actor, siteId: string) {
+  assertHuman(actor);
+  return withUser(actor.userId, async (tx) => {
+    const [conn] = await tx
+      .select({ name: agentConnections.name, clientName: oauthClients.name, lastUsedAt: agentConnections.lastUsedAt })
+      .from(agentConnections)
+      .leftJoin(oauthClients, eq(agentConnections.clientId, oauthClients.id))
+      .where(and(eq(agentConnections.userId, actor.userId), isNull(agentConnections.revokedAt)))
+      .orderBy(desc(agentConnections.lastUsedAt), desc(agentConnections.createdAt))
+      .limit(1);
+    const [post] = await tx
+      .select({ title: posts.title, slug: posts.slug, kind: posts.kind })
+      .from(posts)
+      .where(and(eq(posts.siteId, siteId), eq(posts.status, "published"), isNull(posts.deletedAt)))
+      .orderBy(desc(posts.publishedAt))
+      .limit(1);
+    return {
+      agent: conn ? { name: conn.clientName ?? conn.name, active: !!conn.lastUsedAt } : null,
+      published: post ? { title: post.title, path: post.kind === "post" ? `/blog/${post.slug}` : `/${post.slug}` } : null,
+    };
+  });
 }
 
 export async function listConnections(actor: Actor) {

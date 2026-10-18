@@ -7,6 +7,8 @@ import type { Actor } from "../actor";
 import { createSession, deleteSession, userForSessionToken } from "./accounts";
 
 export const SESSION_COOKIE = "folio_session";
+/** Marks a browser that has signed in before, so sign-in prompts default to login instead of signup. Survives logout. */
+export const SEEN_COOKIE = "op_seen";
 
 /** Host-only cookie on the app domain: never sent to user sites on subdomains. */
 export async function setSessionCookie(userId: string) {
@@ -19,6 +21,7 @@ export async function setSessionCookie(userId: string) {
     path: "/",
     expires: expiresAt,
   });
+  (await cookies()).set(SEEN_COOKIE, "1", { httpOnly: true, secure: config.protocol === "https", sameSite: "lax", path: "/", maxAge: 365 * 86400 });
 }
 
 export async function clearSession() {
