@@ -8,7 +8,10 @@ const escaped = rootDomain.replace(/\./g, "\\.");
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ["@electric-sql/pglite"],
+  // Lets the e2e suite run its own dev server alongside a regular one.
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   poweredByHeader: false,
+  experimental: { globalNotFound: true },
   async rewrites() {
     return {
       beforeFiles: [

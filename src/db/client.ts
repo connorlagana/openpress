@@ -33,7 +33,13 @@ async function createDb(): Promise<Db> {
     const { drizzle } = await import("drizzle-orm/pglite");
     const { migrate } = await import("drizzle-orm/pglite/migrator");
     const location = url.slice("pglite://".length);
-    const client = location === "memory" ? new PGlite() : new PGlite(path.resolve(location));
+    let client;
+    if (location === "memory") client = new PGlite();
+    else {
+      const { mkdirSync } = await import("node:fs");
+      mkdirSync(path.dirname(path.resolve(location)), { recursive: true });
+      client = new PGlite(path.resolve(location));
+    }
     const db = drizzle(client, { schema });
     await migrate(db, { migrationsFolder: path.join(process.cwd(), "drizzle") });
     // The pglite and postgres-js drivers share the same query-builder surface.
