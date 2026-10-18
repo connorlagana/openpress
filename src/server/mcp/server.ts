@@ -5,7 +5,7 @@ import { config } from "@/lib/config";
 import { AppError } from "@/lib/errors";
 import { themePatchSchema } from "@/lib/theme";
 import { siteSettingsSchema, templateIdSchema } from "@/templates/registry";
-import type { Actor } from "../actor";
+import { requireScope, type Actor } from "../actor";
 import { requireConfirmation } from "../confirm";
 import { getSiteAnalytics } from "../services/analytics";
 import { listTemplates, setTemplate, updateTheme } from "../services/appearance";
@@ -155,6 +155,8 @@ export function buildMcpServer(actor: Actor): McpServer {
     },
     ({ siteId, confirmationToken }) =>
       run(async () => {
+        // Check permission first so agents that can't delete never get a confirmation prompt.
+        requireScope(actor, "sites:delete");
         const site = await getSite(actor, siteId);
         await requireConfirmation(actor, {
           action: "delete_site",

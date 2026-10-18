@@ -135,4 +135,12 @@ describe("MCP server over Streamable HTTP", () => {
     expect(res.isError).toBe(true);
     expect(res.structuredContent!.error.code).toBe("FORBIDDEN");
   });
+
+  it("refuses delete_site without the sites:delete scope before issuing a confirmation token", async () => {
+    const { client } = await connectWithApiKey(userId, { scopes: ["sites:read", "sites:write"] });
+    const sites = (await call(client, "list_sites")).structuredContent!.sites;
+    const res = await call(client, "delete_site", { siteId: sites[0].id });
+    expect(res.isError).toBe(true);
+    expect(res.content[0].text).toContain("sites:delete");
+  });
 });
