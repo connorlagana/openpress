@@ -33,33 +33,35 @@ export function ProfileForm({ name: initial }: { name: string }) {
   );
 }
 
-export function PasswordForm() {
+export function PasswordForm({ hasPassword }: { hasPassword: boolean }) {
   const [pending, start] = useTransition();
   return (
     <form
-      className="grid max-w-xl gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end"
+      className={hasPassword ? "grid max-w-xl gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end" : "grid max-w-xl gap-3 sm:grid-cols-[1fr_auto] sm:items-end"}
       onSubmit={(e) => {
         e.preventDefault();
         const form = e.currentTarget;
         const f = new FormData(form);
         start(async () => {
-          const res = await changePasswordAction(String(f.get("current")), String(f.get("next")));
+          const res = await changePasswordAction(String(f.get("current") ?? ""), String(f.get("next")));
           if (!res.ok) return void toast.error(res.error);
-          toast.success("Password changed");
+          toast.success(hasPassword ? "Password changed" : "Password set");
           form.reset();
         });
       }}
     >
-      <div className="space-y-1.5">
-        <Label htmlFor="current">Current</Label>
-        <Input id="current" name="current" type="password" autoComplete="current-password" required />
-      </div>
+      {hasPassword ? (
+        <div className="space-y-1.5">
+          <Label htmlFor="current">Current</Label>
+          <Input id="current" name="current" type="password" autoComplete="current-password" required />
+        </div>
+      ) : null}
       <div className="space-y-1.5">
         <Label htmlFor="next">New</Label>
         <Input id="next" name="next" type="password" autoComplete="new-password" minLength={10} required />
       </div>
       <Button type="submit" variant="outline" disabled={pending}>
-        Change
+        {hasPassword ? "Change" : "Set password"}
       </Button>
     </form>
   );

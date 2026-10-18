@@ -36,6 +36,7 @@ MCP-native website hosting: users connect their own AI agent (Claude, ChatGPT, C
 - `src/server/actor.ts` — `Actor` (dashboard user or agent connection), scopes, site restrictions.
 - `src/server/services/*` — all business logic. Both the dashboard (server actions) and MCP tools call these; they enforce scopes, site grants, quotas, confirmation and audit logging. Never put authorization in UI or tool code only.
 - `src/server/mcp/server.ts` — MCP tool definitions (thin wrappers over services). `src/app/mcp/route.ts` — stateless Streamable HTTP endpoint with bearer auth + rate limits.
+- `src/server/auth/sso.ts` + `src/app/auth/[provider]/{start,callback}` — Sign in with Google / Apple (user login, unrelated to agent OAuth). Buttons appear only when `GOOGLE_*` / `APPLE_*` env vars are set.
 - `src/server/oauth/oauth.ts` — OAuth 2.1 authorization server (DCR, PKCE S256, refresh rotation, revocation) and bearer → Actor resolution. Consent UI: `src/app/(platform)/oauth/authorize`.
 - `src/server/public/*` — privileged, read-only queries for public site rendering. Must only ever return published, non-deleted, non-suspended content.
 - `src/app/site/[subdomain]/**` — public sites. Reached through a host-based rewrite in `next.config.ts` (`<sub>.<ROOT_DOMAIN>/x` → `/site/<sub>/x`).

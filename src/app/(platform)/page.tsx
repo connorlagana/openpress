@@ -250,6 +250,9 @@ export default async function Landing({ searchParams }: PageProps<"/">) {
             <Link href="/report" className="hover:text-foreground">
               Report abuse
             </Link>
+            <Link href="/privacy" className="hover:text-foreground">
+              Privacy
+            </Link>
           </nav>
         </div>
       </footer>

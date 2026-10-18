@@ -37,7 +37,8 @@ export const users = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     email: text("email").notNull(),
-    passwordHash: text("password_hash").notNull(),
+    /** Null for accounts that only sign in with Google or Apple. */
+    passwordHash: text("password_hash"),
     name: text("name"),
     planId: text("plan_id").notNull().default("free").references(() => plans.id),
     isAdmin: boolean("is_admin").notNull().default(false),
@@ -49,6 +50,19 @@ export const users = pgTable(
     updatedAt: updatedAt(),
   },
   (t) => [uniqueIndex("users_email_key").on(sql`lower(${t.email})`)],
+);
+
+// A Google or Apple account that signs in as a user. `subject` is the provider's stable user id (`sub`).
+export const userIdentities = pgTable(
+  "user_identities",
+  {
+    provider: text("provider", { enum: ["google", "apple"] }).notNull(),
+    subject: text("subject").notNull(),
+    userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    email: text("email"),
+    createdAt: createdAt(),
+  },
+  (t) => [primaryKey({ columns: [t.provider, t.subject] }), index("user_identities_user_idx").on(t.userId)],
 );
 
 export const sessions = pgTable(

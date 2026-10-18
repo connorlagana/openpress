@@ -16,10 +16,12 @@ export async function changePassword(actor: Actor, current: string, next: string
   if (next.length < 10) throw new AppError("VALIDATION", "New password must be at least 10 characters.");
   const db = await getDb();
   const [u] = await db.select().from(users).where(eq(users.id, actor.userId));
-  if (!u || !(await verifyPassword(current, u.passwordHash))) throw new AppError("UNAUTHORIZED", "Current password is incorrect.");
+  if (!u) throw new AppError("UNAUTHORIZED", "Current password is incorrect.");
+  // Accounts created with Google or Apple have no password yet; the session is enough to set one.
+  if (u.passwordHash && !(await verifyPassword(current, u.passwordHash))) throw new AppError("UNAUTHORIZED", "Current password is incorrect.");
   const hash = await hashPassword(next);
   await withUser(actor.userId, async (tx) => {
     await tx.update(users).set({ passwordHash: hash, updatedAt: new Date() }).where(eq(users.id, actor.userId));
-    await audit(tx, actor, "account.change_password");
+    await audit(tx, actor, u.passwordHash ? "account.change_password" : "account.set_password");
   });
 }

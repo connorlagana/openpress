@@ -32,20 +32,25 @@ test("a taken name offers an alternative", async ({ page, request }) => {
   await expect(page.getByRole("button", { name: /Claim it/ }).first()).toBeDisabled();
 });
 
-test("agent-first: an unknown visitor approving an agent is sent to signup, then back to consent", async ({ page, request, baseURL }) => {
+test("agent-first: an unknown visitor creates an account and approves on one screen; reconnecting skips consent", async ({ page, request, baseURL }) => {
   const reg = await request.post("/oauth/register", {
     data: { client_name: "Fresh Agent", redirect_uris: ["http://127.0.0.1:43124/cb"], grant_types: ["authorization_code"], response_types: ["code"], token_endpoint_auth_method: "none" },
   });
   const { client_id } = await reg.json();
   const q = new URLSearchParams({ response_type: "code", client_id, redirect_uri: "http://127.0.0.1:43124/cb", code_challenge: "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM", code_challenge_method: "S256", state: "s", resource: `${baseURL}/mcp` });
+  await page.route("http://127.0.0.1:43124/**", (route) => route.fulfill({ status: 200, body: "ok" }));
   await page.goto(`/oauth/authorize?${q}`);
-  await expect(page).toHaveURL(/\/signup\?next=/);
-  await expect(page.getByRole("heading", { name: "Create a free account to connect your agent" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Connect Fresh Agent/ })).toBeVisible();
+  await expect(page.getByText("Publish and unpublish posts and pages")).toBeVisible();
   await page.getByLabel("Email").fill(`agentfirst-${Date.now()}@example.com`);
   await page.getByLabel("Password").fill("a-very-good-password");
-  await page.getByRole("button", { name: "Create free account" }).click();
-  await expect(page.getByRole("heading", { name: /Allow Fresh Agent/ })).toBeVisible();
-  await expect(page.getByText(/don.t have a site yet/)).toBeVisible();
+  await page.getByRole("button", { name: "Create account & allow" }).click();
+  await page.waitForURL(/127\.0\.0\.1:43124\/cb\?code=/);
+
+  // The same agent asking again (e.g. after losing its tokens) goes straight back.
+  const again = await page.request.get(`/oauth/authorize?${q}`, { maxRedirects: 0 });
+  expect(again.status()).toBe(307);
+  expect(again.headers().location).toMatch(/^http:\/\/127\.0\.0\.1:43124\/cb\?code=/);
 });
 
 test("a site's footer link credits the site on the landing page", async ({ page }) => {

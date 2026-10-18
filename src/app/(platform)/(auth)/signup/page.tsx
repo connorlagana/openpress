@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { config } from "@/lib/config";
 import { SUBDOMAIN_RE } from "@/lib/slug";
+import { SsoButtons } from "@/components/app/sso-buttons";
 import { getCurrentUser } from "@/server/auth/session";
 import { signUpAction } from "../actions";
 import { AuthForm } from "../auth-form";
@@ -34,6 +35,7 @@ export default async function SignUpPage({ searchParams }: PageProps<"/signup">)
           {fromAgent ? "Takes a few seconds. You'll go straight back to approving your agent." : "Free hosting and free MCP access. No trial, no card."}
         </p>
       </div>
+      <SsoButtons next={next} />
       <AuthForm mode="signup" action={signUpAction} next={next} />
       <p className="text-sm text-muted-foreground">
         Already have an account?{" "}

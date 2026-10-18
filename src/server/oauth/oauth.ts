@@ -1,4 +1,4 @@
-import { and, eq, gt, inArray, isNull, or, sql } from "drizzle-orm";
+import { and, desc, eq, gt, inArray, isNull, or, sql } from "drizzle-orm";
 import { z } from "zod";
 import { getDb, withUser } from "@/db/client";
 import { agentConnectionSites, agentConnections, agentTokens, oauthClients, oauthCodes, plans, sites, users } from "@/db/schema";
@@ -151,7 +151,14 @@ export const grantInput = z.object({
 });
 
 /** Create the user's grant (agent connection). RLS ensures sites belong to the user. */
-async function createConnection(userId: string, kind: "oauth" | "api_key", clientId: string | null, grant: z.infer<typeof grantInput>, ip?: string | null) {
+async function createConnection(
+  userId: string,
+  kind: "oauth" | "api_key",
+  clientId: string | null,
+  grant: z.infer<typeof grantInput>,
+  ip?: string | null,
+  extra?: Record<string, unknown>,
+) {
   return withUser(userId, async (tx) => {
     const [conn] = await tx
       .insert(agentConnections)
@@ -164,7 +171,7 @@ async function createConnection(userId: string, kind: "oauth" | "api_key", clien
     await audit(tx, { kind: "user", userId, ip }, kind === "oauth" ? "agent.authorize" : "agent.api_key_create", {
       targetType: "agent_connection",
       targetId: conn.id,
-      metadata: { name: grant.name, scopes: grant.scopes, allSites: grant.allSites, siteIds: grant.siteIds },
+      metadata: { name: grant.name, scopes: grant.scopes, allSites: grant.allSites, siteIds: grant.siteIds, ...extra },
     });
     return conn;
   });
@@ -173,11 +180,15 @@ async function createConnection(userId: string, kind: "oauth" | "api_key", clien
 export async function approveAuthorization(userId: string, params: AuthorizeParams, grant: z.input<typeof grantInput>, ip?: string | null) {
   const g = grantInput.parse(grant);
   const conn = await createConnection(userId, "oauth", params.client_id, g, ip);
+  return issueCode(conn.id, params);
+}
+
+async function issueCode(connectionId: string, params: AuthorizeParams) {
   const code = randomToken(32);
   const db = await getDb();
   await db.insert(oauthCodes).values({
     codeHash: await sha256Hex(code),
-    connectionId: conn.id,
+    connectionId,
     clientId: params.client_id,
     redirectUri: params.redirect_uri,
     codeChallenge: params.code_challenge,
@@ -189,6 +200,56 @@ export async function approveAuthorization(userId: string, params: AuthorizePara
   if (params.state) u.searchParams.set("state", params.state);
   u.searchParams.set("iss", config.appUrl);
   return u.toString();
+}
+
+/**
+ * Skip the consent screen when the user already granted this app access.
+ * A prior grant matches by client_id, or, for https callbacks only, by another
+ * registration with the same redirect URI (clients re-register via DCR, and an
+ * https callback can only be served by its owner; loopback and app-scheme
+ * callbacks can be claimed by any local program). Same client: the code is
+ * bound to the existing connection. Re-registered client: the grant is copied
+ * to a new connection. Returns null when consent is needed, including when the
+ * client asks for a scope the user never approved.
+ */
+export async function reauthorize(userId: string, params: AuthorizeParams, requested: Scope[] | null, ip?: string | null): Promise<string | null> {
+  const db = await getDb();
+  const sameApp = params.redirect_uri.startsWith("https://")
+    ? (await db.select({ id: oauthClients.id }).from(oauthClients).where(sql`${params.redirect_uri} = any(${oauthClients.redirectUris})`)).map((c) => c.id)
+    : [];
+  const clientIds = [...new Set([params.client_id, ...sameApp])];
+  const prior = await withUser(userId, async (tx) => {
+    const rows = await tx
+      .select()
+      .from(agentConnections)
+      .where(and(eq(agentConnections.userId, userId), eq(agentConnections.kind, "oauth"), isNull(agentConnections.revokedAt), inArray(agentConnections.clientId, clientIds)))
+      .orderBy(sql`${agentConnections.clientId} = ${params.client_id} desc`, desc(agentConnections.createdAt))
+      .limit(1);
+    if (!rows[0]) return null;
+    const siteIds = rows[0].allSites
+      ? []
+      : (await tx.select({ id: agentConnectionSites.siteId }).from(agentConnectionSites).where(eq(agentConnectionSites.connectionId, rows[0].id))).map((r) => r.id);
+    return { conn: rows[0], siteIds };
+  });
+  if (!prior) return null;
+  const granted = parseScopes(prior.conn.scopes);
+  if (requested?.some((s) => !granted.includes(s))) return null;
+
+  if (prior.conn.clientId === params.client_id) {
+    await withUser(userId, (tx) =>
+      audit(tx, { kind: "user", userId, ip }, "agent.reauthorize", { targetType: "agent_connection", targetId: prior.conn.id, metadata: { name: prior.conn.name } }),
+    );
+    return issueCode(prior.conn.id, params);
+  }
+  const g = grantInput.parse({
+    name: prior.conn.name,
+    scopes: requested ?? granted,
+    allSites: prior.conn.allSites,
+    siteIds: prior.siteIds,
+    confirmPublish: prior.conn.confirmPublish,
+  });
+  const conn = await createConnection(userId, "oauth", params.client_id, g, ip, { copiedFrom: prior.conn.id });
+  return issueCode(conn.id, params);
 }
 
 export async function createApiKey(userId: string, grant: z.input<typeof grantInput>, ip?: string | null) {

@@ -5,7 +5,7 @@ test("sign up → create site → connect MCP client via OAuth → agent publish
   // 1-2. Sign up and create a site through the UI.
   const sub = `journal-${Date.now().toString(36)}`;
   await signUpAndCreateSite(page, { siteName: "The Engineering Journal", subdomain: sub });
-  await expect(page.getByText("Now connect your agent")).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Now connect your agent/ })).toBeVisible();
   const connectUrl = page.url();
   await expect(page.getByText("Waiting for your agent to connect")).toBeVisible();
   const mcpUrl = `${baseURL}/mcp`;
