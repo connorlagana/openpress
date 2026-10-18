@@ -44,8 +44,19 @@ export function errorResponse(e: unknown, cors = false) {
   return json({ error: "server_error" }, { status: 500, cors });
 }
 
+/**
+ * Client IP for rate limits and audit logs. Only trust the header the hosting
+ * edge sets and clients can't forge: IP_HEADER (e.g. "x-real-ip" on Railway),
+ * otherwise Cloudflare's cf-connecting-ip, then the first x-forwarded-for hop.
+ */
+export function ipFromHeaders(h: Headers): string | null {
+  const trusted = process.env.IP_HEADER;
+  if (trusted) return h.get(trusted)?.split(",")[0]?.trim() || null;
+  return h.get("cf-connecting-ip") ?? h.get("x-forwarded-for")?.split(",")[0]?.trim() ?? h.get("x-real-ip") ?? null;
+}
+
 export function clientIpFrom(req: Request) {
-  return req.headers.get("cf-connecting-ip") ?? req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
+  return ipFromHeaders(req.headers);
 }
 
 /** CSRF defence for cookie-authenticated POST endpoints outside Server Actions. */

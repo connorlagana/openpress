@@ -3,6 +3,7 @@ import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 import { config } from "@/lib/config";
+import { ipFromHeaders } from "../http/util";
 import type { Actor } from "../actor";
 import { createSession, deleteSession, userForSessionToken } from "./accounts";
 
@@ -48,5 +49,5 @@ export async function requireActor(): Promise<Actor> {
 }
 
 export function clientIp(h: Headers): string | null {
-  return h.get("cf-connecting-ip") ?? h.get("x-forwarded-for")?.split(",")[0]?.trim() ?? h.get("x-real-ip") ?? null;
+  return ipFromHeaders(h);
 }
