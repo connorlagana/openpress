@@ -50,7 +50,10 @@ export function renderMarkdown(md: string): string {
 
 /** Plain-text excerpt for meta descriptions and listings. */
 export function plainText(md: string, max = 160): string {
-  const text = sanitizeHtml(marked.parse(md) as string, { allowedTags: [], allowedAttributes: {} })
+  // Prefer paragraph text so headings, lists and code don't leak into summaries.
+  const html = marked.parse(md) as string;
+  const paragraphs = html.match(/<p>[\s\S]*?<\/p>/g)?.join(" ") ?? html;
+  const text = sanitizeHtml(paragraphs, { allowedTags: [], allowedAttributes: {} })
     .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'")
     .replace(/\s+/g, " ")
     .trim();

@@ -16,9 +16,10 @@ const nextConfig: NextConfig = {
     return {
       beforeFiles: [
         {
-          source: "/:path*",
+          // Everything except framework assets, which must stay at /_next on every host.
+          source: "/:path((?!_next/).*)",
           has: [{ type: "host", value: `(?<subdomain>[a-z0-9-]+)\\.${escaped}` }],
-          destination: "/site/:subdomain/:path*",
+          destination: "/site/:subdomain/:path",
         },
       ],
       afterFiles: [],

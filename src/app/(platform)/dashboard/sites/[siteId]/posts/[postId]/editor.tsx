@@ -269,8 +269,10 @@ function Field({ label, htmlFor, hint, children }: { label: string; htmlFor: str
   return (
     <div className="space-y-1.5">
       <div className="flex items-baseline justify-between gap-2">
-        <Label htmlFor={htmlFor}>{label}</Label>
-        {hint ? <span className="text-xs text-muted-foreground">{hint}</span> : null}
+        <Label htmlFor={htmlFor} className="shrink-0">
+          {label}
+        </Label>
+        {hint ? <span className="text-right text-xs text-muted-foreground">{hint}</span> : null}
       </div>
       {children}
     </div>
