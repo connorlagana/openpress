@@ -2,7 +2,7 @@
 
 ## Threat model
 
-Folio is multi-tenant hosting operated by third-party AI agents. We assume: tenants are adversarial to each other; agents may be confused or prompt-injected (including by content on the sites they read); published content is untrusted HTML-ish input; anyone on the internet can hit every endpoint.
+OpenPress is multi-tenant hosting operated by third-party AI agents. We assume: tenants are adversarial to each other; agents may be confused or prompt-injected (including by content on the sites they read); published content is untrusted HTML-ish input; anyone on the internet can hit every endpoint.
 
 ## Controls
 

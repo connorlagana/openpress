@@ -44,7 +44,7 @@ On a Cloudflare zone `example.com` (the platform domain):
 
 Edit `wrangler.jsonc`: set `NEXT_PUBLIC_ROOT_DOMAIN`, `routes` to your domain, and (optionally) a Hyperdrive binding:
 ```bash
-npx wrangler hyperdrive create folio-db --connection-string="postgres://...pooler...:6543/postgres"
+npx wrangler hyperdrive create openpress-db --connection-string="postgres://...pooler...:6543/postgres"
 ```
 
 Secrets:
@@ -55,7 +55,7 @@ for s in APP_SECRET DATABASE_URL R2_ACCOUNT_ID R2_ACCESS_KEY_ID R2_SECRET_ACCESS
 
 Deploy — `NEXT_PUBLIC_*` values are inlined at build time, so export them for the build:
 ```bash
-NEXT_PUBLIC_ROOT_DOMAIN=example.com NEXT_PUBLIC_APP_NAME=Folio pnpm deploy:cf
+NEXT_PUBLIC_ROOT_DOMAIN=example.com NEXT_PUBLIC_APP_NAME=OpenPress pnpm deploy:cf
 ```
 
 ## 5. First-deploy checklist

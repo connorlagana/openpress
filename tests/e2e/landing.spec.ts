@@ -27,7 +27,7 @@ test("landing: prompt builder produces a prompt, demo finishes, install tabs swi
 
   const connect = page.locator("#connect");
   await connect.getByRole("tab", { name: "Cursor" }).click();
-  await expect(connect.getByRole("link", { name: /Add to Cursor/ })).toHaveAttribute("href", /^cursor:\/\/anysphere\.cursor-deeplink\/mcp\/install\?name=folio&config=/);
+  await expect(connect.getByRole("link", { name: /Add to Cursor/ })).toHaveAttribute("href", /^cursor:\/\/anysphere\.cursor-deeplink\/mcp\/install\?name=openpress&config=/);
 
   const llms = await page.request.get("/llms.txt");
   expect(llms.ok()).toBe(true);

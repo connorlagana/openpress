@@ -1,7 +1,7 @@
 /** Central runtime configuration. Everything here has a safe local default. */
 export const config = {
-  appName: process.env.NEXT_PUBLIC_APP_NAME ?? "Folio",
-  /** Host that serves the dashboard, API and MCP endpoint, e.g. folio.site or localhost:3000 */
+  appName: process.env.NEXT_PUBLIC_APP_NAME ?? "OpenPress",
+  /** Host that serves the dashboard, API and MCP endpoint, e.g. openpress.blog or localhost:3000 */
   rootDomain: process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "localhost:3000",
   /** http for localhost, https everywhere else */
   get protocol() {

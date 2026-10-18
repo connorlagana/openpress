@@ -26,7 +26,7 @@ describe("MCP server over Streamable HTTP", () => {
 
   it("initializes and lists all required tools with schemas", async () => {
     const { client } = await connectWithApiKey(userId);
-    expect(client.getServerVersion()?.name).toBe("folio-publishing");
+    expect(client.getServerVersion()?.name).toBe("openpress-publishing");
     expect(client.getInstructions()).toContain("confirmation_required");
     const { tools } = await client.listTools();
     const names = tools.map((t) => t.name).sort();

@@ -66,7 +66,7 @@ async function fetchRemoteImage(sourceUrl: string, maxBytes: number): Promise<Ui
     if (url.port && url.port !== "443") throw new AppError("VALIDATION", "sourceUrl must use the default https port");
     if (url.username || url.password) throw new AppError("VALIDATION", "sourceUrl must not contain credentials");
     if (isForbiddenHost(url.hostname)) throw new AppError("VALIDATION", "sourceUrl points to a private or reserved address");
-    const res = await fetch(url, { redirect: "manual", headers: { accept: "image/*", "user-agent": "FolioMediaImporter/1.0" }, signal: AbortSignal.timeout(10_000) });
+    const res = await fetch(url, { redirect: "manual", headers: { accept: "image/*", "user-agent": "OpenPressMediaImporter/1.0" }, signal: AbortSignal.timeout(10_000) });
     if (res.status >= 300 && res.status < 400) {
       const loc = res.headers.get("location");
       if (!loc) break;

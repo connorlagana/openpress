@@ -1,4 +1,4 @@
-# Folio
+# OpenPress
 
 Free website hosting that AI agents can operate. Sign up, pick a template, connect Claude / ChatGPT / Cursor / any MCP client, and ask it to write and publish.
 

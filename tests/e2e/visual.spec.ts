@@ -43,7 +43,7 @@ for (const template of ["Editorial", "Launch", "Portfolio"] as const) {
       await call("update_site_settings", {
         siteId,
         settings: {
-          hero: { headline: "Ship docs your users actually read", subheadline: "Folio turns your changelog and guides into a fast, searchable site your AI agent keeps up to date.", ctaLabel: "Start free", ctaUrl: "/blog", secondaryCtaLabel: "Read the blog", secondaryCtaUrl: "/blog" },
+          hero: { headline: "Ship docs your users actually read", subheadline: "OpenPress turns your changelog and guides into a fast, searchable site your AI agent keeps up to date.", ctaLabel: "Start free", ctaUrl: "/blog", secondaryCtaLabel: "Read the blog", secondaryCtaUrl: "/blog" },
         },
       });
     }
@@ -56,7 +56,7 @@ for (const template of ["Editorial", "Launch", "Portfolio"] as const) {
           projects: [
             { title: "Analytical Engine", description: "A general-purpose mechanical computer.", tags: ["hardware"] },
             { title: "Note G", description: "The first published algorithm.", tags: ["math"] },
-            { title: "Folio", description: "Websites your agent can publish.", tags: ["web"] },
+            { title: "OpenPress", description: "Websites your agent can publish.", tags: ["web"] },
           ],
         },
       });

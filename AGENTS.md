@@ -8,7 +8,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
-# Folio — agent guide
+# OpenPress — agent guide
 
 MCP-native website hosting: users connect their own AI agent (Claude, ChatGPT, Cursor…) over MCP and publish sites by asking.
 

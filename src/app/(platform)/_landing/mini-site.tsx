@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 
-// A tiny, CSS-only rendering of a Folio site. Sized in em, so the caller sets
+// A tiny, CSS-only rendering of an OpenPress site. Sized in em, so the caller sets
 // the scale with font-size. Colors are custom properties, so palette changes
 // transition smoothly.
 
