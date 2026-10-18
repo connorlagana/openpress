@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useSyncExternalStore } from "react";
 import { cn } from "@/lib/utils";
 
@@ -13,14 +14,14 @@ import { cn } from "@/lib/utils";
 const PHASES = [
   { key: "site", at: [0.12, 0.24], tool: "create_site", arg: 'name: "Field Notes"', rail: "Site" },
   { key: "theme", at: [0.26, 0.38], tool: "update_theme", arg: 'fontHeading: "serif"', rail: "Theme" },
-  { key: "media", at: [0.4, 0.5], tool: "upload_media", arg: 'altText: "Rooftops…"', rail: "Image" },
-  { key: "post", at: [0.52, 0.66], tool: "create_post", arg: 'title: "Hello, Lisbon"', rail: "Post" },
-  { key: "seo", at: [0.68, 0.78], tool: "update_post_seo", arg: "description: 148 chars", rail: "SEO" },
+  { key: "media", at: [0.4, 0.5], tool: "upload_media", arg: 'altText: "Lake Como…"', rail: "Image" },
+  { key: "post", at: [0.52, 0.66], tool: "create_post", arg: 'title: "Lake Como, without the crowds"', rail: "Post" },
+  { key: "seo", at: [0.68, 0.78], tool: "update_post_seo", arg: 'description: "A slower Lake Como…"', rail: "SEO" },
   { key: "pub", at: [0.8, 0.88], tool: "publish_post", arg: 'status: "published"', rail: "Publish" },
 ] as const;
 
-const PROMPT = "Start a travel blog called Field Notes. Warm and editorial. First post about three days in Lisbon, with a photo. Make it findable, then publish.";
-const TITLE = "Hello, Lisbon";
+const PROMPT = "Start a travel blog called Field Notes. Warm and editorial. First post about a slow weekend on Lake Como, with a photo. Make it findable, then publish.";
+const TITLE = "Lake Como, without the crowds";
 const VISITORS = 37;
 
 const clamp = (v: number, a = 0, b = 1) => Math.min(b, Math.max(a, v));
@@ -39,7 +40,7 @@ function useMedia(query: string, server: boolean) {
   );
 }
 
-const SIZE = { wide: { w: 1100, h: 560 }, narrow: { w: 360, h: 780 } };
+const SIZE = { wide: { w: 1100, h: 560 }, narrow: { w: 360, h: 950 } };
 
 const step = (key: string) => ({ "--x": `var(--${key})` }) as React.CSSProperties;
 
@@ -169,16 +170,22 @@ export function Story({ rootDomain }: { rootDomain: string }) {
                   <div className="st-article">
                     <div className="st-cover">
                       <span className="st-cover__ph">image</span>
-                      <div className="st-photo" />
+                      <div className="st-photo">
+                        <Image src="/images/landing/travel.jpg" alt="" fill sizes="660px" unoptimized />
+                        <span className="st-photo__caption">A slower weekend · Lake Como, Italy</span>
+                      </div>
                     </div>
                     <div className="st-text">
-                      <p className="st-kicker">Portugal · 6 min read</p>
+                      <p className="st-kicker">Italy · The slow travel journal</p>
                       <h3 className="st-title">
                         <span ref={title}>{TITLE}</span>
                       </h3>
-                      {[100, 94, 97, 62].map((w, i) => (
-                        <i key={i} className="st-line" style={{ width: `${w}%`, "--i": i } as React.CSSProperties} />
-                      ))}
+                      <p className="st-excerpt">Sleepy villages, lakeside walks, and the long way home. Skip the packed itinerary and find a quieter side of Lake Como.</p>
+                      <div className="st-byline">
+                        <span className="st-avatar">SC</span>
+                        <span className="st-author"><b>By Sofia Chen</b><span>Travel writer</span></span>
+                        <span className="st-readtime">6 min read</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -187,9 +194,9 @@ export function Story({ rootDomain }: { rootDomain: string }) {
 
             {/* What search engines see */}
             <div className="st-serp lp-shadow">
-              <div className="st-serp__url">{host} › blog › hello-lisbon</div>
-              <div className="st-serp__title">Hello, Lisbon · Field Notes</div>
-              <p>Three days of tiles, trams and pastéis de nata, and the viewpoint locals actually use…</p>
+              <div className="st-serp__url">{host} › blog › a-slower-lake-como</div>
+              <div className="st-serp__title">{TITLE} · Field Notes</div>
+              <p>A slower weekend on Lake Como: sleepy villages, lakeside walks, and a little more time to take it all in.</p>
             </div>
 
             {/* First visitors */}

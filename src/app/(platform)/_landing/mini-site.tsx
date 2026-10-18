@@ -1,6 +1,7 @@
+import Image from "next/image";
 import type { CSSProperties } from "react";
 
-// A tiny, CSS-only rendering of an OpenPress site. Sized in em, so the caller sets
+// A miniature rendering of an example OpenPress site. Sized in em, so the caller sets
 // the scale with font-size. Colors are custom properties, so palette changes
 // transition smoothly.
 
@@ -31,46 +32,48 @@ export function MiniSite({ template, palette, name, headline, host, className, s
       <div className="ms-body">
         <div className="ms-head">
           <b>{name}</b>
-          <span>
-            <i />
-            <i />
-            <i />
-          </span>
+          <span className="ms-nav">{template === "editorial" ? "Journal · Places · About" : template === "saas" ? "Features · Pricing" : "Work · About · Contact"}</span>
         </div>
         {template === "editorial" ? (
           <div key="editorial" className="ms-ed">
-            <div className="ms-ed__cover" />
+            <Image className="ms-example__cover" src="/images/landing/travel.jpg" alt="" width={640} height={420} unoptimized />
+            <p className="ms-example__eyebrow">Italy · The slow travel journal</p>
             <h5>{headline}</h5>
-            <i className="ms-line" />
-            <i className="ms-line" style={{ width: "72%" }} />
-            <div className="ms-ed__row">
-              <i />
-              <span>
-                <i className="ms-line" />
-                <i className="ms-line" style={{ width: "55%" }} />
-              </span>
-            </div>
+            <p className="ms-example__description">Sleepy villages, lakeside walks, and the long way home. Find a quieter side of northern Italy.</p>
+            <div className="ms-example__author"><b>By Sofia Chen</b><span>6 min read</span></div>
           </div>
         ) : template === "saas" ? (
           <div key="saas" className="ms-saas">
+            <p className="ms-example__eyebrow">Built for independent work</p>
             <h5>{headline}</h5>
-            <i className="ms-line" style={{ width: "60%", margin: "0 auto" }} />
-            <span className="ms-btn" />
-            <div className="ms-feats">
-              <i />
-              <i />
-              <i />
+            <p className="ms-example__description">Less chasing payments. More doing what you love. Meet your new freelance back office.</p>
+            <span className="ms-example__cta">Join the waitlist <span>↗</span></span>
+            <div className="ms-invoice">
+              <div className="ms-invoice__heading"><b>Invoice #042</b><span>Paid ✓</span></div>
+              <p>Brand identity · Studio North</p>
+              <div className="ms-invoice__total"><span>Project total</span><b>$2,400.00</b></div>
+              <div className="ms-invoice__footer">Sent Monday. Paid Tuesday.</div>
             </div>
+            <div className="ms-example__features"><span>Easy invoices</span><span>Auto reminders</span><span>Payment tracking</span></div>
           </div>
         ) : (
           <div key="portfolio" className="ms-pf">
+            <p className="ms-example__eyebrow">Independent designer · Porto</p>
             <h5>{headline}</h5>
-            <i className="ms-line" style={{ width: "50%" }} />
-            <div className="ms-pf__grid">
-              <i />
-              <i />
-              <i />
-              <i />
+            <p className="ms-example__description">I&rsquo;m Ana. I turn everyday problems into thoughtful digital experiences.</p>
+            <div className="ms-projects">
+              {[
+                { image: "design", name: "Soft Space", detail: "Home discovery" },
+                { image: "coffee", name: "Daily Grind", detail: "Coffee subscriptions" },
+                { image: "outdoors", name: "The Long Way", detail: "Trail planning" },
+                { image: "surf", name: "Dawn Patrol", detail: "Surf forecasts" },
+              ].map((project) => (
+                <div key={project.name}>
+                  <Image src={`/images/landing/${project.image}.jpg`} alt="" width={320} height={160} unoptimized />
+                  <b>{project.name} <span>↗</span></b>
+                  <span>{project.detail}</span>
+                </div>
+              ))}
             </div>
           </div>
         )}
