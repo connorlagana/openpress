@@ -2,8 +2,9 @@ import { AwsClient } from "aws4fetch";
 import { config } from "@/lib/config";
 
 /**
- * Object storage. STORAGE_DRIVER=r2 uses Cloudflare R2 through its S3 API
- * (works on Node and Workers); "local" writes to ./.data/media for development.
+ * Object storage. STORAGE_DRIVER=r2-binding uses the Worker's MEDIA R2 binding
+ * (no API keys); "r2" uses R2's S3 API (works on Node and Workers); "local"
+ * writes to ./.data/media for development.
  */
 export interface Storage {
   put(key: string, body: Uint8Array, contentType: string): Promise<void>;
@@ -72,6 +73,32 @@ class R2Storage implements Storage {
   }
 }
 
+type R2Bucket = {
+  put(key: string, body: Uint8Array, opts: { httpMetadata: { contentType: string; cacheControl: string } }): Promise<unknown>;
+  get(key: string): Promise<{ arrayBuffer(): Promise<ArrayBuffer>; httpMetadata?: { contentType?: string } } | null>;
+  delete(key: string): Promise<void>;
+};
+
+class R2BindingStorage implements Storage {
+  private async bucket() {
+    const { getCloudflareContext } = await import("@opennextjs/cloudflare");
+    const bucket = (getCloudflareContext().env as { MEDIA?: R2Bucket }).MEDIA;
+    if (!bucket) throw new Error("MEDIA R2 binding is required when STORAGE_DRIVER=r2-binding");
+    return bucket;
+  }
+  async put(key: string, body: Uint8Array, contentType: string) {
+    await (await this.bucket()).put(key, body, { httpMetadata: { contentType, cacheControl: "public, max-age=31536000, immutable" } });
+  }
+  async get(key: string) {
+    const obj = await (await this.bucket()).get(key);
+    if (!obj) return null;
+    return { body: new Uint8Array(await obj.arrayBuffer()), contentType: obj.httpMetadata?.contentType ?? "application/octet-stream" };
+  }
+  async delete(key: string) {
+    await (await this.bucket()).delete(key);
+  }
+}
+
 function required(name: string): string {
   const v = process.env[name];
   if (!v) throw new Error(`${name} is required when STORAGE_DRIVER=r2`);
@@ -80,7 +107,8 @@ function required(name: string): string {
 
 let instance: Storage | undefined;
 export function getStorage(): Storage {
-  instance ??= process.env.STORAGE_DRIVER === "r2" ? new R2Storage() : new LocalStorage();
+  const driver = process.env.STORAGE_DRIVER;
+  instance ??= driver === "r2-binding" ? new R2BindingStorage() : driver === "r2" ? new R2Storage() : new LocalStorage();
   return instance;
 }
 

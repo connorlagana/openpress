@@ -2,7 +2,11 @@
 
 Target stack: **Cloudflare Workers** (Next.js via OpenNext) + **Supabase Postgres** + **Cloudflare R2**.
 
-> Status: `pnpm build` and `opennextjs-cloudflare build` succeed, and the Worker serves pages in local `wrangler dev`. A deploy against live Supabase/R2/Cloudflare accounts has **not** been verified yet. Run through the checklist at the bottom on first deploy.
+> Status (2026-10-18): deployed to `openpress.openpress.workers.dev` with Neon Postgres (via Hyperdrive) and R2. Pages, OAuth metadata and the MCP 401 challenge verified there. The custom domain (`openpress.blog` + wildcard) is pending the zone moving to Cloudflare; the full checklist below has not been run on it yet.
+>
+> Hyperdrive is required, not optional: postgres.js fails on Workers when it opens TLS to the database itself (`options.rejectUnauthorized is not implemented`). Any Postgres works (production uses Neon; Supabase is fine too).
+>
+> `wrangler.workersdev.jsonc` is the same config without custom-domain routes, for deploying before the zone exists: `npx wrangler deploy -c wrangler.workersdev.jsonc` after `opennextjs-cloudflare build`.
 
 ## Why this stack (and compatibility notes)
 
@@ -28,10 +32,11 @@ Target stack: **Cloudflare Workers** (Next.js via OpenNext) + **Supabase Postgre
 ## 2. R2
 
 ```bash
-npx wrangler r2 bucket create folio-media
+npx wrangler r2 bucket create openpress-media
 ```
-- Bucket → Settings → connect a custom domain (e.g. `media.example.com`) → that's `MEDIA_PUBLIC_URL`.
-- R2 → Manage API tokens → create an Object Read & Write token scoped to the bucket → `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY`.
+- On Workers the app uses the `MEDIA` bucket binding in `wrangler.jsonc` (`STORAGE_DRIVER=r2-binding`), so no R2 API keys are needed.
+- Optional: Bucket → Settings → connect a custom domain (e.g. `media.example.com`) → that's `MEDIA_PUBLIC_URL`. Without it, media is served through `/m/`.
+- Only when running outside Workers: use `STORAGE_DRIVER=r2` with an Object Read & Write API token (`R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY`).
 
 ## 3. Domain + DNS
 
@@ -49,7 +54,7 @@ npx wrangler hyperdrive create openpress-db --connection-string="postgres://...p
 
 Secrets:
 ```bash
-for s in APP_SECRET DATABASE_URL R2_ACCOUNT_ID R2_ACCESS_KEY_ID R2_SECRET_ACCESS_KEY R2_BUCKET MEDIA_PUBLIC_URL; do npx wrangler secret put $s; done
+for s in APP_SECRET DATABASE_URL; do npx wrangler secret put $s; done
 ```
 `APP_SECRET`: `openssl rand -base64 48`.
 

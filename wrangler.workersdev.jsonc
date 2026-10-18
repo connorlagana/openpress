@@ -1,0 +1,26 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "openpress",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-09-01",
+  // global_fetch_strictly_public: outbound fetch() can never reach private/internal
+  // addresses, a platform-level SSRF backstop for upload_media(sourceUrl).
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
+  "services": [{ "binding": "WORKER_SELF_REFERENCE", "service": "openpress" }],
+  // Pools Postgres connections at the edge. Required in practice: postgres.js
+  // can't open a TLS connection to the database directly from a Worker.
+  // Created with: npx wrangler hyperdrive create openpress-db --connection-string="postgres://..."
+  "hyperdrive": [{ "binding": "HYPERDRIVE", "id": "9d82ddd896c64e5db93a8b51d703b57c" }],
+  "vars": {
+    "CF_WORKER": "1",
+    "NEXT_PUBLIC_APP_NAME": "OpenPress",
+    "NEXT_PUBLIC_ROOT_DOMAIN": "openpress.blog",
+    "STORAGE_DRIVER": "r2-binding"
+  },
+  "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "openpress-media" }],
+  // Secrets (wrangler secret put): APP_SECRET, DATABASE_URL. Optional:
+  // MEDIA_PUBLIC_URL (public bucket domain; otherwise media is served via /m/).
+  "workers_dev": true,
+  "observability": { "enabled": true }
+}
