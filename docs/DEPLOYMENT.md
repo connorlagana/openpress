@@ -1,12 +1,25 @@
 # Deployment
 
-Target stack: **Cloudflare Workers** (Next.js via OpenNext) + **Supabase Postgres** + **Cloudflare R2**.
+**Production (since 2026-10-18): Railway + Neon, DNS at Porkbun.** https://openpress.blog
 
-> Status (2026-10-18): deployed to `openpress.openpress.workers.dev` with Neon Postgres (via Hyperdrive) and R2. Pages, OAuth metadata and the MCP 401 challenge verified there. The custom domain (`openpress.blog` + wildcard) is pending the zone moving to Cloudflare; the full checklist below has not been run on it yet.
->
-> Hyperdrive is required, not optional: postgres.js fails on Workers when it opens TLS to the database itself (`options.rejectUnauthorized is not implemented`). Any Postgres works (production uses Neon; Supabase is fine too).
->
-> `wrangler.workersdev.jsonc` is the same config without custom-domain routes, for deploying before the zone exists: `npx wrangler deploy -c wrangler.workersdev.jsonc` after `opennextjs-cloudflare build`.
+| Piece | Where | Notes |
+| --- | --- | --- |
+| App | Railway project `openpress`, service `web` | Railpack builds `pnpm build` and runs `pnpm start` (plain Node). Deploy: `railway up --service web`. |
+| Database | Neon project `openpress` (pooled connection string) | Migrations are run from a dev machine with the direct (non-pooler) URL: `DATABASE_URL=… pnpm db:migrate`. |
+| Media | Railway volume mounted at `/data` | `STORAGE_DRIVER=local`, `LOCAL_MEDIA_DIR=/data/media`, served through `/m/`. Move to R2 (`STORAGE_DRIVER=r2`) if it outgrows the volume. |
+| DNS | Porkbun | `ALIAS @` and `CNAME *` → Railway targets, plus `_acme-challenge` CNAME (wildcard certificate) and `_railway-verify` TXT. |
+
+Service variables: `DATABASE_URL`, `APP_SECRET`, `NEXT_PUBLIC_ROOT_DOMAIN=openpress.blog`, `NEXT_PUBLIC_APP_NAME=OpenPress`, `STORAGE_DRIVER`, `LOCAL_MEDIA_DIR`, `IP_HEADER=x-real-ip` (Railway's edge overwrites it; verified that forged `x-real-ip`/`cf-connecting-ip` headers are ignored), `DATABASE_POOL_MAX`. Don't set `NODE_ENV` on the service: it would skip devDependencies during the build.
+
+Verify a deploy with `pnpm test:live` (signs up, connects an agent over OAuth, uploads an image, publishes, checks the public URL, then deletes the site). It leaves a test account behind; delete `e2e-*@example.com` users afterwards.
+
+---
+
+# Alternative: Cloudflare Workers
+
+The app also runs on Cloudflare Workers (OpenNext). It was deployed and verified there on 2026-10-18 before moving to Railway; the notes below are kept for that path.
+
+> Hyperdrive is required, not optional: postgres.js fails on Workers when it opens TLS to the database itself (`options.rejectUnauthorized is not implemented`). Wildcard subdomains require the domain's DNS to be on Cloudflare. `wrangler.workersdev.jsonc` deploys without custom-domain routes.
 
 ## Why this stack (and compatibility notes)
 
