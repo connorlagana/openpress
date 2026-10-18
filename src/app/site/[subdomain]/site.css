@@ -62,7 +62,7 @@ h1, h2, h3, h4 { font-family: var(--fs-heading-font); line-height: 1.2; letter-s
 .fs-nav a { color: var(--fs-muted); text-decoration: none; font-size: 0.92rem; }
 .fs-nav a:hover, .fs-nav a[aria-current="page"] { color: var(--fs-fg); }
 .fs-header-centered .fs-header-inner { flex-direction: column; justify-content: center; padding-top: 2.2rem; padding-bottom: 1.4rem; gap: 0.6rem; }
-.fs-header-centered .fs-brand { font-size: 1.8rem; }
+.fs-header-centered .fs-brand { font-size: 1.8rem; line-height: 1.15; text-align: center; justify-content: center; }
 .fs-header-centered .fs-tagline { color: var(--fs-muted); font-size: 0.95rem; margin: 0; text-align: center; }
 .fs-header-minimal { border-bottom: 0; }
 .fs-header-minimal .fs-brand { font-size: 1rem; }
