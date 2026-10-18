@@ -9,41 +9,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { cn } from "@/lib/utils";
 import type { Scope } from "@/server/actor";
 import { createApiKeyAction, revokeConnectionAction, updateConnectionAction } from "../actions";
-
-type Client = { id: string; name: string; steps: string[]; code: string };
-
-export function ClientTabs({ clients }: { clients: Client[] }) {
-  const [active, setActive] = useState(clients[0].id);
-  const c = clients.find((x) => x.id === active)!;
-  return (
-    <div>
-      <div className="flex flex-wrap gap-1" role="tablist" aria-label="AI client">
-        {clients.map((x) => (
-          <button
-            key={x.id}
-            role="tab"
-            aria-selected={x.id === active}
-            onClick={() => setActive(x.id)}
-            className={cn("rounded-md px-2.5 py-1 text-sm", x.id === active ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground")}
-          >
-            {x.name}
-          </button>
-        ))}
-      </div>
-      <div role="tabpanel" className="mt-4 space-y-3">
-        <ol className="list-decimal space-y-1 pl-5 text-sm">
-          {c.steps.map((s) => (
-            <li key={s}>{s}</li>
-          ))}
-        </ol>
-        <CodeBlock code={c.code} />
-      </div>
-    </div>
-  );
-}
 
 type Grant = { scopes: Scope[]; allSites: boolean; siteIds: string[]; confirmPublish: boolean };
 

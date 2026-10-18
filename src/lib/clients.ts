@@ -1,6 +1,12 @@
+export type ClientInstructions = { id: string; name: string; steps: string[]; code: string; installUrl?: string; installLabel?: string };
+
 /** Per-client MCP setup instructions. Client UIs change often; keep these short and generic. */
-export function clientInstructions(mcpUrl: string, appName: string) {
+export function clientInstructions(mcpUrl: string, appName: string): ClientInstructions[] {
   const id = appName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  // One-click install deep links (Cursor: base64 config; VS Code: URL-encoded JSON).
+  const cursorConfig = typeof btoa === "function" ? btoa(JSON.stringify({ url: mcpUrl })) : Buffer.from(JSON.stringify({ url: mcpUrl })).toString("base64");
+  const cursorInstall = `cursor://anysphere.cursor-deeplink/mcp/install?name=${encodeURIComponent(id)}&config=${encodeURIComponent(cursorConfig)}`;
+  const vscodeInstall = `vscode:mcp/install?${encodeURIComponent(JSON.stringify({ name: id, type: "http", url: mcpUrl }))}`;
   return [
     {
       id: "claude",
@@ -33,12 +39,16 @@ export function clientInstructions(mcpUrl: string, appName: string) {
       name: "Cursor",
       steps: ["Add this to ~/.cursor/mcp.json (or .cursor/mcp.json in a project). Cursor opens the sign-in page on first use."],
       code: JSON.stringify({ mcpServers: { [id]: { url: mcpUrl } } }, null, 2),
+      installUrl: cursorInstall,
+      installLabel: "Add to Cursor",
     },
     {
       id: "vscode",
       name: "VS Code",
       steps: ["Add this to .vscode/mcp.json, then start the server from the MCP view and sign in."],
       code: JSON.stringify({ servers: { [id]: { type: "http", url: mcpUrl } } }, null, 2),
+      installUrl: vscodeInstall,
+      installLabel: "Add to VS Code",
     },
     {
       id: "other",

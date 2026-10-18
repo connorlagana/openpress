@@ -8,7 +8,8 @@ import { requireActor } from "@/server/auth/session";
 import { mcpResourceUrl } from "@/server/oauth/oauth";
 import { listConnections } from "@/server/services/agents";
 import { listSites } from "@/server/services/sites";
-import { ClientTabs, ConnectionActions, NewApiKey } from "./agents-client";
+import { ClientTabs } from "@/components/app/client-tabs";
+import { ConnectionActions, NewApiKey } from "./agents-client";
 
 export const metadata: Metadata = { title: "Agents" };
 

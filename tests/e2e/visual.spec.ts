@@ -81,8 +81,12 @@ for (const template of ["Editorial", "Launch", "Portfolio"] as const) {
       await page.screenshot({ path: `${dir}/dashboard-analytics.png`, fullPage: true });
       await page.goto(`/dashboard/account`);
       await page.screenshot({ path: `${dir}/dashboard-account.png`, fullPage: true });
+      await page.emulateMedia({ reducedMotion: "reduce" });
       await page.goto(`/`);
       await page.screenshot({ path: `${dir}/landing.png`, fullPage: true });
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.goto(`/`);
+      await page.screenshot({ path: `${dir}/landing-mobile.png`, fullPage: true });
     }
   });
 }
