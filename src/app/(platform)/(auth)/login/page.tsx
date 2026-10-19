@@ -16,11 +16,11 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
     error === "rate_limited" ? "Too many attempts. Please wait a minute and try again." : typeof error === "string" && error in SSO_ERROR_MESSAGES ? SSO_ERROR_MESSAGES[error as keyof typeof SSO_ERROR_MESSAGES] : null;
   return (
     <div className="space-y-6">
-      <div className="space-y-1.5">
-        <h1 className="text-2xl font-semibold tracking-tight">Sign in</h1>
-        {typeof next === "string" && next.startsWith("/oauth/authorize") ? (
-          <p className="text-sm text-muted-foreground">Sign in to connect your AI agent.</p>
-        ) : null}
+      <div className="space-y-2">
+        <h1 className="text-[28px] leading-tight font-semibold tracking-[-0.035em]">Welcome back</h1>
+        <p className="text-sm text-muted-foreground">
+          {typeof next === "string" && next.startsWith("/oauth/authorize") ? "Sign in to connect your AI agent." : "Sign in to manage your sites and agents."}
+        </p>
       </div>
       {errorMessage ? (
         <p role="alert" className="rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">

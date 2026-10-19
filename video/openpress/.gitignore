@@ -1,0 +1,5 @@
+.skills/
+studio/node_modules/
+studio/build/
+studio/out/
+studio/.cache/

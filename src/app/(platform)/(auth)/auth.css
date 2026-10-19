@@ -1,0 +1,14 @@
+/* Sign in / sign up: the landing page's drifting wall of example sites, held
+   in a rounded panel beside the form. */
+
+.au-panel { position: sticky; top: 12px; height: calc(100svh - 24px); display: flex; flex-direction: column; padding: 28px; border-radius: 28px; overflow: clip; isolation: isolate;
+  background: radial-gradient(120% 80% at 100% 0%, color-mix(in oklch, var(--signal) 14%, transparent), transparent 60%), var(--muted); }
+.au-wall { position: absolute; inset: 0; z-index: -1; perspective: 1800px; pointer-events: none;
+  -webkit-mask: linear-gradient(transparent, #000 10%, #000 55%, transparent 92%); mask: linear-gradient(transparent, #000 10%, #000 55%, transparent 92%); }
+.au-wall__plane { position: absolute; inset: -30% -18% -30% -8%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; transform-origin: 50% 40%; transform: rotateX(24deg) rotateZ(-14deg); }
+.au-wall .lp-wall__col { gap: 22px; animation-name: au-drift; }
+@keyframes au-drift { to { translate: 0 calc(-50% - 11px); } }
+.au-wall .lp-wall__site { font-size: 8px; height: 290px; }
+
+.au-submit { width: 100%; height: 44px; justify-content: center; border-radius: 12px; font-size: 15px; }
+.au-submit:disabled { opacity: .6; translate: none; cursor: progress; }

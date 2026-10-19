@@ -19,20 +19,27 @@ export default async function SignUpPage({ searchParams }: PageProps<"/signup">)
   if (await getCurrentUser()) redirect(next ?? "/dashboard");
   return (
     <div className="space-y-6">
-      <div className="space-y-1.5">
-        <h1 className="text-2xl font-semibold tracking-tight">
+      <div className="space-y-2">
+        <span className="inline-flex items-center gap-2 rounded-full border bg-background px-2.5 py-0.5 text-xs">
+          <span className="size-1.5 rounded-full bg-signal" aria-hidden />
+          Free <span className="text-muted-foreground">hosting + MCP · no card</span>
+        </span>
+        <h1 className="text-[28px] leading-tight font-semibold tracking-[-0.035em] text-balance">
           {fromAgent ? (
             "Create a free account to connect your agent"
           ) : site ? (
             <>
-              Claim <span className="break-all">{site}.{config.rootDomain}</span>
+              Claim{" "}
+              <span className="block [overflow-wrap:anywhere] text-signal">
+                {site}.{config.rootDomain}
+              </span>
             </>
           ) : (
             "Create your free site"
           )}
         </h1>
         <p className="text-sm text-muted-foreground">
-          {fromAgent ? "Takes a few seconds. You'll go straight back to approving your agent." : "Free hosting and free MCP access. No trial, no card."}
+          {fromAgent ? "Takes a few seconds. You'll go straight back to approving your agent." : "Your agent does the building. Setup takes under a minute."}
         </p>
       </div>
       <SsoButtons next={next} />
