@@ -115,8 +115,8 @@ export default async function Landing({ searchParams }: PageProps<"/">) {
         <section id="prompt" className="border-t">
           <div className="mx-auto max-w-6xl px-6 py-20">
             <Reveal>
-              <SectionHead eyebrow="START HERE" title="Copy a prompt. Get a site.">
-                Paste one into your agent once it&rsquo;s connected, or write your own. Your agent fills in the rest.
+              <SectionHead eyebrow="START HERE" title="One sentence is enough.">
+                Paste a starter into your agent once it&rsquo;s connected. It asks what it needs and makes the site yours, so no two come out the same.
               </SectionHead>
             </Reveal>
             <Reveal className="mt-10" delay={120}>

@@ -8,7 +8,7 @@ const EXAMPLES: { label: string; template: MiniTemplate; palette: MiniPalette; n
     palette: "warm",
     name: "Field Notes",
     headline: "Lake Como, without the crowds",
-    prompt: (app) => `Use ${app} to start a travel blog called "Field Notes" with the editorial template, warm colors and serif headings. Write a first post about a slow weekend on Lake Como titled "Lake Como, without the crowds", with a photo, a short excerpt and an author byline, set its SEO title and description, and publish it.`,
+    prompt: (app) => `Use ${app} to start a blog based on my interests. Pick the topic from what you know about me, or ask me a couple of questions first. Choose a template and colors that fit, write a first post with a photo, and publish it.`,
   },
   {
     label: "Company",
@@ -16,7 +16,7 @@ const EXAMPLES: { label: string; template: MiniTemplate; palette: MiniPalette; n
     palette: "bold",
     name: "Lumen",
     headline: "Your work. Your worth. Paid.",
-    prompt: (app) => `Use ${app} to make a landing page for my product "Lumen", an invoicing tool for freelancers. Use the saas template with a bold indigo accent: the headline "Your work. Your worth. Paid.", three features (easy invoices, auto reminders, payment tracking), a clearly illustrative sample invoice and a "Join the waitlist" button. Publish it and send me the link.`,
+    prompt: (app) => `Use ${app} to make a landing page for my project. Ask me what it is and who it's for, then write the headline, features and call to action, pick a look that suits it, publish it and send me the link.`,
   },
   {
     label: "Portfolio",
@@ -24,11 +24,11 @@ const EXAMPLES: { label: string; template: MiniTemplate; palette: MiniPalette; n
     palette: "minimal",
     name: "Ana Sousa",
     headline: "Useful things, beautifully simple.",
-    prompt: (app) => `Use ${app} to build my portfolio, "Ana Sousa · Product designer". Minimal black and white, the portfolio template, the headline "Useful things, beautifully simple.", an about section and four sample projects with images and short descriptions: Soft Space (home discovery), Daily Grind (coffee subscriptions), The Long Way (trail planning) and Dawn Patrol (surf forecasts). Save it as a draft and show me before publishing.`,
+    prompt: (app) => `Use ${app} to build me a portfolio. Use what you know about my work, and ask about anything you're missing. Add an about section and a few projects with images, then save it as a draft so I can review it before publishing.`,
   },
 ];
 
-/** Three ready-to-paste prompts, each with a realistic preview of what it builds. */
+/** Three open-ended starter prompts; the agent fills in the specifics, so the previews are just one possible result. */
 export function Examples({ appName, rootDomain }: { appName: string; rootDomain: string }) {
   return (
     <div className="grid gap-5 lg:grid-cols-3">

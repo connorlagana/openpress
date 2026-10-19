@@ -15,7 +15,7 @@ test("landing: story finishes, example prompts render, install tabs switch", asy
 
   const examples = page.locator("#prompt");
   await expect(examples.locator("[data-prompt]")).toHaveCount(3);
-  await expect(examples.locator("[data-prompt]").first()).toContainText('Use OpenPress to start a travel blog');
+  await expect(examples.locator("[data-prompt]").first()).toContainText('Use OpenPress to start a blog based on my interests');
 
   const connect = page.locator("#connect");
   await connect.getByRole("tab", { name: "Cursor" }).click();
