@@ -1,23 +1,21 @@
 import { expect, test } from "@playwright/test";
 
-test("journal is immediately readable without JavaScript", async ({ browser }) => {
+test("landing is readable without JavaScript and links to the guides", async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
   await page.goto("http://localhost:3100/");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  await expect(page.getByRole("button", { name: /Skip intro|Replay conversation/ })).toHaveCount(0);
-  await page.getByRole("link", { name: /Read the story/ }).click();
+  await page.getByRole("link", { name: /Learn by making something small/ }).click();
   await expect(page).toHaveURL(/\/journal\/learn-by-making/);
   await expect(page.locator("article h1")).toHaveText("Learn by making something small.");
   await context.close();
 });
 
-test("journal fits desktop and mobile without an intro", async ({ page }, testInfo) => {
+test("landing fits desktop and mobile", async ({ page }, testInfo) => {
   for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
-    await expect(page.locator(".op-journal")).toBeVisible();
-    await expect(page.locator(".op-journal")).not.toHaveAttribute("inert");
+    await expect(page.locator(".wb-hero")).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
     await page.screenshot({ path: testInfo.outputPath(`landing-${width}.png`) });
   }
