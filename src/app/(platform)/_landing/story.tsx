@@ -83,10 +83,11 @@ export function Story({ rootDomain }: { rootDomain: string }) {
       visitors.current!.textContent = String(Math.round(VISITORS * ramp(p, 0.88, 0.98)));
     };
     let queued = false;
+    let frameId = 0;
     const tick = () => {
       if (queued) return;
       queued = true;
-      requestAnimationFrame(() => {
+      frameId = requestAnimationFrame(() => {
         queued = false;
         frame();
       });
@@ -94,6 +95,7 @@ export function Story({ rootDomain }: { rootDomain: string }) {
     frame();
     addEventListener("scroll", tick, { passive: true });
     return () => {
+      cancelAnimationFrame(frameId);
       removeEventListener("scroll", tick);
       removeEventListener("resize", fit);
     };

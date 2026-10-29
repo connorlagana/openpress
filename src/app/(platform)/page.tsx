@@ -13,7 +13,6 @@ import { Hero } from "./_landing/hero";
 import { Examples } from "./_landing/examples";
 import { RememberRef } from "./_landing/ref";
 import { Reveal } from "./_landing/reveal";
-import { Story } from "./_landing/story";
 import "./_landing/landing.css";
 
 const FEATURES = [
@@ -109,7 +108,19 @@ export default async function Landing({ searchParams }: PageProps<"/">) {
       <main className="flex-1">
         {ref.source ? <RememberRef source={ref.source} /> : null}
         <Hero appName={config.appName} rootDomain={config.rootDomain} signedIn={!!user} banner={banner} />
-        <Story rootDomain={config.rootDomain} />
+        <section id="how" className="border-t scroll-mt-16">
+          <div className="mx-auto max-w-6xl px-6 py-20">
+            <SectionHead eyebrow="HOW IT WORKS" title="Keep the conversation. Publish the insight.">
+              OpenPress is the MCP connection between the AI you already use and your blog.
+            </SectionHead>
+            <div className="mt-10 grid gap-8 sm:grid-cols-3">
+              <div><p className="font-mono text-xs text-muted-foreground">01 / CONNECT ONCE</p><h3 className="mt-3 text-lg font-medium">Bring your own AI.</h3><p className="mt-2 text-sm text-muted-foreground">Connect Claude, ChatGPT, or another MCP client to OpenPress and give it access to your blog.</p></div>
+              <div><p className="font-mono text-xs text-muted-foreground">02 / THINK TOGETHER</p><h3 className="mt-3 text-lg font-medium">Follow your curiosity.</h3><p className="mt-2 text-sm text-muted-foreground">Ask questions, explore ideas, and work through the answers. Have the conversation you were already going to have.</p></div>
+              <div><p className="font-mono text-xs text-muted-foreground">03 / ASK TO PUBLISH</p><h3 className="mt-3 text-lg font-medium">“Make this a blog post.”</h3><p className="mt-2 text-sm text-muted-foreground">Your AI turns the discussion into a post and publishes it through OpenPress, using the access you approved.</p></div>
+            </div>
+            <a href="#connect" className="op-text-link">Connect your agent →</a>
+          </div>
+        </section>
 
         {/* Example prompts */}
         <section id="prompt" className="border-t">
