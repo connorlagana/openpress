@@ -7,13 +7,17 @@ import type { Actor } from "../actor";
 import { signupFunnel } from "./funnel";
 
 /** Cross-tenant reporting is restricted to an active human administrator. */
-export async function getPlatformAnalytics(actor: Actor, days = 30) {
+async function requireAdmin(actor: Actor) {
   if (actor.kind !== "user") throw forbidden();
   const allowed = await withUser(actor.userId, async (tx) => {
     const [user] = await tx.select({ admin: users.isAdmin, suspended: users.suspendedAt }).from(users).where(eq(users.id, actor.userId));
     return user?.admin && !user.suspended;
   });
   if (!allowed) throw forbidden();
+}
+
+export async function getPlatformAnalytics(actor: Actor, days = 30) {
+  await requireAdmin(actor);
   const span = z.union([z.literal(7), z.literal(30), z.literal(90)]).parse(days);
   const db = await getDb();
   const since = sql`(current_date - ${span - 1}::int)`;
@@ -40,4 +44,40 @@ export async function getPlatformAnalytics(actor: Actor, days = 30) {
     where e.day >= ${since} and s.deleted_at is null and s.suspended_at is null
     group by s.id order by pageviews desc, s.subdomain limit 10`));
   return { days: span, inventory, funnel, daily, traffic, sources, topSites };
+}
+
+export type PlatformSite = {
+  id: string; subdomain: string; name: string; ownerEmail: string; createdAt: Date | string; suspendedAt: Date | string | null;
+  posts: number; drafts: number; pages: number; lastPublishedAt: Date | string | null; pageviews: number;
+};
+
+const sitesQuery = z.object({ q: z.string().trim().max(100).default(""), page: z.number().int().min(1).max(10_000).default(1) });
+export const PLATFORM_SITES_PAGE_SIZE = 50;
+
+/** Every non-deleted site (suspended included) with owner, content counts and 30-day traffic, newest first. */
+export async function listPlatformSites(actor: Actor, input: { q?: string; page?: number } = {}) {
+  await requireAdmin(actor);
+  const { q, page } = sitesQuery.parse(input);
+  const db = await getDb();
+  const like = `%${q.replace(/[\\%_]/g, (c) => `\\${c}`)}%`;
+  const match = q ? sql`and (s.subdomain ilike ${like} or s.name ilike ${like} or u.email ilike ${like})` : sql``;
+  const [{ total }] = rowsOf<{ total: number }>(await db.execute(sql`
+    select count(*)::int as total from sites s join users u on u.id = s.owner_id where s.deleted_at is null ${match}`));
+  const rows = rowsOf<PlatformSite>(await db.execute(sql`
+    select s.id, s.subdomain, s.name, u.email as "ownerEmail", s.created_at as "createdAt", s.suspended_at as "suspendedAt",
+      coalesce(p.posts, 0)::int as posts, coalesce(p.drafts, 0)::int as drafts, coalesce(p.pages, 0)::int as pages,
+      p.last_published as "lastPublishedAt", coalesce(t.n, 0)::int as pageviews
+    from sites s join users u on u.id = s.owner_id
+    left join lateral (
+      select count(*) filter (where kind = 'post' and status = 'published') as posts,
+        count(*) filter (where kind = 'post' and status = 'draft') as drafts,
+        count(*) filter (where kind = 'page' and status = 'published') as pages,
+        max(published_at) filter (where status = 'published') as last_published
+      from posts where site_id = s.id and deleted_at is null
+    ) p on true
+    left join lateral (select count(*) as n from analytics_events where site_id = s.id and day >= current_date - 29) t on true
+    where s.deleted_at is null ${match}
+    order by s.created_at desc, s.subdomain
+    limit ${PLATFORM_SITES_PAGE_SIZE} offset ${(page - 1) * PLATFORM_SITES_PAGE_SIZE}`));
+  return { sites: rows, total, page, pageSize: PLATFORM_SITES_PAGE_SIZE, q };
 }

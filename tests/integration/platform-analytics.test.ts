@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { eq, sql } from "drizzle-orm";
 import { getDb } from "@/db/client";
-import { analyticsEvents, users } from "@/db/schema";
+import { analyticsEvents, sites, users } from "@/db/schema";
 import type { Actor } from "@/server/actor";
-import { getPlatformAnalytics } from "@/server/services/platform-analytics";
+import { getPlatformAnalytics, listPlatformSites } from "@/server/services/platform-analytics";
 import { createSite } from "@/server/services/sites";
 import { createPost, setPublished } from "@/server/services/posts";
 import { makeUser } from "../helpers";
@@ -47,5 +47,32 @@ describe("platform analytics", () => {
     expect(report.inventory.published).toBeGreaterThanOrEqual(1);
     await expect(getPlatformAnalytics(admin.actor, 365)).rejects.toThrow();
     await expect(getPlatformAnalytics(admin.actor, NaN)).rejects.toThrow();
+  });
+
+  it("lists every tenant's sites with counts for admins only", async () => {
+    const admin = await makeUser("sites-admin");
+    const owner = await makeUser("sites-owner");
+    const db = await getDb();
+    await expect(listPlatformSites(admin.actor)).rejects.toMatchObject({ code: "FORBIDDEN" });
+    await db.update(users).set({ isAdmin: true }).where(eq(users.id, admin.user.id));
+    const site = await createSite(owner.actor, { name: "Listed blog", template: "editorial" });
+    const live = await createPost(owner.actor, { siteId: site.id, title: "Live", content: "Hi" });
+    await setPublished(owner.actor, live.id, true);
+    await createPost(owner.actor, { siteId: site.id, title: "Draft", content: "Later" });
+    await db.update(sites).set({ suspendedAt: new Date() }).where(eq(sites.id, site.id));
+    await db.insert(analyticsEvents).values({ siteId: site.id, day: sql`current_date`, path: "/", visitorHash: "v", referrerCategory: "direct" });
+
+    const all = await listPlatformSites(admin.actor);
+    expect(all.total).toBeGreaterThanOrEqual(1);
+    const row = all.sites.find((s) => s.id === site.id);
+    expect(row).toMatchObject({ name: "Listed blog", ownerEmail: owner.user.email, posts: 1, drafts: 1, pages: 0, pageviews: 1 });
+    expect(row?.suspendedAt).toBeTruthy();
+    expect(row?.lastPublishedAt).toBeTruthy();
+
+    const found = await listPlatformSites(admin.actor, { q: "LISTED blog" });
+    expect(found.sites.map((s) => s.id)).toEqual([site.id]);
+    expect((await listPlatformSites(admin.actor, { q: "%" })).sites.find((s) => s.id === site.id)).toBeUndefined();
+    await db.update(sites).set({ deletedAt: new Date() }).where(eq(sites.id, site.id));
+    expect((await listPlatformSites(admin.actor, { q: "Listed blog" })).total).toBe(0);
   });
 });
