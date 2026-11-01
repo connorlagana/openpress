@@ -54,6 +54,11 @@ test("sign up → create site → connect MCP client via OAuth → agent publish
   expect(await rss.text()).toContain("<title>Will AI Replace Software Engineers?</title>");
   const sitemap = await page.request.get(`http://${sub}.localhost:3100/sitemap.xml`);
   expect(await sitemap.text()).toContain(`/blog/will-ai-replace-software-engineers`);
+  // Search engine discovery: IndexNow key on the site's own host, and owner verification meta tags via MCP.
+  expect(await (await page.request.get(`http://${sub}.localhost:3100/indexnow-key.txt`)).text()).toMatch(/^[0-9a-f]{32}$/);
+  await call("update_site_settings", { siteId: sites[0].id, settings: { searchVerification: { google: '<meta name="google-site-verification" content="e2e-google-token" />' } } });
+  await page.goto(`http://${sub}.localhost:3100/`);
+  await expect(page.locator('meta[name="google-site-verification"]')).toHaveAttribute("content", "e2e-google-token");
 
   // 6. Slug change on a published post leaves a 301.
   await call("update_post_seo", { postId: post.id, slug: "ai-and-software-engineers" });

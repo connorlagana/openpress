@@ -6,6 +6,19 @@ const url = z
   .max(2000)
   .refine((v) => /^https?:\/\//i.test(v) || /^\/(?!\/)/.test(v) || /^mailto:/i.test(v), "Must be an http(s) URL, mailto:, or a site path starting with /");
 
+/**
+ * A search engine site-verification code. Accepts the bare code or the whole
+ * `<meta name="…" content="CODE">` tag people copy from the console.
+ */
+const verificationToken = z.preprocess(
+  (v) => (typeof v === "string" ? (/content\s*=\s*["']([^"']*)["']/i.exec(v)?.[1] ?? v).trim() || undefined : v),
+  z
+    .string()
+    .max(120)
+    .regex(/^[A-Za-z0-9_\-=.+/]{6,120}$/, "Paste the verification code (or the whole meta tag) from the search console")
+    .optional(),
+);
+
 /** Structured, template-agnostic site content. Rendered as text, never as HTML. */
 export const siteSettingsSchema = z.object({
   hero: z
@@ -37,6 +50,13 @@ export const siteSettingsSchema = z.object({
   footerText: z.string().max(300).optional(),
   postsPerPage: z.number().int().min(1).max(50).optional(),
   showPostsOnHome: z.boolean().optional(),
+  searchVerification: z
+    .object({
+      google: verificationToken.describe("Google Search Console 'HTML tag' verification code"),
+      bing: verificationToken.describe("Bing Webmaster Tools 'meta tag' (msvalidate.01) verification code"),
+    })
+    .optional()
+    .describe("Search engine ownership verification. Lets the owner add this site in Google Search Console / Bing Webmaster Tools and submit /sitemap.xml."),
 });
 export type SiteSettings = z.infer<typeof siteSettingsSchema>;
 

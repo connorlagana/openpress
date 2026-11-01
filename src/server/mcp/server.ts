@@ -126,7 +126,7 @@ export function buildMcpServer(actor: Actor): McpServer {
     {
       title: "Update site settings",
       description:
-        "Update site name, tagline, description, language, logo/favicon, homepage content blocks (hero, features, projects, about, social links, footer text) and navigation menus. Only provided fields change.",
+        "Update site name, tagline, description, language, logo/favicon, homepage content blocks (hero, features, projects, about, social links, footer text), search engine verification codes (settings.searchVerification: Google Search Console / Bing meta tag) and navigation menus. Only provided fields change.",
       inputSchema: {
         siteId: SITE_ID,
         name: z.string().min(1).max(80).optional(),

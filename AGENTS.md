@@ -39,6 +39,7 @@ MCP-native website hosting: users connect their own AI agent (Claude, ChatGPT, C
 - `src/server/auth/sso.ts` + `src/app/auth/[provider]/{start,callback}` — Sign in with Google / Apple (user login, unrelated to agent OAuth). Buttons appear only when `GOOGLE_*` / `APPLE_*` env vars are set.
 - `src/server/oauth/oauth.ts` — OAuth 2.1 authorization server (DCR, PKCE S256, refresh rotation, revocation) and bearer → Actor resolution. Consent UI: `src/app/(platform)/oauth/authorize`.
 - `src/server/public/*` — privileged, read-only queries for public site rendering. Must only ever return published, non-deleted, non-suspended content.
+- `src/server/indexnow.ts` — IndexNow pings (Bing, Yandex…) after a published post is published, updated or deleted; per-site key served at `/indexnow-key.txt`. Google discovery is via Search Console: owners set `settings.searchVerification` (rendered as verification meta tags) and submit `/sitemap.xml`.
 - `src/app/site/[subdomain]/**` — public sites. Reached through a host-based rewrite in `next.config.ts` (`<sub>.<ROOT_DOMAIN>/x` → `/site/<sub>/x`).
 - `src/templates/` — template registry (default theme + homepage blocks) and React components. Add a template = add a registry entry + homepage component in `HOMEPAGES`.
 - `src/app/(platform)/**` — marketing, auth, onboarding, dashboard.

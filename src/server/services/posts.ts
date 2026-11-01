@@ -8,6 +8,7 @@ import { plainText, renderMarkdown } from "@/lib/markdown";
 import { RESERVED_PAGE_SLUGS, SLUG_RE, slugify, uniqueSlug } from "@/lib/slug";
 import { requireScope, type Actor } from "../actor";
 import { requireConfirmation } from "../confirm";
+import { notifyIndexNow } from "../indexnow";
 import { audit } from "./audit";
 import { assertUserActive, getPlanForUser, sitePostCount } from "./limits";
 import { loadSite } from "./sites";
@@ -53,6 +54,14 @@ export const listPostsInput = z.object({
 export function postPath(p: Pick<Post, "kind" | "slug">) {
   return p.kind === "page" ? `/${p.slug}` : `/blog/${p.slug}`;
 }
+
+/** A post appearing or disappearing also changes the homepage and /blog listings. */
+function listingPaths(p: Pick<Post, "kind" | "slug">) {
+  return p.kind === "post" ? [postPath(p), "/blog", "/"] : [postPath(p)];
+}
+
+/** A search engine ping to send once the transaction has committed. */
+type Ping = { subdomain: string; paths: string[] } | null;
 
 export function toPostDto(p: Post, site: Pick<Site, "subdomain">, opts: { content?: boolean } = {}) {
   const path = postPath(p);
@@ -205,7 +214,8 @@ export async function listPosts(actor: Actor, input: z.input<typeof listPostsInp
 export async function updatePost(actor: Actor, postId: string, input: z.input<typeof updatePostInput>) {
   requireScope(actor, "content:write");
   const data = updatePostInput.parse(input);
-  return withUser(actor.userId, async (tx) => {
+  let ping = null as Ping; // assigned inside the transaction callback
+  const result = await withUser(actor.userId, async (tx) => {
     await assertUserActive(tx, actor.userId);
     const { post, site } = await loadPost(tx, actor, postId);
     await assertMediaOnSite(tx, site.id, data.coverMediaId);
@@ -254,8 +264,11 @@ export async function updatePost(actor: Actor, postId: string, input: z.input<ty
       await addRedirect(tx, site.id, postPath(post), postPath(updated));
     }
     await audit(tx, actor, `${post.kind}.update`, { siteId: site.id, targetType: post.kind, targetId: post.id, metadata: { fields: Object.keys(data) } });
+    if (updated.status === "published" && !site.suspendedAt) ping = { subdomain: site.subdomain, paths: [postPath(updated), postPath(post)] };
     return toPostDto(updated, site, { content: true });
   });
+  if (ping) notifyIndexNow(ping.subdomain, ping.paths);
+  return result;
 }
 
 /** Record a 301 old -> new, repointing existing chains and dropping any redirect that would shadow the new URL. */
@@ -270,7 +283,8 @@ async function addRedirect(tx: Tx, siteId: string, from: string, to: string) {
 
 export async function setPublished(actor: Actor, postId: string, publish: boolean, confirmationToken?: string) {
   requireScope(actor, "content:publish");
-  return withUser(actor.userId, async (tx) => {
+  let ping = null as Ping; // assigned inside the transaction callback
+  const result = await withUser(actor.userId, async (tx) => {
     await assertUserActive(tx, actor.userId);
     const { post, site } = await loadPost(tx, actor, postId);
     if (site.suspendedAt) throw new AppError("SUSPENDED", "This site is suspended and cannot publish.");
@@ -298,13 +312,17 @@ export async function setPublished(actor: Actor, postId: string, publish: boolea
       targetId: post.id,
       metadata: { title: post.title, path: postPath(post) },
     });
+    ping = { subdomain: site.subdomain, paths: listingPaths(updated) };
     return { ...toPostDto(updated, site), changed: true };
   });
+  if (ping) notifyIndexNow(ping.subdomain, ping.paths);
+  return result;
 }
 
 export async function deletePost(actor: Actor, postId: string, confirmationToken?: string) {
   requireScope(actor, "content:write");
-  return withUser(actor.userId, async (tx) => {
+  let ping = null as Ping; // assigned inside the transaction callback
+  const result = await withUser(actor.userId, async (tx) => {
     const { post, site } = await loadPost(tx, actor, postId);
     await requireConfirmation(actor, {
       action: "delete_post",
@@ -315,8 +333,11 @@ export async function deletePost(actor: Actor, postId: string, confirmationToken
     });
     await tx.update(posts).set({ deletedAt: new Date(), status: "draft" }).where(eq(posts.id, post.id));
     await audit(tx, actor, `${post.kind}.delete`, { siteId: site.id, targetType: post.kind, targetId: post.id, metadata: { title: post.title } });
+    if (post.status === "published" && !site.suspendedAt) ping = { subdomain: site.subdomain, paths: listingPaths(post) };
     return { id: post.id, deleted: true };
   });
+  if (ping) notifyIndexNow(ping.subdomain, ping.paths);
+  return result;
 }
 
 export async function listRevisions(actor: Actor, postId: string) {

@@ -8,7 +8,13 @@ import "./site.css";
 export async function generateMetadata({ params }: LayoutProps<"/site/[subdomain]">): Promise<Metadata> {
   const site = await loadPublicSite((await params).subdomain);
   if (!site) return { title: "Site not found", robots: { index: false } };
-  return { ...siteBaseMetadata(site), title: { default: site.name, template: `%s · ${site.name}` }, description: site.description ?? site.tagline ?? undefined };
+  const v = site.settingsParsed.searchVerification;
+  return {
+    ...siteBaseMetadata(site),
+    verification: v?.google || v?.bing ? { google: v.google, other: v.bing ? { "msvalidate.01": v.bing } : undefined } : undefined,
+    title: { default: site.name, template: `%s · ${site.name}` },
+    description: site.description ?? site.tagline ?? undefined,
+  };
 }
 
 export default async function SiteLayout({ children, params }: LayoutProps<"/site/[subdomain]">) {

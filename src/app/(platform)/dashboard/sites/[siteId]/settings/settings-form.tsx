@@ -15,6 +15,7 @@ type Site = {
   id: string;
   name: string;
   subdomain: string;
+  url: string;
   tagline: string | null;
   description: string | null;
   language: string;
@@ -38,6 +39,7 @@ export function SettingsForm({ site, media }: { site: Site; media: { id: string;
   const [pending, start] = useTransition();
   const [confirm, setConfirm] = useState("");
   const hero = site.settings.hero ?? {};
+  const verification = site.settings.searchVerification ?? {};
 
   function submit(build: (f: FormData) => Parameters<typeof updateSiteAction>[1]) {
     return (e: React.FormEvent<HTMLFormElement>) => {
@@ -149,6 +151,30 @@ export function SettingsForm({ site, media }: { site: Site; media: { id: string;
             </Field>
             <Field id="footer" label="Footer menu">
               <Textarea id="footer" name="footer" defaultValue={navToText(site.navigation.footer)} rows={5} className="font-mono text-xs" />
+            </Field>
+            <div>
+              <Button type="submit" disabled={pending}>
+                Save
+              </Button>
+            </div>
+          </div>
+        </Section>
+      </form>
+
+      <form onSubmit={submit((f) => ({ settings: { searchVerification: { google: s(f, "googleVerification") || undefined, bing: s(f, "bingVerification") || undefined } } }))}>
+        <Section
+          title="Search engines"
+          description="Published posts are indexable and listed in your sitemap. Bing and other IndexNow engines are notified automatically when you publish. For Google, add this site in Search Console, verify it here, then submit the sitemap."
+        >
+          <div className="grid max-w-xl gap-4">
+            <Field id="sitemap" label="Sitemap">
+              <Input id="sitemap" readOnly value={`${site.url}/sitemap.xml`} className="font-mono text-xs" onFocus={(e) => e.currentTarget.select()} />
+            </Field>
+            <Field id="googleVerification" label="Google Search Console" hint="HTML tag method: paste the tag or its code">
+              <Input id="googleVerification" name="googleVerification" defaultValue={verification.google ?? ""} placeholder='<meta name="google-site-verification" content="…">' className="font-mono text-xs" />
+            </Field>
+            <Field id="bingVerification" label="Bing Webmaster Tools" hint="Meta tag method (msvalidate.01)">
+              <Input id="bingVerification" name="bingVerification" defaultValue={verification.bing ?? ""} placeholder='<meta name="msvalidate.01" content="…">' className="font-mono text-xs" />
             </Field>
             <div>
               <Button type="submit" disabled={pending}>
