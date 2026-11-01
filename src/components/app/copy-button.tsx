@@ -26,7 +26,7 @@ export function CopyButton({ value, label = "Copy" }: { value: string; label?: s
 
 export function CodeBlock({ code, copy = true }: { code: string; copy?: boolean }) {
   return (
-    <div className="relative rounded-lg border bg-muted/40">
+    <div className="relative rounded-xl bg-muted/70">
       <pre className="overflow-x-auto p-3 pr-24 font-mono text-[13px] leading-relaxed">
         <code>{code}</code>
       </pre>

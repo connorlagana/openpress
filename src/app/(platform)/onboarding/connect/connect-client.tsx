@@ -18,7 +18,7 @@ export function InstallButtons({ clients }: { clients: ClientInstructions[] }) {
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {clients.map((x) =>
           x.installUrl ? (
-            <a key={x.id} href={x.installUrl} className="flex h-12 border shadow-xs items-center justify-between rounded-xl bg-background px-3.5 text-sm font-medium hover:bg-muted/50">
+            <a key={x.id} href={x.installUrl} className="lp-shadow flex h-12 items-center justify-between rounded-xl bg-background px-3.5 transition-shadow text-sm font-medium hover:bg-muted/50">
               {x.name}
               <span className="text-xs font-normal text-muted-foreground">Install ↗</span>
             </a>
@@ -28,7 +28,7 @@ export function InstallButtons({ clients }: { clients: ClientInstructions[] }) {
               type="button"
               aria-expanded={open === x.id}
               onClick={() => setOpen(open === x.id ? null : x.id)}
-              className={cn("flex h-12 border shadow-xs items-center justify-between rounded-xl bg-background px-3.5 text-left text-sm font-medium hover:bg-muted/50", open === x.id && "ring-2 ring-foreground")}
+              className={cn("lp-shadow flex h-12 items-center justify-between rounded-xl bg-background px-3.5 transition-shadow text-left text-sm font-medium hover:bg-muted/50", open === x.id && "outline-2 outline-signal")}
             >
               {x.name}
               <span className="text-xs font-normal text-muted-foreground">How ↓</span>
@@ -37,7 +37,7 @@ export function InstallButtons({ clients }: { clients: ClientInstructions[] }) {
         )}
       </div>
       {c ? (
-        <div className="mt-3 space-y-3 rounded-xl border p-4">
+        <div className="op-card mt-3 space-y-3 p-4">
           <ol className="list-decimal space-y-1 pl-5 text-sm">
             {c.steps.map((s) => (
               <li key={s}>{s}</li>
@@ -78,7 +78,7 @@ export function ConnectStatus({ siteId, siteUrl, prompt }: { siteId: string; sit
   ];
 
   return (
-    <section className="mt-10 rounded-2xl border p-5" aria-live="polite">
+    <section className="op-card mt-10 p-6" aria-live="polite">
       <ol className="space-y-3">
         {steps.map((s, i) => (
           <li key={i} className="flex items-center gap-3 text-sm">
@@ -91,7 +91,7 @@ export function ConnectStatus({ siteId, siteUrl, prompt }: { siteId: string; sit
       </ol>
       {status?.published ? (
         <div className="mt-5 flex flex-wrap items-center gap-3">
-          <a href={`${siteUrl}${status.published.path}`} target="_blank" rel="noreferrer" className="inline-flex h-10 items-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/80">
+          <a href={`${siteUrl}${status.published.path}`} target="_blank" rel="noreferrer" className="lp-cta">
             Read &ldquo;{status.published.title}&rdquo; ↗
           </a>
           <Link href={`/dashboard/sites/${siteId}`} className="text-sm text-muted-foreground hover:text-foreground">

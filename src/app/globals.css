@@ -147,3 +147,23 @@
 .prose-preview img { border-radius: 6px; max-width: 100%; }
 .prose-preview table { border-collapse: collapse; }
 .prose-preview th, .prose-preview td { border: 1px solid var(--border); padding: 0.35em 0.6em; }
+
+/* ---------- Brand primitives: shared by the landing page and the app ---------- */
+.lp-shadow { box-shadow: inset 0 1px 0 #ffffff8c, 0 0 0 1px rgb(0 0 0 / .05), 0 1px 1px rgb(0 0 0 / .03), 0 2px 4px -1px rgb(0 0 0 / .04), 0 6px 12px -4px rgb(0 0 0 / .05), 0 14px 28px -12px rgb(0 0 0 / .08); }
+.dark .lp-shadow { box-shadow: 0 0 0 1px rgb(255 255 255 / .07), 0 14px 28px -12px rgb(0 0 0 / .5); }
+.lp-cta { position: relative; display: inline-flex; align-items: center; gap: 10px; height: 50px; padding: 0 24px; border-radius: 14px; font-weight: 600; font-size: 16px; color: var(--primary-foreground); background: var(--primary);
+  box-shadow: 0 12px 28px -12px color-mix(in oklch, var(--primary) 80%, transparent); transition: translate .25s, box-shadow .25s; }
+.lp-cta:hover { translate: 0 -2px; box-shadow: 0 18px 34px -10px color-mix(in oklch, var(--primary) 85%, transparent); }
+.lp-cta__arrow { transition: translate .25s; }
+.lp-cta:hover .lp-cta__arrow { translate: 4px 0; }
+
+/* Raised surface: the landing page's floating card, used for lists and panels in the app. */
+.op-card { border-radius: 18px; background: var(--background); box-shadow: inset 0 1px 0 #ffffff8c, 0 0 0 1px rgb(0 0 0 / .05), 0 1px 1px rgb(0 0 0 / .03), 0 2px 4px -1px rgb(0 0 0 / .04), 0 6px 12px -4px rgb(0 0 0 / .05), 0 14px 28px -12px rgb(0 0 0 / .08); }
+.dark .op-card { box-shadow: 0 0 0 1px rgb(255 255 255 / .07), 0 14px 28px -12px rgb(0 0 0 / .5); }
+/* Sunken well for empty states, code and hints. */
+.op-well { border-radius: 18px; background: color-mix(in oklch, var(--muted) 60%, var(--background)); }
+/* The hero's signal-green wash, faded into the page. */
+.op-canvas { background: linear-gradient(to bottom, color-mix(in oklch, var(--signal) 7%, var(--background)), var(--background) 360px); }
+.op-h1 { font-size: clamp(28px, 3.4vw, 40px); font-weight: 700; letter-spacing: -.035em; line-height: 1.08; text-wrap: balance; }
+.op-h2 { font-size: 20px; font-weight: 650; letter-spacing: -.02em; line-height: 1.2; }
+.op-kicker { font-size: 13px; font-weight: 600; color: var(--signal); }

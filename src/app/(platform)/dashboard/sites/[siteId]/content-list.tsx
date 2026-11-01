@@ -22,7 +22,7 @@ export async function ContentList({ actor, siteId, kind, status, basePath }: { a
               key={f.label}
               href={f.value ? `${basePath}?status=${f.value}` : basePath}
               aria-current={status === f.value ? "page" : undefined}
-              className={cn("rounded-md px-2.5 py-1", status === f.value ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground")}
+              className={cn("rounded-full px-3 py-1", status === f.value ? "bg-foreground/[.07] font-medium text-foreground" : "text-muted-foreground hover:text-foreground")}
             >
               {f.label}
             </Link>
@@ -31,18 +31,18 @@ export async function ContentList({ actor, siteId, kind, status, basePath }: { a
         <NewPostButton siteId={siteId} kind={kind} />
       </div>
       {items.length ? (
-        <ul className="divide-y rounded-xl border">
+        <ul className="op-card divide-y">
           {items.map((p) => (
-            <li key={p.id} className="flex flex-wrap items-center gap-x-6 gap-y-1 px-5 py-3.5">
-              <div className="min-w-0 flex-1">
+            <li key={p.id} className="flex flex-wrap items-center gap-x-6 gap-y-2 px-5 py-4">
+              <div className="min-w-0 flex-1 basis-full sm:basis-0">
                 <Link href={`/dashboard/sites/${siteId}/posts/${p.id}`} className="font-medium hover:underline underline-offset-4">
                   {p.title}
                 </Link>
                 <div className="mt-0.5 truncate font-mono text-xs text-muted-foreground">{p.path}</div>
               </div>
-              {p.createdVia === "agent" ? <span className="rounded border px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground">by agent</span> : null}
+              {p.createdVia === "agent" ? <span className="rounded-full bg-muted px-2 py-0.5 font-mono text-[11px] text-muted-foreground">by agent</span> : null}
               <StatusDot live={p.isLive} />
-              <span className="w-20 text-right text-xs text-muted-foreground">{relativeTime(p.updatedAt)}</span>
+              <span className="ml-auto text-right text-xs text-muted-foreground sm:ml-0 sm:w-20">{relativeTime(p.updatedAt)}</span>
             </li>
           ))}
         </ul>

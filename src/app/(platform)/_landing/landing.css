@@ -2,8 +2,6 @@
    build, and the configurator preview. Everything degrades to a static layout
    without JS or with reduced motion. */
 
-.lp-shadow { box-shadow: inset 0 1px 0 #ffffff8c, 0 0 0 1px rgb(0 0 0 / .05), 0 1px 1px rgb(0 0 0 / .03), 0 2px 4px -1px rgb(0 0 0 / .04), 0 6px 12px -4px rgb(0 0 0 / .05), 0 14px 28px -12px rgb(0 0 0 / .08); }
-.dark .lp-shadow { box-shadow: 0 0 0 1px rgb(255 255 255 / .07), 0 14px 28px -12px rgb(0 0 0 / .5); }
 
 /* ---------- Mini site (hero wall + configurator preview) ---------- */
 .ms { --ms-line: color-mix(in oklch, var(--ms-fg) 14%, var(--ms-bg)); display: flex; flex-direction: column; border-radius: .9em; overflow: hidden; background: var(--ms-bg); color: var(--ms-fg); box-shadow: 0 0 0 1px rgb(0 0 0 / .06), 0 1.4em 3em -1.6em rgb(0 0 0 / .35); }
@@ -47,11 +45,6 @@
 .ms-blog__next b { font-weight: 500; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .ms-blog__next > span:last-child { margin-left: auto; }
 
-.lp-cta { position: relative; display: inline-flex; align-items: center; gap: 10px; height: 50px; padding: 0 24px; border-radius: 14px; font-weight: 600; font-size: 16px; color: var(--primary-foreground); background: var(--primary);
-  box-shadow: 0 12px 28px -12px color-mix(in oklch, var(--primary) 80%, transparent); transition: translate .25s, box-shadow .25s; }
-.lp-cta:hover { translate: 0 -2px; box-shadow: 0 18px 34px -10px color-mix(in oklch, var(--primary) 85%, transparent); }
-.lp-cta__arrow { transition: translate .25s; }
-.lp-cta:hover .lp-cta__arrow { translate: 4px 0; }
 
 /* ---------- Story: the scroll-driven build ---------- */
 .lp-story { position: relative; --site: 1; --theme: 1; --media: 1; --post: 1; --seo: 1; --pub: 1; }
@@ -356,7 +349,7 @@
 .wb-closing { padding-block: clamp(72px, 10vw, 128px); background: var(--primary); color: var(--primary-foreground); }
 .wb-closing a.lp-cta { background: var(--primary-foreground); color: var(--primary); }
 .wb-closing form { color: var(--foreground); margin-inline: auto; }
-.wb-closing #claim-status { color: var(--primary-foreground); opacity: .75; }
+.wb-closing .lp-claim__status { color: var(--primary-foreground); opacity: .75; }
 
 @media (prefers-reduced-motion: reduce) {
   .wb-marquee { overflow-x: auto; mask-image: none; }

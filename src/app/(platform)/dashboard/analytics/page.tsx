@@ -25,7 +25,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/dashbo
     <div className="space-y-8">
       <PageHeader title="Platform analytics" description="Acquisition, activation and traffic across OpenPress." actions={
         <nav aria-label="Analytics period" className="flex gap-1">
-          {[7, 30, 90].map((d) => <Link key={d} href={`?days=${d}`} aria-current={days === d ? "page" : undefined} className={cn("rounded-md px-3 py-1.5 text-sm", days === d ? "bg-muted font-medium" : "text-muted-foreground")}>{d} days</Link>)}
+          {[7, 30, 90].map((d) => <Link key={d} href={`?days=${d}`} aria-current={days === d ? "page" : undefined} className={cn("rounded-full px-3 py-1.5 text-sm", days === d ? "bg-foreground/[.07] font-medium" : "text-muted-foreground hover:text-foreground")}>{d} days</Link>)}
         </nav>
       } />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -34,11 +34,11 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/dashbo
         <Metric label="Hosted-site pageviews" value={a.traffic.pageviews} detail={`Across ${a.traffic.sites} sites with traffic`} />
         <Metric label="Daily unique visitors" value={a.traffic.visitors} detail="Summed across days and sites" />
       </div>
-      <section className="rounded-xl border p-5">
+      <section className="op-card p-6">
         <h2 className="font-medium">Signup activity</h2>
         <p className="mt-1 text-sm text-muted-foreground">Daily signups, including days with no activity. Dates use UTC.</p>
         <div className="mt-6 flex h-36 items-end gap-1" role="img" aria-label={`${signups} signups in the last ${days} days. Daily values follow below.`}>
-          {a.daily.map((d) => <div key={d.day} title={`${d.day}: ${d.signups} signups`} className="min-w-0 flex-1 rounded-t bg-foreground/80" style={{ height: `${Math.max(1, d.signups / Math.max(1, ...a.daily.map((r) => r.signups)) * 100)}%` }} />)}
+          {a.daily.map((d) => <div key={d.day} title={`${d.day}: ${d.signups} signups`} className="min-w-0 flex-1 rounded-t bg-signal/70" style={{ height: `${Math.max(1, d.signups / Math.max(1, ...a.daily.map((r) => r.signups)) * 100)}%` }} />)}
         </div>
         <div className="mt-2 flex justify-between text-xs text-muted-foreground"><span>{a.daily[0]?.day}</span><span>{a.daily.at(-1)?.day}</span></div>
         <details className="mt-4 text-sm"><summary className="cursor-pointer">View daily counts</summary><DataTable headers={["Date (UTC)", "Signups", "Hosted-site pageviews"]} rows={a.daily.map((d) => [d.day, d.signups, d.pageviews])} /></details>
@@ -69,9 +69,9 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/dashbo
 }
 
 function Metric({ label, value, detail }: { label: string; value: number; detail: string }) {
-  return <div className="rounded-xl border p-4"><p className="text-sm text-muted-foreground">{label}</p><p className="mt-2 text-3xl font-semibold tabular-nums">{value.toLocaleString()}</p><p className="mt-2 text-xs text-muted-foreground">{detail}</p></div>;
+  return <div className="op-card p-5"><p className="text-sm text-muted-foreground">{label}</p><p className="mt-2 text-3xl font-bold tracking-tight tabular-nums">{value.toLocaleString()}</p><p className="mt-2 text-xs text-muted-foreground">{detail}</p></div>;
 }
 function DataTable({ headers, rows }: { headers: string[]; rows: (string | number)[][] }) {
-  if (!rows.length) return <p className="mt-4 rounded-lg border border-dashed p-6 text-sm text-muted-foreground">No activity in this period.</p>;
-  return <div className="mt-4 overflow-x-auto rounded-lg border"><table className="w-full text-left text-sm"><thead className="bg-muted"><tr>{headers.map((h) => <th key={h} scope="col" className="whitespace-nowrap px-4 py-3 font-medium">{h}</th>)}</tr></thead><tbody>{rows.map((row, i) => <tr key={i} className="border-t">{row.map((v, j) => <td key={j} className="px-4 py-3 tabular-nums">{typeof v === "number" ? v.toLocaleString() : v}</td>)}</tr>)}</tbody></table></div>;
+  if (!rows.length) return <p className="mt-4 op-well p-6 text-sm text-muted-foreground">No activity in this period.</p>;
+  return <div className="op-card mt-4 overflow-x-auto"><table className="w-full text-left text-sm"><thead className="bg-muted/50"><tr>{headers.map((h) => <th key={h} scope="col" className="whitespace-nowrap px-4 py-3 font-medium">{h}</th>)}</tr></thead><tbody>{rows.map((row, i) => <tr key={i} className="border-t">{row.map((v, j) => <td key={j} className="px-4 py-3 tabular-nums">{typeof v === "number" ? v.toLocaleString() : v}</td>)}</tr>)}</tbody></table></div>;
 }

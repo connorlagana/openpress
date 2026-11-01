@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Logo, PageIntro } from "@/components/app/brand";
 import { redirect } from "next/navigation";
 import { config } from "@/lib/config";
 import { SUBDOMAIN_RE } from "@/lib/slug";
@@ -15,16 +15,14 @@ export default async function OnboardingPage({ searchParams }: PageProps<"/onboa
   const claimed = (await searchParams).site;
   if ((await listSites(actor)).length) redirect("/dashboard");
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="px-6 py-5">
-        <Link href="/" className="font-semibold tracking-tight">
-          {config.appName}
-        </Link>
+    <div className="op-canvas flex min-h-screen flex-col">
+      <header className="flex h-14 items-center px-6 text-sm">
+        <Logo />
       </header>
-      <main className="mx-auto w-full max-w-2xl px-4 pt-[4vh] pb-20">
-        <p className="font-mono text-xs text-muted-foreground">Step 1 of 2</p>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight">Name your site</h1>
-        <p className="mt-1 text-sm text-muted-foreground">You can change everything later, or ask your agent to.</p>
+      <main className="mx-auto w-full max-w-2xl px-4 pt-[6vh] pb-20">
+        <PageIntro kicker="Step 1 of 2" title="Name your site">
+          You can change everything later, or ask your agent to.
+        </PageIntro>
         <OnboardingForm claimed={typeof claimed === "string" && SUBDOMAIN_RE.test(claimed) ? claimed : undefined} rootDomain={config.rootDomain} templates={listTemplates().map(({ id, name, description }) => ({ id, name, description }))} />
       </main>
     </div>

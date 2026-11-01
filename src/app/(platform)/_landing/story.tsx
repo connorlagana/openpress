@@ -60,7 +60,9 @@ export function Story({ rootDomain }: { rootDomain: string }) {
     const root = story.current!;
     const c = canvas.current!;
     const fit = () => {
-      const k = Math.max(0.45, Math.min(1, (window.innerWidth - 32) / S.w, live ? (window.innerHeight - 210) / S.h : 1));
+      // Room left for the canvas once the pinned stage's heading, rail and caption are placed (the heading wraps to two lines on phones).
+      const chrome = narrow ? 300 : 210;
+      const k = Math.max(narrow ? 0.35 : 0.45, Math.min(1, (window.innerWidth - 32) / S.w, live ? (window.innerHeight - chrome) / S.h : 1));
       c.style.transform = `scale(${k})`;
       c.parentElement!.style.height = `${S.h * k}px`;
     };
@@ -104,11 +106,11 @@ export function Story({ rootDomain }: { rootDomain: string }) {
   const S = narrow ? SIZE.narrow : SIZE.wide;
 
   return (
-    <div ref={story} className={cn("lp-story", live && "is-live")} id="how">
+    <div ref={story} className={cn("lp-story", live && "is-live")} id="build">
       <div className="lp-story__stage">
         <div className="text-center">
-          <p className="font-mono text-xs tracking-wide text-muted-foreground">HOW IT WORKS</p>
-          <h2 className="mt-2 text-[clamp(24px,2.6vw,36px)] leading-tight font-semibold tracking-[-0.03em]">One prompt. Six tool calls. A live site.</h2>
+          <p className="wb-kicker">Watch it build</p>
+          <h2 className="wb-h2 mt-2">One prompt. Six tool calls. A live site.</h2>
         </div>
         <div className="lp-fit">
           <div ref={canvas} className={cn("st", narrow ? "is-narrow" : "is-wide")} style={{ width: S.w, height: S.h }} aria-hidden>

@@ -18,16 +18,16 @@ export default async function AnalyticsPage({ params, searchParams }: PageProps<
         <dl className="flex gap-10">
           <div>
             <dt className="text-xs text-muted-foreground">Pageviews</dt>
-            <dd className="text-2xl font-semibold tabular-nums">{a.pageviews.toLocaleString()}</dd>
+            <dd className="mt-1 text-3xl font-bold tracking-tight tabular-nums">{a.pageviews.toLocaleString()}</dd>
           </div>
           <div>
             <dt className="text-xs text-muted-foreground">Daily unique visitors</dt>
-            <dd className="text-2xl font-semibold tabular-nums">{a.uniqueVisitors.toLocaleString()}</dd>
+            <dd className="mt-1 text-3xl font-bold tracking-tight tabular-nums">{a.uniqueVisitors.toLocaleString()}</dd>
           </div>
         </dl>
         <div className="flex gap-1 text-sm">
           {[7, 30, 90].map((d) => (
-            <Link key={d} href={`?days=${d}`} className={cn("rounded-md px-2.5 py-1", d === days ? "bg-muted" : "text-muted-foreground hover:text-foreground")} aria-current={d === days ? "page" : undefined}>
+            <Link key={d} href={`?days=${d}`} className={cn("rounded-full px-3 py-1", d === days ? "bg-foreground/[.07] font-medium" : "text-muted-foreground hover:text-foreground")} aria-current={d === days ? "page" : undefined}>
               {d}d
             </Link>
           ))}
@@ -38,11 +38,11 @@ export default async function AnalyticsPage({ params, searchParams }: PageProps<
         <EmptyState title="No visits yet">Share your site&rsquo;s link. Visits appear here within seconds. No cookies, no personal data.</EmptyState>
       ) : (
         <>
-          <figure>
+          <figure className="op-card p-5 pt-10">
             <div className="flex h-40 items-end gap-[2px]" role="img" aria-label={`Daily pageviews over the last ${days} days, peak ${max}`}>
               {a.daily.map((d) => (
                 <div key={d.day} className="group relative flex-1">
-                  <div className="rounded-t-sm bg-foreground/80 group-hover:bg-foreground" style={{ height: `${Math.max(2, (d.pageviews / max) * 160)}px` }} />
+                  <div className="rounded-t-sm bg-signal/70 group-hover:bg-signal" style={{ height: `${Math.max(2, (d.pageviews / max) * 160)}px` }} />
                   <span className="pointer-events-none absolute -top-7 left-1/2 hidden -translate-x-1/2 rounded bg-foreground px-1.5 py-0.5 text-[11px] whitespace-nowrap text-background group-hover:block">
                     {d.day}: {d.pageviews}
                   </span>
@@ -70,12 +70,12 @@ function Table({ title, rows }: { title: string; rows: [string, number][] }) {
   const max = Math.max(1, ...rows.map((r) => r[1]));
   return (
     <div>
-      <h2 className="mb-2 text-sm font-medium">{title}</h2>
+      <h2 className="mb-3 text-base font-semibold tracking-tight">{title}</h2>
       {rows.length === 0 && <p className="text-sm text-muted-foreground">No data for this period.</p>}
       <ul className="space-y-1">
         {rows.map(([k, v]) => (
           <li key={k} className="relative flex justify-between rounded px-2 py-1 text-sm">
-            <span className="absolute inset-y-0 left-0 rounded bg-muted" style={{ width: `${(v / max) * 100}%` }} aria-hidden />
+            <span className="absolute inset-y-0 left-0 rounded-md bg-signal/10" style={{ width: `${(v / max) * 100}%` }} aria-hidden />
             <span className="relative truncate font-mono text-xs leading-5">{k}</span>
             <span className="relative tabular-nums">{v}</span>
           </li>

@@ -26,7 +26,7 @@ export default async function MediaPage({ params }: PageProps<"/dashboard/sites/
       {items.length ? (
         <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {items.map((m) => (
-            <li key={m.id} className="overflow-hidden rounded-xl border">
+            <li key={m.id} className="op-card overflow-hidden">
               <div className="aspect-[4/3] bg-muted">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={m.url} alt={m.altText ?? ""} className="size-full object-cover" loading="lazy" />

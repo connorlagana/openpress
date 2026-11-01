@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { cn } from "@/lib/utils";
 
 type Check = { ok: boolean; message: string; suggestion?: string; name: string };
@@ -10,6 +10,7 @@ const clean = (v: string) => v.toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0,
 
 /** "yourname.openpress.blog" box: live availability, then on to signup (or onboarding) with the name carried along. */
 export function ClaimName({ rootDomain, signedIn, className }: { rootDomain: string; signedIn: boolean; className?: string }) {
+  const id = useId();
   const [name, setName] = useState("");
   const [check, setCheck] = useState<Check | null>(null);
 
@@ -41,18 +42,18 @@ export function ClaimName({ rootDomain, signedIn, className }: { rootDomain: str
       }}
     >
       <div className="lp-claim lp-shadow">
-        <label htmlFor="claim" className="sr-only">
+        <label htmlFor={`${id}-claim`} className="sr-only">
           Your site name
         </label>
         <div className="lp-claim__field">
-          <input id="claim" value={name} onChange={(e) => setName(clean(e.target.value))} placeholder="yourname" autoComplete="off" spellCheck={false} aria-describedby="claim-status" />
+          <input id={`${id}-claim`} value={name} onChange={(e) => setName(clean(e.target.value))} placeholder="yourname" autoComplete="off" spellCheck={false} aria-describedby={`${id}-status`} />
           <span aria-hidden>.{rootDomain}</span>
         </div>
         <button type="submit" className="lp-cta" disabled={status?.ok === false}>
           Claim it <span className="lp-cta__arrow">→</span>
         </button>
       </div>
-      <p id="claim-status" aria-live="polite" className={cn("mt-2 min-h-5 pl-1 text-[13px]", status?.ok ? "text-signal" : status ? "text-destructive" : "text-muted-foreground")}>
+      <p id={`${id}-status`} aria-live="polite" className={cn("lp-claim__status mt-2 min-h-5 pl-1 text-[13px]", status?.ok ? "text-signal" : status ? "text-destructive" : "text-muted-foreground")}>
         {status?.ok ? (
           <>✓ {name}.{rootDomain} is yours if you want it. Free, no card.</>
         ) : status ? (

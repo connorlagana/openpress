@@ -107,12 +107,12 @@ export function OnboardingForm({ claimed, rootDomain, templates }: { claimed?: s
             <label
               key={t.id}
               className={cn(
-                "cursor-pointer rounded-xl border p-3 transition-colors has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-ring/50",
-                template === t.id ? "border-foreground" : "hover:border-foreground/30",
+                "lp-shadow cursor-pointer rounded-2xl bg-background p-3 outline-offset-0 has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-ring/50",
+                template === t.id ? "outline-2 outline-signal" : "hover:outline-1 hover:outline-foreground/20",
               )}
             >
               <input type="radio" name="template" value={t.id} checked={template === t.id} onChange={() => setTemplate(t.id)} className="sr-only" />
-              <div className={cn("mb-3 h-20 rounded-md p-2.5", PREVIEW[t.id])} aria-hidden>
+              <div className={cn("mb-3 h-20 rounded-xl p-2.5", PREVIEW[t.id])} aria-hidden>
                 <i className="block h-1.5 w-8 rounded-full" />
                 <span className="mt-2 block h-1 w-16 rounded-full bg-black/15" />
                 <span className="mt-1 block h-1 w-12 rounded-full bg-black/10" />

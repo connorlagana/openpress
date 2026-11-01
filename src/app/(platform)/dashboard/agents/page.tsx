@@ -25,7 +25,7 @@ export default async function AgentsPage() {
 
       <Section title="MCP server URL" description="The same URL works for every client. Sign-in happens with OAuth.">
         <div className="flex flex-wrap items-center gap-2">
-          <code className="min-w-0 flex-1 truncate rounded-lg border bg-muted/40 px-3 py-2 font-mono text-sm">{mcpUrl}</code>
+          <code className="min-w-0 flex-1 truncate rounded-xl bg-muted/70 px-3.5 py-2 font-mono text-sm">{mcpUrl}</code>
           <CopyButton value={mcpUrl} label="Copy URL" />
         </div>
         <div className="mt-6">
@@ -35,13 +35,13 @@ export default async function AgentsPage() {
 
       <Section title="Connected agents" description="Each connection has its own permissions. Revoking takes effect immediately.">
         {connections.length ? (
-          <ul className="divide-y rounded-xl border">
+          <ul className="op-card divide-y">
             {connections.map((c) => (
               <li key={c.id} className="flex flex-wrap items-start gap-x-6 gap-y-2 px-4 py-3.5">
                 <div className="min-w-0 flex-1">
                   <div className="font-medium">
                     {c.clientName ?? c.name}
-                    <span className="ml-2 rounded border px-1.5 py-0.5 font-mono text-[11px] font-normal text-muted-foreground">{c.kind === "oauth" ? "OAuth" : `API key ${c.keyPrefix ?? ""}…`}</span>
+                    <span className="ml-2 rounded-full bg-muted px-2 py-0.5 font-mono text-[11px] font-normal text-muted-foreground">{c.kind === "oauth" ? "OAuth" : `API key ${c.keyPrefix ?? ""}…`}</span>
                   </div>
                   <div className="mt-1 text-xs text-muted-foreground">
                     {c.scopes.map((s) => s.replace(":", " ")).join(" · ")} — {c.allSites ? "all sites" : c.sites.map((s) => s.name).join(", ") || "no sites"}
@@ -56,7 +56,7 @@ export default async function AgentsPage() {
             ))}
           </ul>
         ) : (
-          <p className="rounded-xl border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">No agents connected yet. Add the URL above to your AI client.</p>
+          <p className="op-well px-4 py-8 text-center text-sm text-muted-foreground">No agents connected yet. Add the URL above to your AI client.</p>
         )}
       </Section>
 

@@ -1,19 +1,19 @@
 import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import { NotFoundCard } from "@/components/app/not-found-card";
 import "./globals.css";
+
+// Bypasses every layout, so fonts must be loaded here too.
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
+const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = { title: "Not found" };
 
 export default function GlobalNotFound() {
   return (
-    <html lang="en">
-      <body className="min-h-screen grid place-items-center bg-background text-foreground font-sans">
-        <div className="text-center space-y-3 px-6">
-          <p className="font-mono text-sm text-muted-foreground">404</p>
-          <h1 className="text-2xl font-semibold tracking-tight">This page doesn&rsquo;t exist</h1>
-          <a href="/" className="text-sm underline underline-offset-4">
-            Go home
-          </a>
-        </div>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body>
+        <NotFoundCard />
       </body>
     </html>
   );

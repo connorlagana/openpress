@@ -12,8 +12,8 @@ export function StatusDot({ live, className }: { live: boolean; className?: stri
 
 export function EmptyState({ title, children, action }: { title: string; children?: ReactNode; action?: ReactNode }) {
   return (
-    <div className="rounded-xl border border-dashed px-6 py-12 text-center">
-      <h3 className="font-medium">{title}</h3>
+    <div className="op-well px-6 py-14 text-center">
+      <h3 className="text-lg font-semibold tracking-tight">{title}</h3>
       {children ? <div className="mx-auto mt-1.5 max-w-md text-sm text-muted-foreground">{children}</div> : null}
       {action ? <div className="mt-5 flex justify-center">{action}</div> : null}
     </div>
@@ -22,10 +22,10 @@ export function EmptyState({ title, children, action }: { title: string; childre
 
 export function PageHeader({ title, description, actions }: { title: string; description?: ReactNode; actions?: ReactNode }) {
   return (
-    <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+    <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
       <div>
-        <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
-        {description ? <p className="mt-1 text-sm text-muted-foreground">{description}</p> : null}
+        <h1 className="op-h1">{title}</h1>
+        {description ? <p className="mt-2 text-muted-foreground">{description}</p> : null}
       </div>
       {actions ? <div className="flex gap-2">{actions}</div> : null}
     </div>
@@ -34,9 +34,9 @@ export function PageHeader({ title, description, actions }: { title: string; des
 
 export function Section({ title, description, children, className }: { title: string; description?: ReactNode; children: ReactNode; className?: string }) {
   return (
-    <section className={cn("grid gap-4 border-t py-8 first:border-t-0 first:pt-0 md:grid-cols-[220px_1fr] md:gap-10", className)}>
+    <section className={cn("grid gap-4 border-t py-10 first:border-t-0 first:pt-0 md:grid-cols-[240px_1fr] md:gap-10", className)}>
       <div>
-        <h2 className="text-sm font-medium">{title}</h2>
+        <h2 className="text-base font-semibold tracking-tight">{title}</h2>
         {description ? <p className="mt-1 text-sm text-muted-foreground">{description}</p> : null}
       </div>
       <div className="min-w-0">{children}</div>

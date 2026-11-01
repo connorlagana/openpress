@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { PageIntro, PublicShell } from "@/components/app/brand";
 import { CodeBlock } from "@/components/app/copy-button";
 import { clientInstructions } from "@/lib/clients";
 import { config } from "@/lib/config";
@@ -19,60 +19,58 @@ function toolList() {
 export default function McpDocs() {
   const url = mcpResourceUrl();
   return (
-    <main className="mx-auto max-w-3xl px-6 py-16">
-      <Link href="/" className="text-sm text-muted-foreground hover:text-foreground">
-        ← {config.appName}
-      </Link>
-      <h1 className="mt-6 text-3xl font-semibold tracking-tight">MCP server</h1>
-      <p className="mt-3 text-muted-foreground">
-        A remote MCP server over Streamable HTTP. Authentication is OAuth 2.1 with PKCE and dynamic client registration (RFC 7591, RFC 8414, RFC 9728), or a bearer API key.
-      </p>
-      <div className="mt-6">
-        <CodeBlock code={url} />
-      </div>
+    <PublicShell>
+      <main className="mx-auto max-w-3xl px-6 pt-14 pb-24">
+        <PageIntro kicker="Docs" title="MCP server">
+          A remote MCP server over Streamable HTTP. Authentication is OAuth 2.1 with PKCE and dynamic client registration (RFC 7591, RFC 8414, RFC 9728), or a bearer API key.
+        </PageIntro>
+        <div className="mt-8">
+          <CodeBlock code={url} />
+        </div>
 
-      <h2 className="mt-12 text-lg font-semibold">Connect a client</h2>
-      <div className="mt-4 space-y-8">
-        {clientInstructions(url, config.appName).map((c) => (
-          <div key={c.id}>
-            <h3 className="font-medium">{c.name}</h3>
-            <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm text-muted-foreground">
-              {c.steps.map((s) => (
-                <li key={s}>{s}</li>
-              ))}
-            </ol>
-            <div className="mt-3">
-              <CodeBlock code={c.code} />
+        <h2 className="op-h2 mt-14">Connect a client</h2>
+        <div className="mt-4 space-y-4">
+          {clientInstructions(url, config.appName).map((c) => (
+            <div key={c.id} className="op-card p-5">
+              <h3 className="text-lg font-semibold tracking-tight">{c.name}</h3>
+              <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm text-muted-foreground">
+                {c.steps.map((s) => (
+                  <li key={s}>{s}</li>
+                ))}
+              </ol>
+              <div className="mt-3">
+                <CodeBlock code={c.code} />
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      <h2 className="mt-12 text-lg font-semibold">Permissions</h2>
-      <ul className="mt-3 space-y-1.5 text-sm">
-        {Object.entries(SCOPES).map(([k, v]) => (
-          <li key={k}>
-            <code className="font-mono text-xs">{k}</code> <span className="text-muted-foreground">— {v}</span>
-          </li>
-        ))}
-      </ul>
+        <h2 className="op-h2 mt-14">Permissions</h2>
+        <ul className="mt-3 space-y-1.5 text-sm">
+          {Object.entries(SCOPES).map(([k, v]) => (
+            <li key={k}>
+              <code className="font-mono text-xs">{k}</code> <span className="text-muted-foreground">— {v}</span>
+            </li>
+          ))}
+        </ul>
 
-      <h2 className="mt-12 text-lg font-semibold">Tools</h2>
-      <ul className="mt-3 divide-y rounded-xl border">
-        {toolList().map((t) => (
-          <li key={t.name} className="px-4 py-3">
-            <div className="flex items-center gap-2">
-              <code className="font-mono text-sm">{t.name}</code>
-              {t.annotations?.destructiveHint ? <span className="text-xs text-destructive">confirmation required</span> : null}
-              {t.annotations?.readOnlyHint ? <span className="text-xs text-muted-foreground">read-only</span> : null}
-            </div>
-            <p className="mt-1 text-sm text-muted-foreground">{t.description}</p>
-          </li>
-        ))}
-      </ul>
+        <h2 className="op-h2 mt-14">Tools</h2>
+        <ul className="mt-3 op-card divide-y">
+          {toolList().map((t) => (
+            <li key={t.name} className="px-5 py-4">
+              <div className="flex items-center gap-2">
+                <code className="font-mono text-sm">{t.name}</code>
+                {t.annotations?.destructiveHint ? <span className="text-xs text-destructive">confirmation required</span> : null}
+                {t.annotations?.readOnlyHint ? <span className="text-xs text-muted-foreground">read-only</span> : null}
+              </div>
+              <p className="mt-1 text-sm text-muted-foreground">{t.description}</p>
+            </li>
+          ))}
+        </ul>
 
-      <h2 className="mt-12 text-lg font-semibold">Server instructions</h2>
-      <pre className="mt-3 rounded-xl border bg-muted/30 p-4 text-sm whitespace-pre-wrap">{SERVER_INSTRUCTIONS}</pre>
-    </main>
+        <h2 className="op-h2 mt-14">Server instructions</h2>
+        <pre className="op-well mt-3 p-5 text-sm whitespace-pre-wrap">{SERVER_INSTRUCTIONS}</pre>
+      </main>
+    </PublicShell>
   );
 }

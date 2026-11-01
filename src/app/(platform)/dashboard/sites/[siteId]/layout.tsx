@@ -7,15 +7,15 @@ export default async function SiteLayout({ children, params }: LayoutProps<"/das
   const base = `/dashboard/sites/${site.id}`;
   return (
     <div>
-      <div className="mb-6">
+      <div className="mb-8">
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <h1 className="text-xl font-semibold tracking-tight">{site.name}</h1>
+          <h1 className="op-h1">{site.name}</h1>
           <a href={site.url} target="_blank" rel="noreferrer" className="font-mono text-xs text-muted-foreground hover:text-foreground">
             {site.url.replace(/^https?:\/\//, "")} ↗
           </a>
           {site.suspended ? <span className="text-xs text-destructive">Suspended</span> : null}
         </div>
-        <nav className="mt-5 flex gap-5 overflow-x-auto border-b" aria-label="Site">
+        <nav className="mt-6 flex gap-5 overflow-x-auto border-b" aria-label="Site">
           <TabLink href={base} exact>
             Posts
           </TabLink>

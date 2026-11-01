@@ -99,7 +99,7 @@ export function Editor({ post, media }: { post: Post; media: { id: string; url: 
 
   return (
     <form
-      className="grid gap-8 lg:grid-cols-[1fr_300px]"
+      className="grid grid-cols-1 gap-8 *:min-w-0 lg:grid-cols-[minmax(0,1fr)_300px]"
       onSubmit={(e) => {
         e.preventDefault();
         start(async () => {
@@ -125,12 +125,12 @@ export function Editor({ post, media }: { post: Post; media: { id: string; url: 
           id="title"
           value={form.title}
           onChange={(e) => set("title", e.target.value)}
-          className="w-full bg-transparent text-3xl font-semibold tracking-tight outline-none placeholder:text-muted-foreground/50"
+          className="w-full bg-transparent text-2xl font-bold sm:text-3xl tracking-[-.03em] outline-none placeholder:text-muted-foreground/50"
           placeholder="Title"
           maxLength={200}
           required
         />
-        <div className="rounded-xl border">
+        <div className="op-card overflow-hidden">
           <div className="flex items-center gap-1 border-b px-2 py-1.5" role="tablist">
             {(["write", "preview"] as const).map((t) => (
               <button
@@ -139,7 +139,7 @@ export function Editor({ post, media }: { post: Post; media: { id: string; url: 
                 role="tab"
                 aria-selected={tab === t}
                 onClick={() => setTab(t)}
-                className={cn("rounded-md px-2.5 py-1 text-sm capitalize", tab === t ? "bg-muted" : "text-muted-foreground hover:text-foreground")}
+                className={cn("rounded-full px-3 py-1 text-sm capitalize", tab === t ? "bg-foreground/[.07] font-medium" : "text-muted-foreground hover:text-foreground")}
               >
                 {t}
               </button>

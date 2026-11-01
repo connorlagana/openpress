@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Logo, SiteFooter } from "@/components/app/brand";
 import { ClientTabs } from "@/components/app/client-tabs";
 import { buttonVariants } from "@/components/ui/button";
 import { clientInstructions } from "@/lib/clients";
@@ -14,6 +15,7 @@ import { Examples } from "./_landing/examples";
 import { RememberRef } from "./_landing/ref";
 import { Reveal } from "./_landing/reveal";
 import { Showcase } from "./_landing/showcase";
+import { Story } from "./_landing/story";
 import { articles } from "./journal/articles";
 import "./_landing/landing.css";
 
@@ -124,10 +126,7 @@ export default async function Landing({ searchParams }: PageProps<"/">) {
     <div className="flex min-h-screen flex-col">
       <header className="fixed inset-x-0 top-0 z-30 border-b border-transparent bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/70">
         <nav className="mx-auto flex h-14 max-w-[1180px] items-center gap-1 px-6 text-sm" aria-label="Main">
-          <Link href="/" className="mr-2 flex items-center gap-2 font-semibold tracking-tight">
-            <span className="size-2.5 rounded-full bg-signal ring-3 ring-signal/20" aria-hidden />
-            {config.appName}
-          </Link>
+          <Logo className="mr-2" />
           <a href="#steps" className="hidden rounded-lg px-2.5 py-1.5 text-muted-foreground hover:text-foreground sm:inline">
             How it works
           </a>
@@ -158,9 +157,10 @@ export default async function Landing({ searchParams }: PageProps<"/">) {
       <main className="flex-1">
         {ref.source ? <RememberRef source={ref.source} /> : null}
         <BlogHero rootDomain={config.rootDomain} signedIn={!!user} banner={banner} />
+        <Story rootDomain={config.rootDomain} />
 
         {/* Example blogs */}
-        <section id="examples" className="wb-section">
+        <section id="examples" className="wb-section border-t">
           <div className="mx-auto max-w-6xl px-6">
             <Reveal>
               <SectionHead center title="Blogs that started as a chat">
@@ -390,34 +390,7 @@ export default async function Landing({ searchParams }: PageProps<"/">) {
         </section>
       </main>
 
-      <footer className="border-t">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-start justify-between gap-6 px-6 py-8 text-xs text-muted-foreground">
-          <div>
-            <div className="font-medium text-foreground">{config.appName}</div>
-            <p className="mt-1">Free blog hosting with a free MCP server. Your AI writes, you share.</p>
-          </div>
-          <nav className="flex flex-wrap gap-x-5 gap-y-2" aria-label="Footer">
-            <Link href="/docs/mcp" className="hover:text-foreground">
-              MCP docs
-            </Link>
-            <a href="/llms.txt" className="hover:text-foreground">
-              llms.txt
-            </a>
-            <Link href="/.well-known/oauth-protected-resource/mcp" prefetch={false} className="hover:text-foreground">
-              OAuth metadata
-            </Link>
-            <Link href="/journal/bring-your-own-ai" className="hover:text-foreground">
-              Guides
-            </Link>
-            <Link href="/report" className="hover:text-foreground">
-              Report abuse
-            </Link>
-            <Link href="/privacy" className="hover:text-foreground">
-              Privacy
-            </Link>
-          </nav>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

@@ -12,7 +12,7 @@ import { PasswordForm, ProfileForm } from "./account-client";
 
 export const metadata: Metadata = { title: "Account" };
 
-function Meter({ label, used, limit, format = (n: number) => n.toLocaleString() }: { label: string; used: number; limit: number; format?: (n: number) => string }) {
+function Meter({ label, used, limit, format = (n: number) => n.toLocaleString(), warn = true }: { label: string; used: number; limit: number; format?: (n: number) => string; warn?: boolean }) {
   const pct = Math.min(100, (used / Math.max(1, limit)) * 100);
   return (
     <div>
@@ -23,7 +23,7 @@ function Meter({ label, used, limit, format = (n: number) => n.toLocaleString() 
         </span>
       </div>
       <div className="mt-1.5 h-1.5 rounded-full bg-muted" role="meter" aria-valuenow={used} aria-valuemin={0} aria-valuemax={limit} aria-label={label}>
-        <div className={pct > 90 ? "h-full rounded-full bg-destructive" : "h-full rounded-full bg-foreground"} style={{ width: `${pct}%` }} />
+        <div className={warn && pct > 90 ? "h-full rounded-full bg-destructive" : "h-full rounded-full bg-signal"} style={{ width: `${pct}%` }} />
       </div>
     </div>
   );
@@ -47,7 +47,7 @@ export default async function AccountPage({ searchParams }: PageProps<"/dashboar
       <PageHeader title="Account" description={user.email} />
       <Section title="Plan & usage" description={`${usage.plan.name} — free forever. MCP access is always free.`}>
         <div className="grid max-w-xl gap-5">
-          <Meter label="Sites" used={usage.sites.used} limit={usage.sites.limit} />
+          <Meter label="Sites" used={usage.sites.used} limit={usage.sites.limit} warn={false} />
           <Meter label="Storage" used={usage.storageBytes.used} limit={usage.storageBytes.limit} format={formatBytes} />
           <Meter label="Pageviews this month" used={usage.pageviewsThisMonth.used} limit={usage.pageviewsThisMonth.limit} />
           <p className="text-xs text-muted-foreground">
@@ -67,7 +67,7 @@ export default async function AccountPage({ searchParams }: PageProps<"/dashboar
               </p>
             ) : null}
             {identities.length ? (
-              <ul className="divide-y rounded-xl border text-sm">
+              <ul className="op-card divide-y text-sm">
                 {identities.map((i) => (
                   <li key={i.provider} className="flex items-center justify-between gap-4 px-4 py-2.5">
                     <span>{PROVIDER_LABELS[i.provider]}</span>
@@ -92,13 +92,13 @@ export default async function AccountPage({ searchParams }: PageProps<"/dashboar
       </Section>
       <Section title="Recent activity" description="Publishing, deletions and permission changes, by you or your agents.">
         {activity.length ? (
-          <ul className="divide-y rounded-xl border text-sm">
+          <ul className="op-card divide-y text-sm">
             {activity.map((a) => (
               <li key={a.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2.5">
                 <span className="font-mono text-xs">{a.action}</span>
                 <span className="min-w-0 flex-1 truncate text-muted-foreground">{typeof (a.metadata as { title?: string }).title === "string" ? (a.metadata as { title: string }).title : ""}</span>
-                <span className="text-xs text-muted-foreground">{a.via}</span>
-                <span className="w-20 text-right text-xs text-muted-foreground">{relativeTime(a.createdAt)}</span>
+                <span className="hidden text-xs text-muted-foreground sm:inline">{a.via}</span>
+                <span className="text-right text-xs text-muted-foreground sm:w-20">{relativeTime(a.createdAt)}</span>
               </li>
             ))}
           </ul>

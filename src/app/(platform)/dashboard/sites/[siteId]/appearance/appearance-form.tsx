@@ -43,7 +43,7 @@ export function AppearanceForm({ siteId, siteUrl, template, theme, templates }: 
                   router.refresh();
                 })
               }
-              className={cn("rounded-xl border p-3 text-left transition-colors disabled:cursor-default", t.id === template ? "border-foreground" : "hover:border-foreground/30")}
+              className={cn("lp-shadow flex flex-col items-start rounded-2xl bg-background p-4 text-left outline-offset-0 disabled:cursor-default", t.id === template ? "outline-2 outline-signal" : "hover:outline-1 hover:outline-foreground/20")}
               aria-pressed={t.id === template}
             >
               <div className="text-sm font-medium">{t.name}</div>

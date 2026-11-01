@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/app/brand";
 import { config } from "@/lib/config";
 import { BlogSite } from "../_landing/blog-site";
 import { SITES } from "../_landing/sites";
@@ -18,10 +19,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     <div className="grid min-h-screen lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
       <div className="flex min-w-0 flex-col bg-muted/20">
         <header className="flex h-14 items-center justify-between px-6 text-sm">
-          <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
-            <span className="size-2.5 rounded-full bg-signal ring-3 ring-signal/20" aria-hidden />
-            {config.appName}
-          </Link>
+          <Logo />
           <Link href="/" className="rounded-lg px-2.5 py-1.5 text-muted-foreground hover:text-foreground">
             ← Home
           </Link>

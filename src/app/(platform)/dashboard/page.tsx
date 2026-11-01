@@ -29,9 +29,12 @@ export default async function DashboardHome() {
         }
       />
       {!connections.length ? (
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border bg-muted/30 px-5 py-4">
+        <div className="op-card mb-6 flex flex-wrap items-center justify-between gap-4 px-5 py-4">
           <div>
-            <p className="text-sm font-medium">Connect your AI agent</p>
+            <p className="flex items-center gap-2 text-sm font-medium">
+              <span className="size-2 rounded-full bg-signal ring-3 ring-signal/20" aria-hidden />
+              Connect your AI agent
+            </p>
             <p className="text-sm text-muted-foreground">Add the MCP server to Claude, ChatGPT or another client, then ask it to write and publish.</p>
           </div>
           <Link href="/dashboard/agents" className={buttonVariants()}>
@@ -39,11 +42,11 @@ export default async function DashboardHome() {
           </Link>
         </div>
       ) : null}
-      <ul className="divide-y rounded-xl border">
+      <ul className="op-card divide-y">
         {sites.map((s) => (
-          <li key={s.id} className="flex flex-wrap items-center gap-x-6 gap-y-2 px-5 py-4">
-            <div className="min-w-0 flex-1">
-              <Link href={`/dashboard/sites/${s.id}`} className="font-medium hover:underline underline-offset-4">
+          <li key={s.id} className="flex flex-wrap items-center gap-x-6 gap-y-2 px-5 py-5">
+            <div className="min-w-0 flex-1 basis-full sm:basis-0">
+              <Link href={`/dashboard/sites/${s.id}`} className="text-lg font-semibold tracking-tight hover:underline underline-offset-4">
                 {s.name}
               </Link>
               <div className="mt-0.5 truncate font-mono text-xs text-muted-foreground">{s.url.replace(/^https?:\/\//, "")}</div>

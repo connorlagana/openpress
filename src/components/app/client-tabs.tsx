@@ -21,7 +21,7 @@ export function ClientTabs({ clients }: { clients: ClientInstructions[] }) {
             aria-selected={x.id === active}
             aria-controls="client-panel"
             onClick={() => setActive(x.id)}
-            className={cn("rounded-md px-2.5 py-1 text-sm", x.id === active ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground")}
+            className={cn("rounded-full px-3 py-1 text-sm", x.id === active ? "bg-foreground/[.07] font-medium text-foreground" : "text-muted-foreground hover:text-foreground")}
           >
             {x.name}
           </button>
