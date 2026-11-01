@@ -40,9 +40,10 @@ function useMedia(query: string, server: boolean) {
   );
 }
 
-const SIZE = { wide: { w: 1100, h: 560 }, narrow: { w: 360, h: 950 } };
+const SIZE = { wide: { w: 1100, h: 560 }, narrow: { w: 360, h: 505 } };
 
-const step = (key: string) => ({ "--x": `var(--${key})` }) as React.CSSProperties;
+const step = (key: string, next?: string) =>
+  ({ "--x": `var(--${key})`, "--n": next ? `var(--${next})` : "0" }) as React.CSSProperties;
 
 export function Story({ rootDomain }: { rootDomain: string }) {
   const live = !useMedia("(prefers-reduced-motion: reduce)", true);
@@ -60,9 +61,16 @@ export function Story({ rootDomain }: { rootDomain: string }) {
     const root = story.current!;
     const c = canvas.current!;
     const fit = () => {
-      // Room left for the canvas once the pinned stage's heading, rail and caption are placed (the heading wraps to two lines on phones).
-      const chrome = narrow ? 300 : 210;
-      const k = Math.max(narrow ? 0.35 : 0.45, Math.min(1, (window.innerWidth - 32) / S.w, live ? (window.innerHeight - chrome) / S.h : 1));
+      // Room left for the canvas once the pinned stage's padding, heading, rail and caption are placed.
+      const fitBox = c.parentElement!;
+      const stage = fitBox.parentElement!;
+      const cs = getComputedStyle(stage);
+      const gap = parseFloat(cs.rowGap) || 0;
+      let chrome = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+      for (const el of Array.from(stage.children)) if (el !== fitBox) chrome += (el as HTMLElement).offsetHeight + gap;
+      const avail = stage.clientHeight - chrome;
+      const byWidth = (stage.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)) / S.w;
+      const k = Math.max(0.45, Math.min(narrow ? 1.25 : 1, byWidth, live ? avail / S.h : 1));
       c.style.transform = `scale(${k})`;
       c.parentElement!.style.height = `${S.h * k}px`;
     };
@@ -124,8 +132,8 @@ export function Story({ rootDomain }: { rootDomain: string }) {
                 <span ref={typed}>{PROMPT}</span>
               </div>
               <ol className="st-calls">
-                {PHASES.map((ph) => (
-                  <li key={ph.key} style={step(ph.key)}>
+                {PHASES.map((ph, i) => (
+                  <li key={ph.key} style={step(ph.key, PHASES[i + 1]?.key)}>
                     <span className="st-ico">
                       <i className="st-spin" />
                       <i className="st-ok">✓</i>
@@ -220,7 +228,7 @@ export function Story({ rootDomain }: { rootDomain: string }) {
             </li>
           ))}
         </ol>
-        <p className="text-center text-xs text-muted-foreground">Example site. Tool names are real.</p>
+        <p className="lp-story__note text-center text-xs text-muted-foreground">Example site. Tool names are real.</p>
       </div>
     </div>
   );
