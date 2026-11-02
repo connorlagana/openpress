@@ -1,8 +1,10 @@
 import { and, asc, count, desc, eq, isNull, sql } from "drizzle-orm";
 import { getDb } from "@/db/client";
 import { media, navItems, posts, redirects, sites, themes, users, type Post, type Site } from "@/db/schema";
+import { chartIdsInHtml, embedCharts, type EmbedMode } from "@/lib/charts/render";
 import { resolveTheme, type Theme } from "@/lib/theme";
 import { getTemplate, parseSettings, type SiteSettings } from "@/templates/registry";
+import { chartSpecsFor } from "../services/charts";
 import { mediaUrl } from "../storage";
 
 // Public, unauthenticated reads for rendering sites. These use the privileged
@@ -72,7 +74,16 @@ export async function getPublishedPost(subdomain: string, kind: "post" | "page",
     .from(posts)
     .leftJoin(media, and(eq(posts.coverMediaId, media.id), isNull(media.deletedAt)))
     .where(and(eq(posts.siteId, site.id), eq(posts.kind, kind), eq(posts.slug, slug), eq(posts.status, "published"), isNull(posts.deletedAt)));
-  return row ? { site, post: withCover(row) } : null;
+  if (!row) return null;
+  const post = withCover(row);
+  return { site, post: { ...post, contentHtml: await withCharts(site.id, post.contentHtml) } };
+}
+
+/** Draw embedded charts into a post body. Only live charts of the same site are used. */
+export async function withCharts(siteId: string, html: string, mode: EmbedMode = "page"): Promise<string> {
+  const ids = chartIdsInHtml(html);
+  if (!ids.length) return html;
+  return embedCharts(html, await chartSpecsFor(await getDb(), siteId, ids), mode);
 }
 
 export async function listPublishedPosts(siteId: string, opts: { limit?: number; offset?: number; tag?: string } = {}) {

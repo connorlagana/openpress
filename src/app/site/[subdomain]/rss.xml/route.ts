@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { config } from "@/lib/config";
-import { getPublicSite, listPublishedPosts } from "@/server/public/data";
+import { getPublicSite, listPublishedPosts, withCharts } from "@/server/public/data";
 
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const cdata = (s: string) => `<![CDATA[${s.replace(/]]>/g, "]]]]><![CDATA[>")}]]>`;
@@ -10,7 +10,8 @@ export async function GET(_req: Request, ctx: RouteContext<"/site/[subdomain]/rs
   const site = await getPublicSite((await ctx.params).subdomain);
   if (!site) return new Response("Not found", { status: 404 });
   const base = config.siteUrl(site.subdomain);
-  const { items } = await listPublishedPosts(site.id, { limit: 50 });
+  const { items: posts } = await listPublishedPosts(site.id, { limit: 50 });
+  const items = await Promise.all(posts.map(async (p) => ({ ...p, contentHtml: await withCharts(site.id, p.contentHtml, "feed") })));
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
 <channel>

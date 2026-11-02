@@ -155,6 +155,26 @@ export const media = pgTable(
   (t) => [index("media_site_idx").on(t.siteId, t.createdAt), uniqueIndex("media_storage_key").on(t.storageKey)],
 );
 
+// Charts are content objects of their own: posts embed them with a
+// {{chart:<id>}} token, so the data can change without editing the post.
+export const charts = pgTable(
+  "charts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    siteId: uuid("site_id").notNull().references(() => sites.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    // Validated ChartSpec (src/lib/charts/spec.ts). Never markup.
+    spec: jsonb("spec").notNull(),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    createdVia: text("created_via", { enum: ["dashboard", "agent"] }).notNull().default("dashboard"),
+    agentConnectionId: uuid("agent_connection_id"),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
+  },
+  (t) => [index("charts_site_idx").on(t.siteId, t.updatedAt)],
+);
+
 // Posts and static pages share one table (kind) because they share every
 // lifecycle concern: drafts, publishing, SEO, revisions, redirects.
 export const posts = pgTable(
@@ -344,6 +364,7 @@ export type User = typeof users.$inferSelect;
 export type Site = typeof sites.$inferSelect;
 export type Post = typeof posts.$inferSelect;
 export type Media = typeof media.$inferSelect;
+export type Chart = typeof charts.$inferSelect;
 export type NavItem = typeof navItems.$inferSelect;
 export type Plan = typeof plans.$inferSelect;
 export type AgentConnection = typeof agentConnections.$inferSelect;

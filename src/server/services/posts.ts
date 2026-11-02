@@ -10,6 +10,7 @@ import { requireScope, type Actor } from "../actor";
 import { requireConfirmation } from "../confirm";
 import { notifyIndexNow } from "../indexnow";
 import { audit } from "./audit";
+import { assertChartsOnSite } from "./charts";
 import { assertUserActive, getPlanForUser, sitePostCount } from "./limits";
 import { loadSite } from "./sites";
 
@@ -29,7 +30,7 @@ export const createPostInput = z
     siteId: z.string().describe("Site id or subdomain"),
     kind: z.enum(["post", "page"]).default("post").describe("'post' = dated blog post at /blog/<slug>; 'page' = static page at /<slug>"),
     title: z.string().trim().min(1).max(200),
-    content: z.string().max(200_000).default("").describe("Body in Markdown (GitHub-flavored). Raw HTML is sanitized; scripts, iframes and styles are removed."),
+    content: z.string().max(200_000).default("").describe("Body in Markdown (GitHub-flavored). Raw HTML is sanitized; scripts, iframes and styles are removed. Embed a chart from create_chart by putting its {{chart:<id>}} token on its own line."),
     slug: slugSchema.optional().describe("URL slug. Derived from the title if omitted; collisions get a numeric suffix."),
     excerpt: z.string().trim().max(400).optional().describe("Short summary for listings and default meta description"),
     tags: z.array(z.string().trim().min(1).max(40)).max(12).optional(),
@@ -122,6 +123,7 @@ export async function createPost(actor: Actor, input: z.input<typeof createPostI
       throw new AppError("QUOTA_EXCEEDED", `This site has reached the ${plan.maxPostsPerSite} post/page limit of the ${plan.name} plan.`);
     }
     await assertMediaOnSite(tx, site.id, data.coverMediaId);
+    await assertChartsOnSite(tx, site.id, data.content);
 
     let slug: string;
     if (data.slug) {
@@ -219,6 +221,7 @@ export async function updatePost(actor: Actor, postId: string, input: z.input<ty
     await assertUserActive(tx, actor.userId);
     const { post, site } = await loadPost(tx, actor, postId);
     await assertMediaOnSite(tx, site.id, data.coverMediaId);
+    if (data.content !== undefined) await assertChartsOnSite(tx, site.id, data.content);
 
     let slug = post.slug;
     if (data.slug && data.slug !== post.slug) {

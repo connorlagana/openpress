@@ -2,10 +2,12 @@ import type { ReactNode } from "react";
 import { config } from "@/lib/config";
 import { renderMarkdown } from "@/lib/markdown";
 import type { PublicPost, PublicSite } from "@/server/public/data";
+import { ChartEnhancer } from "./chart-enhancer";
 
 // Shared building blocks for public site templates. Everything user- or
 // agent-supplied is rendered as text, except post bodies, which are sanitized
-// at write time (see lib/markdown.ts).
+// at write time (see lib/markdown.ts), plus charts OpenPress draws itself from
+// validated data at read time (lib/charts/render.ts).
 
 const dateFmt = (d: Date | null, lang: string) =>
   d ? new Intl.DateTimeFormat(lang, { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" }).format(d) : "";
@@ -167,6 +169,8 @@ export function Article({ site, post }: { site: PublicSite; post: PublicPost }) 
       ) : null}
       {/* contentHtml is sanitized with an allow-list when saved. */}
       <div className="fs-prose" dangerouslySetInnerHTML={{ __html: post.contentHtml }} />
+      {/* Charts are drawn by OpenPress from validated data (lib/charts/render.ts) and enhanced on the client. */}
+      {post.contentHtml.includes('class="op-chart"') ? <ChartEnhancer /> : null}
       {isPost ? (
         <footer className="fs-article-footer">
           {post.tags.length ? (

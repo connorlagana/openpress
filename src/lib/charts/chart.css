@@ -1,0 +1,90 @@
+/* Charts embedded in posts (lib/charts/render.ts). Text and chrome follow the
+   site theme (--fs-*); series use a fixed, colorblind-validated categorical
+   order (light and dark steps validated separately), never the site accent,
+   so any theme keeps adjacent series distinguishable. */
+
+.op-chart {
+  --op-bg: var(--fs-bg, #ffffff);
+  --op-fg: var(--fs-fg, #1c1c1c);
+  --op-muted: color-mix(in srgb, var(--op-fg) 62%, var(--op-bg));
+  --op-grid: color-mix(in srgb, var(--op-fg) 10%, var(--op-bg));
+  --op-axis: color-mix(in srgb, var(--op-fg) 24%, var(--op-bg));
+  --op-c0: #2a78d6; --op-c1: #eb6834; --op-c2: #1baf7a; --op-c3: #eda100;
+  --op-c4: #e87ba4; --op-c5: #008300; --op-c6: #6250d6; --op-c7: #e34948;
+  margin: 2em 0 0;
+  padding: 0;
+  font-family: var(--fs-body-font, system-ui, sans-serif);
+  color: var(--op-fg);
+}
+.fs-prose .op-chart { margin: 2em 0; }
+.fs-dark .op-chart, .dark .op-chart {
+  --op-c0: #3987e5; --op-c1: #d95926; --op-c2: #199e70; --op-c3: #c98500;
+  --op-c4: #d55181; --op-c5: #008300; --op-c6: #9085e9; --op-c7: #e66767;
+}
+@media (prefers-color-scheme: dark) {
+  .fs-auto .op-chart {
+    --op-c0: #3987e5; --op-c1: #d95926; --op-c2: #199e70; --op-c3: #c98500;
+    --op-c4: #d55181; --op-c5: #008300; --op-c6: #9085e9; --op-c7: #e66767;
+  }
+}
+.op-c0 { --c: var(--op-c0); } .op-c1 { --c: var(--op-c1); } .op-c2 { --c: var(--op-c2); } .op-c3 { --c: var(--op-c3); }
+.op-c4 { --c: var(--op-c4); } .op-c5 { --c: var(--op-c5); } .op-c6 { --c: var(--op-c6); } .op-c7 { --c: var(--op-c7); }
+
+.op-chart-head { display: flex; flex-direction: column; gap: 0.15rem; margin-bottom: 0.75rem; }
+.op-chart-title { font-family: var(--fs-heading-font, inherit); font-weight: 650; font-size: 1.05rem; line-height: 1.3; }
+.op-chart-sub { color: var(--op-muted); font-size: 0.88rem; }
+
+.op-chart .op-legend { display: flex; flex-wrap: wrap; gap: 0.35rem 1rem; margin: 0 0 0.6rem; padding: 0; list-style: none; font-size: 0.85rem; color: var(--op-fg); }
+.op-chart .op-legend li { display: inline-flex; align-items: center; gap: 0.4rem; margin: 0; }
+.op-legend-v { color: var(--op-muted); font-variant-numeric: tabular-nums; }
+.op-toggle { display: inline-flex; align-items: center; gap: 0.4rem; font: inherit; color: inherit; background: none; border: 0; padding: 0.2rem 0; cursor: pointer; }
+.op-toggle:disabled { cursor: default; }
+.op-toggle[aria-pressed="false"] { color: var(--op-muted); text-decoration: line-through; }
+.op-toggle[aria-pressed="false"] .op-key { opacity: 0.3; }
+.op-key { display: inline-block; flex: none; background: var(--c); }
+.op-key-rect { width: 10px; height: 10px; border-radius: 2px; }
+.op-key-line { width: 14px; height: 2px; border-radius: 1px; }
+
+.op-chart-body { position: relative; border-radius: 6px; }
+.op-chart-body:focus-visible { outline: 2px solid var(--fs-primary, currentColor); outline-offset: 4px; }
+.op-plot { display: block; width: 100%; height: auto; overflow: visible; touch-action: pan-y; }
+.op-plot text { fill: var(--op-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.op-plot .op-axis-title { font-size: 12px; fill: var(--op-muted); }
+.op-grid { stroke: var(--op-grid); stroke-width: 1; }
+.op-base { stroke: var(--op-axis); stroke-width: 1; }
+.op-cross { stroke: var(--op-axis); stroke-width: 1; pointer-events: none; }
+.op-line { fill: none; stroke: var(--c); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.op-area { fill: var(--c); fill-opacity: 0.1; stroke: none; }
+.op-dot { fill: var(--c); stroke: var(--op-bg); stroke-width: 2; }
+.op-bar { fill: var(--c); transition: opacity 120ms; }
+.op-slice { fill: var(--c); stroke: var(--op-bg); stroke-width: 2; stroke-linejoin: round; transition: opacity 120ms; }
+.op-hit { fill: transparent; }
+.op-active .op-bar:not(.op-on), .op-active .op-slice:not(.op-on) { opacity: 0.55; }
+.op-active .op-dot.op-on { r: 5; }
+
+.op-tip {
+  position: absolute; top: 0; left: 0; z-index: 2; pointer-events: none;
+  min-width: 8rem; max-width: 16rem; padding: 0.5rem 0.65rem;
+  background: var(--op-bg); color: var(--op-fg);
+  border: 1px solid var(--op-grid); border-radius: 8px;
+  box-shadow: 0 4px 16px color-mix(in srgb, #000 12%, transparent);
+  font-size: 0.82rem; line-height: 1.35;
+}
+.op-tip[hidden] { display: none; }
+.op-tip-head { color: var(--op-muted); margin-bottom: 0.25rem; }
+.op-tip-row { display: flex; align-items: center; gap: 0.45rem; }
+.op-tip-row strong { font-variant-numeric: tabular-nums; font-weight: 650; }
+.op-tip-row span:last-child { color: var(--op-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.op-chart-foot { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem 1rem; flex-wrap: wrap; margin-top: 0.5rem; font-size: 0.8rem; color: var(--op-muted); }
+.op-chart-data { margin-left: auto; }
+.op-chart-data[open] { flex-basis: 100%; }
+.op-chart-data summary { cursor: pointer; color: var(--op-muted); text-align: right; }
+.op-chart-table { margin-top: 0.5rem; overflow-x: auto; }
+.op-chart .op-chart-table table { width: 100%; border-collapse: collapse; font-size: 0.85rem; color: var(--op-fg); display: table; }
+.op-chart .op-chart-table th, .op-chart .op-chart-table td { border-bottom: 1px solid var(--op-grid); padding: 0.35em 0.6em; text-align: right; font-variant-numeric: tabular-nums; }
+.op-chart .op-chart-table th[scope="row"], .op-chart .op-chart-table thead th:first-child { text-align: left; }
+
+@media (forced-colors: active) {
+  .op-line { stroke: CanvasText; } .op-bar, .op-slice, .op-key { fill: CanvasText; background: CanvasText; }
+}

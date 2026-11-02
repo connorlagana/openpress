@@ -4,13 +4,13 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { AppError } from "@/lib/errors";
-import { renderMarkdown } from "@/lib/markdown";
 import { deleteAllSessions } from "@/server/auth/accounts";
 import { requireActor, setSessionCookie } from "@/server/auth/session";
 import { createApiKey } from "@/server/oauth/oauth";
 import { changePassword, updateProfile } from "@/server/services/account";
 import { onboardingStatus, revokeConnection, updateConnection } from "@/server/services/agents";
 import { setTemplate, updateTheme } from "@/server/services/appearance";
+import { previewPostHtml } from "@/server/services/charts";
 import { deleteMedia } from "@/server/services/media";
 import { createPost, deletePost, setPublished, updatePost } from "@/server/services/posts";
 import { checkSubdomain, createSite, deleteSite, updateSiteSettings } from "@/server/services/sites";
@@ -105,9 +105,9 @@ export async function deletePostAction(siteId: string, postId: string, kind: "po
   redirect(`/dashboard/sites/${siteId}${kind === "page" ? "/pages" : ""}`);
 }
 
-export async function previewMarkdownAction(md: string) {
-  await requireActor();
-  return renderMarkdown(md.slice(0, 200_000));
+export async function previewMarkdownAction(md: string, siteId: string) {
+  const actor = await requireActor();
+  return previewPostHtml(actor, siteId, md.slice(0, 200_000));
 }
 
 // ---------- Media ----------

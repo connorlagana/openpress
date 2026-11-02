@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 import { themeCssVars } from "@/lib/theme";
 import { loadPublicSite, siteBaseMetadata } from "@/server/public/render";
 import { SiteFooter, SiteHeader } from "@/templates/components";
+import "@/lib/charts/chart.css";
 import "./site.css";
 
 export async function generateMetadata({ params }: LayoutProps<"/site/[subdomain]">): Promise<Metadata> {

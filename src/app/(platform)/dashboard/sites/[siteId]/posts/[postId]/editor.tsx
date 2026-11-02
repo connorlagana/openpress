@@ -23,6 +23,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { deletePostAction, previewMarkdownAction, savePostAction, setPublishedAction, type EditorInput } from "../../../../actions";
+import "@/lib/charts/chart.css";
 
 type Post = {
   id: string;
@@ -79,11 +80,11 @@ export function Editor({ post, media }: { post: Post; media: { id: string; url: 
   useEffect(() => {
     if (tab !== "preview") return;
     let alive = true;
-    previewMarkdownAction(form.content).then((html) => alive && setPreview(html));
+    previewMarkdownAction(form.content, post.siteId).then((html) => alive && setPreview(html));
     return () => {
       alive = false;
     };
-  }, [tab, form.content]);
+  }, [tab, form.content, post.siteId]);
 
   async function save(): Promise<boolean> {
     const res = await savePostAction(post.id, form);
