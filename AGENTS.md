@@ -24,10 +24,10 @@ MCP-native website hosting: users connect their own AI agent (Claude, ChatGPT, C
 | Screenshot tour for design review | `SCREENSHOT_DIR=/tmp/shots pnpm test:e2e visual` |
 | All checks | `pnpm check` |
 | New migration from schema change | edit `src/db/schema.ts` → `pnpm db:generate` |
-| Apply migrations to Postgres | `DATABASE_URL=postgres://… pnpm db:migrate` |
+| Apply migrations to Postgres | `DATABASE_URL=postgres://… pnpm db:migrate`; production: `pnpm db:migrate --prod` (reads `PROD_DATABASE_URL` from `.env.production.local`) |
 | Abuse tooling | `pnpm admin reports`, `pnpm admin suspend-site <sub> "<reason>"` |
 | Activation funnel (signup → site → agent → publish, by source) | `DATABASE_URL=… pnpm admin funnel [days]` |
-| Cloudflare build / preview / deploy | `pnpm preview:cf`, `pnpm deploy:cf` |
+| Cloudflare build / preview / deploy | `pnpm preview:cf`, `pnpm deploy:cf` (build → migrate production → deploy; aborts if `PROD_DATABASE_URL` is missing or a migration fails, so keep migrations additive) |
 
 ## Architecture (where things live)
 

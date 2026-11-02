@@ -5,7 +5,7 @@
 | Piece | Where | Notes |
 | --- | --- | --- |
 | App | Railway project `openpress`, service `web` | Railpack builds `pnpm build` and runs `pnpm start` (plain Node). Deploy: `railway up --service web`. |
-| Database | Neon project `openpress` (pooled connection string) | Migrations are run from a dev machine with the direct (non-pooler) URL: `DATABASE_URL=… pnpm db:migrate`. |
+| Database | Neon project `openpress` (pooled connection string) | `pnpm deploy:cf` applies pending migrations after the build and before the deploy, using `PROD_DATABASE_URL` (direct, non-pooler URL) from `.env.production.local`. By hand: `pnpm db:migrate --prod`. |
 | Media | Railway volume mounted at `/data` | `STORAGE_DRIVER=local`, `LOCAL_MEDIA_DIR=/data/media`, served through `/m/`. Move to R2 (`STORAGE_DRIVER=r2`) if it outgrows the volume. |
 | DNS | Porkbun | `ALIAS @` and `CNAME *` → Railway targets, plus `_acme-challenge` CNAME (wildcard certificate) and `_railway-verify` TXT. |
 
