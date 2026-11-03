@@ -18,7 +18,7 @@ export async function signUpAndSignIn(input: { email: string; password: string; 
   // Honeypot: real users never see or fill this field.
   if (input.honeypot) throw new AppError("VALIDATION", "Something went wrong. Please try again.");
   const ip = clientIp(await headers()) ?? "unknown";
-  await rateLimit(`signup:ip:${ip}`, 5, 3600);
+  await rateLimit(`signup:ip:${ip}`, config.signupRateLimitPerHour, 3600);
   const signupSource = (await cookies()).get(REF_COOKIE)?.value;
   const user = await createUser({ email: input.email, password: input.password, name: input.name, signupSource });
   await setSessionCookie(user.id);

@@ -1,0 +1,330 @@
+{
+ "specs": {
+  "line": {
+   "type": "line",
+   "title": "Josh Allen's Development",
+   "subtitle": "Completion %",
+   "labels": [
+    "2017 College",
+    "2018 NFL",
+    "2019 NFL",
+    "2020 NFL"
+   ],
+   "series": [
+    {
+     "name": "Completion %",
+     "data": [
+      56.3,
+      52.8,
+      58.8,
+      69.2
+     ]
+    },
+    {
+     "name": "League",
+     "data": [
+      null,
+      62.1,
+      63.1,
+      65.2
+     ]
+    }
+   ],
+   "valueFormat": {
+    "suffix": "%",
+    "decimals": 1
+   },
+   "yAxis": {
+    "title": "Pct"
+   },
+   "xAxis": {
+    "title": "Season"
+   }
+  },
+  "area": {
+   "type": "area",
+   "title": "Area <b>",
+   "labels": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e"
+   ],
+   "series": [
+    {
+     "name": "x",
+     "data": [
+      1,
+      3,
+      null,
+      4,
+      8
+     ]
+    }
+   ]
+  },
+  "bar": {
+   "type": "bar",
+   "title": "Bars",
+   "labels": [
+    "a",
+    "b",
+    "c"
+   ],
+   "series": [
+    {
+     "name": "x",
+     "data": [
+      3,
+      -2,
+      5
+     ]
+    },
+    {
+     "name": "y",
+     "data": [
+      1,
+      2,
+      3
+     ]
+    }
+   ],
+   "valueFormat": {
+    "prefix": "$"
+   }
+  },
+  "stacked": {
+   "type": "bar",
+   "stacked": true,
+   "title": "Stacked",
+   "labels": [
+    "2018",
+    "2019",
+    "2020",
+    "2021"
+   ],
+   "series": [
+    {
+     "name": "Pass",
+     "data": [
+      10,
+      20,
+      37,
+      36
+     ]
+    },
+    {
+     "name": "Rush",
+     "data": [
+      8,
+      9,
+      8,
+      6
+     ]
+    }
+   ]
+  },
+  "big": {
+   "type": "line",
+   "title": "Big",
+   "labels": [
+    "W0",
+    "W1",
+    "W2",
+    "W3",
+    "W4",
+    "W5",
+    "W6",
+    "W7",
+    "W8",
+    "W9",
+    "W10",
+    "W11",
+    "W12",
+    "W13",
+    "W14",
+    "W15",
+    "W16",
+    "W17",
+    "W18",
+    "W19",
+    "W20",
+    "W21",
+    "W22",
+    "W23",
+    "W24",
+    "W25",
+    "W26",
+    "W27",
+    "W28",
+    "W29",
+    "W30",
+    "W31",
+    "W32",
+    "W33",
+    "W34",
+    "W35",
+    "W36",
+    "W37",
+    "W38",
+    "W39"
+   ],
+   "series": [
+    {
+     "name": "v",
+     "data": [
+      12000,
+      12900,
+      13800,
+      14700,
+      15600,
+      16500,
+      17400,
+      18300,
+      19200,
+      20100,
+      21000,
+      21900,
+      22800,
+      23700,
+      24600,
+      25500,
+      26400,
+      27300,
+      28200,
+      29100,
+      30000,
+      30900,
+      31800,
+      32700,
+      33600,
+      34500,
+      35400,
+      36300,
+      37200,
+      38100,
+      39000,
+      39900,
+      40800,
+      41700,
+      42600,
+      43500,
+      44400,
+      45300,
+      46200,
+      47100
+     ]
+    }
+   ]
+  },
+  "pie": {
+   "type": "pie",
+   "title": "Pie",
+   "labels": [
+    "A",
+    "B",
+    "C"
+   ],
+   "series": [
+    {
+     "name": "s",
+     "data": [
+      5,
+      3,
+      2
+     ]
+    }
+   ]
+  },
+  "donut": {
+   "type": "donut",
+   "title": "Donut",
+   "description": "Desc",
+   "labels": [
+    "A",
+    "B"
+   ],
+   "series": [
+    {
+     "name": "s",
+     "data": [
+      1,
+      0
+     ]
+    }
+   ]
+  },
+  "fixedAxis": {
+   "type": "line",
+   "title": "Fixed",
+   "labels": [
+    "a",
+    "b"
+   ],
+   "series": [
+    {
+     "name": "x",
+     "data": [
+      5,
+      6
+     ]
+    }
+   ],
+   "yAxis": {
+    "min": 0,
+    "max": 10
+   }
+  }
+ },
+ "out": {
+  "line": {
+   "svg680": "<svg class=\"op-plot\" viewBox=\"0 0 680 354\" width=\"680\" height=\"354\" role=\"img\" aria-label=\"Josh Allen&#39;s Development\"><g class=\"op-axis\" aria-hidden=\"true\"><line class=\"op-grid\" x1=\"57\" x2=\"666\" y1=\"308\" y2=\"308\"/><text x=\"49\" y=\"308\" dy=\"0.32em\" text-anchor=\"end\">50%</text><line class=\"op-grid\" x1=\"57\" x2=\"666\" y1=\"234\" y2=\"234\"/><text x=\"49\" y=\"234\" dy=\"0.32em\" text-anchor=\"end\">55%</text><line class=\"op-grid\" x1=\"57\" x2=\"666\" y1=\"160\" y2=\"160\"/><text x=\"49\" y=\"160\" dy=\"0.32em\" text-anchor=\"end\">60%</text><line class=\"op-grid\" x1=\"57\" x2=\"666\" y1=\"86\" y2=\"86\"/><text x=\"49\" y=\"86\" dy=\"0.32em\" text-anchor=\"end\">65%</text><line class=\"op-grid\" x1=\"57\" x2=\"666\" y1=\"12\" y2=\"12\"/><text x=\"49\" y=\"12\" dy=\"0.32em\" text-anchor=\"end\">70%</text><line class=\"op-base\" x1=\"57\" x2=\"666\" y1=\"308\" y2=\"308\"/><text x=\"133.1\" y=\"326\" text-anchor=\"middle\">2017 College</text><text x=\"285.4\" y=\"326\" text-anchor=\"middle\">2018 NFL</text><text x=\"437.6\" y=\"326\" text-anchor=\"middle\">2019 NFL</text><text x=\"589.9\" y=\"326\" text-anchor=\"middle\">2020 NFL</text><text class=\"op-axis-title\" transform=\"translate(12 160) rotate(-90)\" text-anchor=\"middle\">Pct</text><text class=\"op-axis-title\" x=\"361.5\" y=\"350\" text-anchor=\"middle\">Season</text></g><line class=\"op-cross\" x1=\"0\" x2=\"0\" y1=\"12\" y2=\"308\" visibility=\"hidden\"/><g class=\"op-marks\"><g class=\"op-series op-c0\"><path class=\"op-line\" d=\"M133.1 214.8L285.4 266.6L437.6 177.8L589.9 23.8\"/><circle class=\"op-dot\" data-i=\"0\" cx=\"133.1\" cy=\"214.8\" r=\"4\"/><circle class=\"op-dot\" data-i=\"1\" cx=\"285.4\" cy=\"266.6\" r=\"4\"/><circle class=\"op-dot\" data-i=\"2\" cx=\"437.6\" cy=\"177.8\" r=\"4\"/><circle class=\"op-dot\" data-i=\"3\" cx=\"589.9\" cy=\"23.8\" r=\"4\"/></g><g class=\"op-series op-c1\"><path class=\"op-line\" d=\"M285.4 128.9L437.6 114.1L589.9 83\"/><circle class=\"op-dot\" data-i=\"1\" cx=\"285.4\" cy=\"128.9\" r=\"4\"/><circle class=\"op-dot\" data-i=\"2\" cx=\"437.6\" cy=\"114.1\" r=\"4\"/><circle class=\"op-dot\" data-i=\"3\" cx=\"589.9\" cy=\"83\" r=\"4\"/></g></g><g class=\"op-hits\"><rect class=\"op-hit\" data-i=\"0\" data-x=\"133.1\" x=\"57\" y=\"12\" width=\"152.3\" height=\"296\"/><rect class=\"op-hit\" data-i=\"1\" data-x=\"285.4\" x=\"209.3\" y=\"12\" width=\"152.3\" height=\"296\"/><rect class=\"op-hit\" data-i=\"2\" data-x=\"437.6\" x=\"361.5\" y=\"12\" width=\"152.3\" height=\"296\"/><rect class=\"op-hit\" data-i=\"3\" data-x=\"589.9\" x=\"513.8\" y=\"12\" width=\"152.3\" height=\"296\"/></g></svg>",
+   "svg360": "<svg class=\"op-plot\" viewBox=\"0 0 360 220\" width=\"360\" height=\"220\" role=\"img\" aria-label=\"Josh Allen&#39;s Development\"><g class=\"op-axis\" aria-hidden=\"true\"><line class=\"op-grid\" x1=\"57\" x2=\"346\" y1=\"174\" y2=\"174\"/><text x=\"49\" y=\"174\" dy=\"0.32em\" text-anchor=\"end\">50%</text><line class=\"op-grid\" x1=\"57\" x2=\"346\" y1=\"133.5\" y2=\"133.5\"/><text x=\"49\" y=\"133.5\" dy=\"0.32em\" text-anchor=\"end\">55%</text><line class=\"op-grid\" x1=\"57\" x2=\"346\" y1=\"93\" y2=\"93\"/><text x=\"49\" y=\"93\" dy=\"0.32em\" text-anchor=\"end\">60%</text><line class=\"op-grid\" x1=\"57\" x2=\"346\" y1=\"52.5\" y2=\"52.5\"/><text x=\"49\" y=\"52.5\" dy=\"0.32em\" text-anchor=\"end\">65%</text><line class=\"op-grid\" x1=\"57\" x2=\"346\" y1=\"12\" y2=\"12\"/><text x=\"49\" y=\"12\" dy=\"0.32em\" text-anchor=\"end\">70%</text><line class=\"op-base\" x1=\"57\" x2=\"346\" y1=\"174\" y2=\"174\"/><text x=\"93.1\" y=\"192\" text-anchor=\"middle\">2017 College</text><text x=\"237.6\" y=\"192\" text-anchor=\"middle\">2019 NFL</text><text class=\"op-axis-title\" transform=\"translate(12 93) rotate(-90)\" text-anchor=\"middle\">Pct</text><text class=\"op-axis-title\" x=\"201.5\" y=\"216\" text-anchor=\"middle\">Season</text></g><line class=\"op-cross\" x1=\"0\" x2=\"0\" y1=\"12\" y2=\"174\" visibility=\"hidden\"/><g class=\"op-marks\"><g class=\"op-series op-c0\"><path class=\"op-line\" d=\"M93.1 123L165.4 151.3L237.6 102.7L309.9 18.5\"/><circle class=\"op-dot\" data-i=\"0\" cx=\"93.1\" cy=\"123\" r=\"4\"/><circle class=\"op-dot\" data-i=\"1\" cx=\"165.4\" cy=\"151.3\" r=\"4\"/><circle class=\"op-dot\" data-i=\"2\" cx=\"237.6\" cy=\"102.7\" r=\"4\"/><circle class=\"op-dot\" data-i=\"3\" cx=\"309.9\" cy=\"18.5\" r=\"4\"/></g><g class=\"op-series op-c1\"><path class=\"op-line\" d=\"M165.4 76L237.6 67.9L309.9 50.9\"/><circle class=\"op-dot\" data-i=\"1\" cx=\"165.4\" cy=\"76\" r=\"4\"/><circle class=\"op-dot\" data-i=\"2\" cx=\"237.6\" cy=\"67.9\" r=\"4\"/><circle class=\"op-dot\" data-i=\"3\" cx=\"309.9\" cy=\"50.9\" r=\"4\"/></g></g><g class=\"op-hits\"><rect class=\"op-hit\" data-i=\"0\" data-x=\"93.1\" x=\"57\" y=\"12\" width=\"72.3\" height=\"162\"/><rect class=\"op-hit\" data-i=\"1\" data-x=\"165.4\" x=\"129.3\" y=\"12\" width=\"72.3\" height=\"162\"/><rect class=\"op-hit\" data-i=\"2\" data-x=\"237.6\" x=\"201.5\" y=\"12\" width=\"72.3\" height=\"162\"/><rect class=\"op-hit\" data-i=\"3\" data-x=\"309.9\" x=\"273.8\" y=\"12\" width=\"72.3\" height=\"162\"/></g></svg>",
+   "hidden": "<svg class=\"op-plot\" viewBox=\"0 0 680 354\" width=\"680\" height=\"354\" role=\"img\" aria-label=\"Josh Allen&#39;s Development\"><g class=\"op-axis\" aria-hidden=\"true\"><line class=\"op-grid\" x1=\"57\" x2=\"666\" y1=\"308\" y2=\"308\"/><text x=\"49\" y=\"308\" dy=\"0.32em\" text-anchor=\"end\">50%</text><line class=\"op-grid\" x1=\"57\" x2=\"666\" y1=\"234\" y2=\"234\"/><text x=\"49\" y=\"234\" dy=\"0.32em\" text-anchor=\"end\">55%</text><line class=\"op-grid\" x1=\"57\" x2=\"666\" y1=\"160\" y2=\"160\"/><text x=\"49\" y=\"160\" dy=\"0.32em\" text-anchor=\"end\">60%</text><line class=\"op-grid\" x1=\"57\" x2=\"666\" y1=\"86\" y2=\"86\"/><text x=\"49\" y=\"86\" dy=\"0.32em\" text-anchor=\"end\">65%</text><line class=\"op-grid\" x1=\"57\" x2=\"666\" y1=\"12\" y2=\"12\"/><text x=\"49\" y=\"12\" dy=\"0.32em\" text-anchor=\"end\">70%</text><line class=\"op-base\" x1=\"57\" x2=\"666\" y1=\"308\" y2=\"308\"/><text x=\"133.1\" y=\"326\" text-anchor=\"middle\">2017 College</text><text x=\"285.4\" y=\"326\" text-anchor=\"middle\">2018 NFL</text><text x=\"437.6\" y=\"326\" text-anchor=\"middle\">2019 NFL</text><text x=\"589.9\" y=\"326\" text-anchor=\"middle\">2020 NFL</text><text class=\"op-axis-title\" transform=\"translate(12 160) rotate(-90)\" text-anchor=\"middle\">Pct</text><text class=\"op-axis-title\" x=\"361.5\" y=\"350\" text-anchor=\"middle\">Season</text></g><line class=\"op-cross\" x1=\"0\" x2=\"0\" y1=\"12\" y2=\"308\" visibility=\"hidden\"/><g class=\"op-marks\"><g class=\"op-series op-c0\"><path class=\"op-line\" d=\"M133.1 214.8L285.4 266.6L437.6 177.8L589.9 23.8\"/><circle class=\"op-dot\" data-i=\"0\" cx=\"133.1\" cy=\"214.8\" r=\"4\"/><circle class=\"op-dot\" data-i=\"1\" cx=\"285.4\" cy=\"266.6\" r=\"4\"/><circle class=\"op-dot\" data-i=\"2\" cx=\"437.6\" cy=\"177.8\" r=\"4\"/><circle class=\"op-dot\" data-i=\"3\" cx=\"589.9\" cy=\"23.8\" r=\"4\"/></g></g><g class=\"op-hits\"><rect class=\"op-hit\" data-i=\"0\" data-x=\"133.1\" x=\"57\" y=\"12\" width=\"152.3\" height=\"296\"/><rect class=\"op-hit\" data-i=\"1\" data-x=\"285.4\" x=\"209.3\" y=\"12\" width=\"152.3\" height=\"296\"/><rect class=\"op-hit\" data-i=\"2\" data-x=\"437.6\" x=\"361.5\" y=\"12\" width=\"152.3\" height=\"296\"/><rect class=\"op-hit\" data-i=\"3\" data-x=\"589.9\" x=\"513.8\" y=\"12\" width=\"152.3\" height=\"296\"/></g></svg>",
+   "table": "<table><thead><tr><th scope=\"col\">Season</th><th scope=\"col\">Completion %</th><th scope=\"col\">League</th></tr></thead><tbody><tr><th scope=\"row\">2017 College</th><td>56.3%</td><td>–</td></tr><tr><th scope=\"row\">2018 NFL</th><td>52.8%</td><td>62.1%</td></tr><tr><th scope=\"row\">2019 NFL</th><td>58.8%</td><td>63.1%</td></tr><tr><th scope=\"row\">2020 NFL</th><td>69.2%</td><td>65.2%</td></tr></tbody></table>"
+  },
+  "area": {
+   "svg680": "<svg class=\"op-plot\" viewBox=\"0 0 680 354\" width=\"680\" height=\"354\" role=\"img\" aria-label=\"Area &lt;b&gt;\"><g class=\"op-axis\" aria-hidden=\"true\"><line class=\"op-grid\" x1=\"24\" x2=\"666\" y1=\"328\" y2=\"328\"/><text x=\"16\" y=\"328\" dy=\"0.32em\" text-anchor=\"end\">0</text><line class=\"op-grid\" x1=\"24\" x2=\"666\" y1=\"249\" y2=\"249\"/><text x=\"16\" y=\"249\" dy=\"0.32em\" text-anchor=\"end\">2</text><line class=\"op-grid\" x1=\"24\" x2=\"666\" y1=\"170\" y2=\"170\"/><text x=\"16\" y=\"170\" dy=\"0.32em\" text-anchor=\"end\">4</text><line class=\"op-grid\" x1=\"24\" x2=\"666\" y1=\"91\" y2=\"91\"/><text x=\"16\" y=\"91\" dy=\"0.32em\" text-anchor=\"end\">6</text><line class=\"op-grid\" x1=\"24\" x2=\"666\" y1=\"12\" y2=\"12\"/><text x=\"16\" y=\"12\" dy=\"0.32em\" text-anchor=\"end\">8</text><line class=\"op-base\" x1=\"24\" x2=\"666\" y1=\"328\" y2=\"328\"/><text x=\"88.2\" y=\"346\" text-anchor=\"middle\">a</text><text x=\"216.6\" y=\"346\" text-anchor=\"middle\">b</text><text x=\"345\" y=\"346\" text-anchor=\"middle\">c</text><text x=\"473.4\" y=\"346\" text-anchor=\"middle\">d</text><text x=\"601.8\" y=\"346\" text-anchor=\"middle\">e</text></g><line class=\"op-cross\" x1=\"0\" x2=\"0\" y1=\"12\" y2=\"328\" visibility=\"hidden\"/><g class=\"op-marks\"><g class=\"op-series op-c0\"><path class=\"op-area\" d=\"M88.2 288.5L216.6 209.5V328H88.2Z\"/><path class=\"op-line\" d=\"M88.2 288.5L216.6 209.5\"/><path class=\"op-area\" d=\"M473.4 170L601.8 12V328H473.4Z\"/><path class=\"op-line\" d=\"M473.4 170L601.8 12\"/><circle class=\"op-dot\" data-i=\"0\" cx=\"88.2\" cy=\"288.5\" r=\"4\"/><circle class=\"op-dot\" data-i=\"1\" cx=\"216.6\" cy=\"209.5\" r=\"4\"/><circle class=\"op-dot\" data-i=\"3\" cx=\"473.4\" cy=\"170\" r=\"4\"/><circle class=\"op-dot\" data-i=\"4\" cx=\"601.8\" cy=\"12\" r=\"4\"/></g></g><g class=\"op-hits\"><rect class=\"op-hit\" data-i=\"0\" data-x=\"88.2\" x=\"24\" y=\"12\" width=\"128.4\" height=\"316\"/><rect class=\"op-hit\" data-i=\"1\" data-x=\"216.6\" x=\"152.4\" y=\"12\" width=\"128.4\" height=\"316\"/><rect class=\"op-hit\" data-i=\"2\" data-x=\"345\" x=\"280.8\" y=\"12\" width=\"128.4\" height=\"316\"/><rect class=\"op-hit\" data-i=\"3\" data-x=\"473.4\" x=\"409.2\" y=\"12\" width=\"128.4\" height=\"316\"/><rect class=\"op-hit\" data-i=\"4\" data-x=\"601.8\" x=\"537.6\" y=\"12\" width=\"128.4\" height=\"316\"/></g></svg>",
+   "svg360": "<svg class=\"op-plot\" viewBox=\"0 0 360 220\" width=\"360\" height=\"220\" role=\"img\" aria-label=\"Area &lt;b&gt;\"><g class=\"op-axis\" aria-hidden=\"true\"><line class=\"op-grid\" x1=\"24\" x2=\"346\" y1=\"194\" y2=\"194\"/><text x=\"16\" y=\"194\" dy=\"0.32em\" text-anchor=\"end\">0</text><line class=\"op-grid\" x1=\"24\" x2=\"346\" y1=\"148.5\" y2=\"148.5\"/><text x=\"16\" y=\"148.5\" dy=\"0.32em\" text-anchor=\"end\">2</text><line class=\"op-grid\" x1=\"24\" x2=\"346\" y1=\"103\" y2=\"103\"/><text x=\"16\" y=\"103\" dy=\"0.32em\" text-anchor=\"end\">4</text><line class=\"op-grid\" x1=\"24\" x2=\"346\" y1=\"57.5\" y2=\"57.5\"/><text x=\"16\" y=\"57.5\" dy=\"0.32em\" text-anchor=\"end\">6</text><line class=\"op-grid\" x1=\"24\" x2=\"346\" y1=\"12\" y2=\"12\"/><text x=\"16\" y=\"12\" dy=\"0.32em\" text-anchor=\"end\">8</text><line class=\"op-base\" x1=\"24\" x2=\"346\" y1=\"194\" y2=\"194\"/><text x=\"56.2\" y=\"212\" text-anchor=\"middle\">a</text><text x=\"120.6\" y=\"212\" text-anchor=\"middle\">b</text><text x=\"185\" y=\"212\" text-anchor=\"middle\">c</text><text x=\"249.4\" y=\"212\" text-anchor=\"middle\">d</text><text x=\"313.8\" y=\"212\" text-anchor=\"middle\">e</text></g><line class=\"op-cross\" x1=\"0\" x2=\"0\" y1=\"12\" y2=\"194\" visibility=\"hidden\"/><g class=\"op-marks\"><g class=\"op-series op-c0\"><path class=\"op-area\" d=\"M56.2 171.3L120.6 125.8V194H56.2Z\"/><path class=\"op-line\" d=\"M56.2 171.3L120.6 125.8\"/><path class=\"op-area\" d=\"M249.4 103L313.8 12V194H249.4Z\"/><path class=\"op-line\" d=\"M249.4 103L313.8 12\"/><circle class=\"op-dot\" data-i=\"0\" cx=\"56.2\" cy=\"171.3\" r=\"4\"/><circle class=\"op-dot\" data-i=\"1\" cx=\"120.6\" cy=\"125.8\" r=\"4\"/><circle class=\"op-dot\" data-i=\"3\" cx=\"249.4\" cy=\"103\" r=\"4\"/><circle class=\"op-dot\" data-i=\"4\" cx=\"313.8\" cy=\"12\" r=\"4\"/></g></g><g class=\"op-hits\"><rect class=\"op-hit\" data-i=\"0\" data-x=\"56.2\" x=\"24\" y=\"12\" width=\"64.4\" height=\"182\"/><rect class=\"op-hit\" data-i=\"1\" data-x=\"120.6\" x=\"88.4\" y=\"12\" width=\"64.4\" height=\"182\"/><rect class=\"op-hit\" data-i=\"2\" data-x=\"185\" x=\"152.8\" y=\"12\" width=\"64.4\" height=\"182\"/><rect class=\"op-hit\" data-i=\"3\" data-x=\"249.4\" x=\"217.2\" y=\"12\" width=\"64.4\" height=\"182\"/><rect class=\"op-hit\" data-i=\"4\" data-x=\"313.8\" x=\"281.6\" y=\"12\" width=\"64.4\" height=\"182\"/></g></svg>",
+   "hidden": "<svg class=\"op-plot\" viewBox=\"0 0 680 354\" width=\"680\" height=\"354\" role=\"img\" aria-label=\"Area &lt;b&gt;\"><g class=\"op-axis\" aria-hidden=\"true\"><line class=\"op-grid\" x1=\"24\" x2=\"666\" y1=\"328\" y2=\"328\"/><text x=\"16\" y=\"328\" dy=\"0.32em\" text-anchor=\"end\">0</text><line class=\"op-grid\" x1=\"24\" x2=\"666\" y1=\"249\" y2=\"249\"/><text x=\"16\" y=\"249\" dy=\"0.32em\" text-anchor=\"end\">2</text><line class=\"op-grid\" x1=\"24\" x2=\"666\" y1=\"170\" y2=\"170\"/><text x=\"16\" y=\"170\" dy=\"0.32em\" text-anchor=\"end\">4</text><line class=\"op-grid\" x1=\"24\" x2=\"666\" y1=\"91\" y2=\"91\"/><text x=\"16\" y=\"91\" dy=\"0.32em\" text-anchor=\"end\">6</text><line class=\"op-grid\" x1=\"24\" x2=\"666\" y1=\"12\" y2=\"12\"/><text x=\"16\" y=\"12\" dy=\"0.32em\" text-anchor=\"end\">8</text><line class=\"op-base\" x1=\"24\" x2=\"666\" y1=\"328\" y2=\"328\"/><text x=\"88.2\" y=\"346\" text-anchor=\"middle\">a</text><text x=\"216.6\" y=\"346\" text-anchor=\"middle\">b</text><text x=\"345\" y=\"346\" text-anchor=\"middle\">c</text><text x=\"473.4\" y=\"346\" text-anchor=\"middle\">d</text><text x=\"601.8\" y=\"346\" text-anchor=\"middle\">e</text></g><line class=\"op-cross\" x1=\"0\" x2=\"0\" y1=\"12\" y2=\"328\" visibility=\"hidden\"/><g class=\"op-marks\"><g class=\"op-series op-c0\"><path class=\"op-area\" d=\"M88.2 288.5L216.6 209.5V328H88.2Z\"/><path class=\"op-line\" d=\"M88.2 288.5L216.6 209.5\"/><path class=\"op-area\" d=\"M473.4 170L601.8 12V328H473.4Z\"/><path class=\"op-line\" d=\"M473.4 170L601.8 12\"/><circle class=\"op-dot\" data-i=\"0\" cx=\"88.2\" cy=\"288.5\" r=\"4\"/><circle class=\"op-dot\" data-i=\"1\" cx=\"216.6\" cy=\"209.5\" r=\"4\"/><circle class=\"op-dot\" data-i=\"3\" cx=\"473.4\" cy=\"170\" r=\"4\"/><circle class=\"op-dot\" data-i=\"4\" cx=\"601.8\" cy=\"12\" r=\"4\"/></g></g><g class=\"op-hits\"><rect class=\"op-hit\" data-i=\"0\" data-x=\"88.2\" x=\"24\" y=\"12\" width=\"128.4\" height=\"316\"/><rect class=\"op-hit\" data-i=\"1\" data-x=\"216.6\" x=\"152.4\" y=\"12\" width=\"128.4\" height=\"316\"/><rect class=\"op-hit\" data-i=\"2\" data-x=\"345\" x=\"280.8\" y=\"12\" width=\"128.4\" height=\"316\"/><rect class=\"op-hit\" data-i=\"3\" data-x=\"473.4\" x=\"409.2\" y=\"12\" width=\"128.4\" height=\"316\"/><rect class=\"op-hit\" data-i=\"4\" data-x=\"601.8\" x=\"537.6\" y=\"12\" width=\"128.4\" height=\"316\"/></g></svg>",
+   "table": "<table><thead><tr><th scope=\"col\"></th><th scope=\"col\">x</th></tr></thead><tbody><tr><th scope=\"row\">a</th><td>1</td></tr><tr><th scope=\"row\">b</th><td>3</td></tr><tr><th scope=\"row\">c</th><td>–</td></tr><tr><th scope=\"row\">d</th><td>4</td></tr><tr><th scope=\"row\">e</th><td>8</td></tr></tbody></table>"
+  },
+  "bar": {
+   "svg680": "<svg class=\"op-plot\" viewBox=\"0 0 680 354\" width=\"680\" height=\"354\" role=\"img\" aria-label=\"Bars\"><g class=\"op-axis\" aria-hidden=\"true\"><line class=\"op-grid\" x1=\"39\" x2=\"666\" y1=\"328\" y2=\"328\"/><text x=\"31\" y=\"328\" dy=\"0.32em\" text-anchor=\"end\">−$2</text><line class=\"op-grid\" x1=\"39\" x2=\"666\" y1=\"249\" y2=\"249\"/><text x=\"31\" y=\"249\" dy=\"0.32em\" text-anchor=\"end\">$0</text><line class=\"op-grid\" x1=\"39\" x2=\"666\" y1=\"170\" y2=\"170\"/><text x=\"31\" y=\"170\" dy=\"0.32em\" text-anchor=\"end\">$2</text><line class=\"op-grid\" x1=\"39\" x2=\"666\" y1=\"91\" y2=\"91\"/><text x=\"31\" y=\"91\" dy=\"0.32em\" text-anchor=\"end\">$4</text><line class=\"op-grid\" x1=\"39\" x2=\"666\" y1=\"12\" y2=\"12\"/><text x=\"31\" y=\"12\" dy=\"0.32em\" text-anchor=\"end\">$6</text><line class=\"op-base\" x1=\"39\" x2=\"666\" y1=\"249\" y2=\"249\"/><text x=\"143.5\" y=\"346\" text-anchor=\"middle\">a</text><text x=\"352.5\" y=\"346\" text-anchor=\"middle\">b</text><text x=\"561.5\" y=\"346\" text-anchor=\"middle\">c</text></g><g class=\"op-marks\"><path class=\"op-bar op-c0\" data-i=\"0\" d=\"M118.5 249V134.5Q118.5 130.5 122.5 130.5H138.5Q142.5 130.5 142.5 134.5V249Z\"/><path class=\"op-bar op-c1\" data-i=\"0\" d=\"M144.5 249V213.5Q144.5 209.5 148.5 209.5H164.5Q168.5 209.5 168.5 213.5V249Z\"/><path class=\"op-bar op-c0\" data-i=\"1\" d=\"M327.5 249V324Q327.5 328 331.5 328H347.5Q351.5 328 351.5 324V249Z\"/><path class=\"op-bar op-c1\" data-i=\"1\" d=\"M353.5 249V174Q353.5 170 357.5 170H373.5Q377.5 170 377.5 174V249Z\"/><path class=\"op-bar op-c0\" data-i=\"2\" d=\"M536.5 249V55.5Q536.5 51.5 540.5 51.5H556.5Q560.5 51.5 560.5 55.5V249Z\"/><path class=\"op-bar op-c1\" data-i=\"2\" d=\"M562.5 249V134.5Q562.5 130.5 566.5 130.5H582.5Q586.5 130.5 586.5 134.5V249Z\"/></g><g class=\"op-hits\"><rect class=\"op-hit\" data-i=\"0\" data-x=\"143.5\" x=\"39\" y=\"12\" width=\"209\" height=\"316\"/><rect class=\"op-hit\" data-i=\"1\" data-x=\"352.5\" x=\"248\" y=\"12\" width=\"209\" height=\"316\"/><rect class=\"op-hit\" data-i=\"2\" data-x=\"561.5\" x=\"457\" y=\"12\" width=\"209\" height=\"316\"/></g></svg>",
+   "svg360": "<svg class=\"op-plot\" viewBox=\"0 0 360 220\" width=\"360\" height=\"220\" role=\"img\" aria-label=\"Bars\"><g class=\"op-axis\" aria-hidden=\"true\"><line class=\"op-grid\" x1=\"39\" x2=\"346\" y1=\"194\" y2=\"194\"/><text x=\"31\" y=\"194\" dy=\"0.32em\" text-anchor=\"end\">−$2</text><line class=\"op-grid\" x1=\"39\" x2=\"346\" y1=\"148.5\" y2=\"148.5\"/><text x=\"31\" y=\"148.5\" dy=\"0.32em\" text-anchor=\"end\">$0</text><line class=\"op-grid\" x1=\"39\" x2=\"346\" y1=\"103\" y2=\"103\"/><text x=\"31\" y=\"103\" dy=\"0.32em\" text-anchor=\"end\">$2</text><line class=\"op-grid\" x1=\"39\" x2=\"346\" y1=\"57.5\" y2=\"57.5\"/><text x=\"31\" y=\"57.5\" dy=\"0.32em\" text-anchor=\"end\">$4</text><line class=\"op-grid\" x1=\"39\" x2=\"346\" y1=\"12\" y2=\"12\"/><text x=\"31\" y=\"12\" dy=\"0.32em\" text-anchor=\"end\">$6</text><line class=\"op-base\" x1=\"39\" x2=\"346\" y1=\"148.5\" y2=\"148.5\"/><text x=\"90.2\" y=\"212\" text-anchor=\"middle\">a</text><text x=\"192.5\" y=\"212\" text-anchor=\"middle\">b</text><text x=\"294.8\" y=\"212\" text-anchor=\"middle\">c</text></g><g class=\"op-marks\"><path class=\"op-bar op-c0\" data-i=\"0\" d=\"M65.2 148.5V84.3Q65.2 80.3 69.2 80.3H85.2Q89.2 80.3 89.2 84.3V148.5Z\"/><path class=\"op-bar op-c1\" data-i=\"0\" d=\"M91.2 148.5V129.8Q91.2 125.8 95.2 125.8H111.2Q115.2 125.8 115.2 129.8V148.5Z\"/><path class=\"op-bar op-c0\" data-i=\"1\" d=\"M167.5 148.5V190Q167.5 194 171.5 194H187.5Q191.5 194 191.5 190V148.5Z\"/><path class=\"op-bar op-c1\" data-i=\"1\" d=\"M193.5 148.5V107Q193.5 103 197.5 103H213.5Q217.5 103 217.5 107V148.5Z\"/><path class=\"op-bar op-c0\" data-i=\"2\" d=\"M269.8 148.5V38.8Q269.8 34.8 273.8 34.8H289.8Q293.8 34.8 293.8 38.8V148.5Z\"/><path class=\"op-bar op-c1\" data-i=\"2\" d=\"M295.8 148.5V84.3Q295.8 80.3 299.8 80.3H315.8Q319.8 80.3 319.8 84.3V148.5Z\"/></g><g class=\"op-hits\"><rect class=\"op-hit\" data-i=\"0\" data-x=\"90.2\" x=\"39\" y=\"12\" width=\"102.3\" height=\"182\"/><rect class=\"op-hit\" data-i=\"1\" data-x=\"192.5\" x=\"141.3\" y=\"12\" width=\"102.3\" height=\"182\"/><rect class=\"op-hit\" data-i=\"2\" data-x=\"294.8\" x=\"243.7\" y=\"12\" width=\"102.3\" height=\"182\"/></g></svg>",
+   "hidden": "<svg class=\"op-plot\" viewBox=\"0 0 680 354\" width=\"680\" height=\"354\" role=\"img\" aria-label=\"Bars\"><g class=\"op-axis\" aria-hidden=\"true\"><line class=\"op-grid\" x1=\"39\" x2=\"666\" y1=\"328\" y2=\"328\"/><text x=\"31\" y=\"328\" dy=\"0.32em\" text-anchor=\"end\">−$2</text><line class=\"op-grid\" x1=\"39\" x2=\"666\" y1=\"249\" y2=\"249\"/><text x=\"31\" y=\"249\" dy=\"0.32em\" text-anchor=\"end\">$0</text><line class=\"op-grid\" x1=\"39\" x2=\"666\" y1=\"170\" y2=\"170\"/><text x=\"31\" y=\"170\" dy=\"0.32em\" text-anchor=\"end\">$2</text><line class=\"op-grid\" x1=\"39\" x2=\"666\" y1=\"91\" y2=\"91\"/><text x=\"31\" y=\"91\" dy=\"0.32em\" text-anchor=\"end\">$4</text><line class=\"op-grid\" x1=\"39\" x2=\"666\" y1=\"12\" y2=\"12\"/><text x=\"31\" y=\"12\" dy=\"0.32em\" text-anchor=\"end\">$6</text><line class=\"op-base\" x1=\"39\" x2=\"666\" y1=\"249\" y2=\"249\"/><text x=\"143.5\" y=\"346\" text-anchor=\"middle\">a</text><text x=\"352.5\" y=\"346\" text-anchor=\"middle\">b</text><text x=\"561.5\" y=\"346\" text-anchor=\"middle\">c</text></g><g class=\"op-marks\"><path class=\"op-bar op-c0\" data-i=\"0\" d=\"M131.5 249V134.5Q131.5 130.5 135.5 130.5H151.5Q155.5 130.5 155.5 134.5V249Z\"/><path class=\"op-bar op-c0\" data-i=\"1\" d=\"M340.5 249V324Q340.5 328 344.5 328H360.5Q364.5 328 364.5 324V249Z\"/><path class=\"op-bar op-c0\" data-i=\"2\" d=\"M549.5 249V55.5Q549.5 51.5 553.5 51.5H569.5Q573.5 51.5 573.5 55.5V249Z\"/></g><g class=\"op-hits\"><rect class=\"op-hit\" data-i=\"0\" data-x=\"143.5\" x=\"39\" y=\"12\" width=\"209\" height=\"316\"/><rect class=\"op-hit\" data-i=\"1\" data-x=\"352.5\" x=\"248\" y=\"12\" width=\"209\" height=\"316\"/><rect class=\"op-hit\" data-i=\"2\" data-x=\"561.5\" x=\"457\" y=\"12\" width=\"209\" height=\"316\"/></g></svg>",
+   "table": "<table><thead><tr><th scope=\"col\"></th><th scope=\"col\">x</th><th scope=\"col\">y</th></tr></thead><tbody><tr><th scope=\"row\">a</th><td>$3</td><td>$1</td></tr><tr><th scope=\"row\">b</th><td>−$2</td><td>$2</td></tr><tr><th scope=\"row\">c</th><td>$5</td><td>$3</td></tr></tbody></table>"
+  },
+  "stacked": {
+   "svg680": "<svg class=\"op-plot\" viewBox=\"0 0 680 354\" width=\"680\" height=\"354\" role=\"img\" aria-label=\"Stacked\"><g class=\"op-axis\" aria-hidden=\"true\"><line class=\"op-grid\" x1=\"31\" x2=\"666\" y1=\"328\" y2=\"328\"/><text x=\"23\" y=\"328\" dy=\"0.32em\" text-anchor=\"end\">0</text><line class=\"op-grid\" x1=\"31\" x2=\"666\" y1=\"222.7\" y2=\"222.7\"/><text x=\"23\" y=\"222.7\" dy=\"0.32em\" text-anchor=\"end\">20</text><line class=\"op-grid\" x1=\"31\" x2=\"666\" y1=\"117.3\" y2=\"117.3\"/><text x=\"23\" y=\"117.3\" dy=\"0.32em\" text-anchor=\"end\">40</text><line class=\"op-grid\" x1=\"31\" x2=\"666\" y1=\"12\" y2=\"12\"/><text x=\"23\" y=\"12\" dy=\"0.32em\" text-anchor=\"end\">60</text><line class=\"op-base\" x1=\"31\" x2=\"666\" y1=\"328\" y2=\"328\"/><text x=\"110.4\" y=\"346\" text-anchor=\"middle\">2018</text><text x=\"269.1\" y=\"346\" text-anchor=\"middle\">2019</text><text x=\"427.9\" y=\"346\" text-anchor=\"middle\">2020</text><text x=\"586.6\" y=\"346\" text-anchor=\"middle\">2021</text></g><g class=\"op-marks\"><path class=\"op-bar op-c0\" data-i=\"0\" d=\"M98.4 328V276.3H122.4V328Z\"/><path class=\"op-bar op-c1\" data-i=\"0\" d=\"M98.4 274.3V237.2Q98.4 233.2 102.4 233.2H118.4Q122.4 233.2 122.4 237.2V274.3Z\"/><path class=\"op-bar op-c0\" data-i=\"1\" d=\"M257.1 328V223.7H281.1V328Z\"/><path class=\"op-bar op-c1\" data-i=\"1\" d=\"M257.1 221.7V179.3Q257.1 175.3 261.1 175.3H277.1Q281.1 175.3 281.1 179.3V221.7Z\"/><path class=\"op-bar op-c0\" data-i=\"2\" d=\"M415.9 328V134.1H439.9V328Z\"/><path class=\"op-bar op-c1\" data-i=\"2\" d=\"M415.9 132.1V95Q415.9 91 419.9 91H435.9Q439.9 91 439.9 95V132.1Z\"/><path class=\"op-bar op-c0\" data-i=\"3\" d=\"M574.6 328V139.4H598.6V328Z\"/><path class=\"op-bar op-c1\" data-i=\"3\" d=\"M574.6 137.4V110.8Q574.6 106.8 578.6 106.8H594.6Q598.6 106.8 598.6 110.8V137.4Z\"/></g><g class=\"op-hits\"><rect class=\"op-hit\" data-i=\"0\" data-x=\"110.4\" x=\"31\" y=\"12\" width=\"158.8\" height=\"316\"/><rect class=\"op-hit\" data-i=\"1\" data-x=\"269.1\" x=\"189.8\" y=\"12\" width=\"158.8\" height=\"316\"/><rect class=\"op-hit\" data-i=\"2\" data-x=\"427.9\" x=\"348.5\" y=\"12\" width=\"158.8\" height=\"316\"/><rect class=\"op-hit\" data-i=\"3\" data-x=\"586.6\" x=\"507.3\" y=\"12\" width=\"158.8\" height=\"316\"/></g></svg>",
+   "svg360": "<svg class=\"op-plot\" viewBox=\"0 0 360 220\" width=\"360\" height=\"220\" role=\"img\" aria-label=\"Stacked\"><g class=\"op-axis\" aria-hidden=\"true\"><line class=\"op-grid\" x1=\"31\" x2=\"346\" y1=\"194\" y2=\"194\"/><text x=\"23\" y=\"194\" dy=\"0.32em\" text-anchor=\"end\">0</text><line class=\"op-grid\" x1=\"31\" x2=\"346\" y1=\"133.3\" y2=\"133.3\"/><text x=\"23\" y=\"133.3\" dy=\"0.32em\" text-anchor=\"end\">20</text><line class=\"op-grid\" x1=\"31\" x2=\"346\" y1=\"72.7\" y2=\"72.7\"/><text x=\"23\" y=\"72.7\" dy=\"0.32em\" text-anchor=\"end\">40</text><line class=\"op-grid\" x1=\"31\" x2=\"346\" y1=\"12\" y2=\"12\"/><text x=\"23\" y=\"12\" dy=\"0.32em\" text-anchor=\"end\">60</text><line class=\"op-base\" x1=\"31\" x2=\"346\" y1=\"194\" y2=\"194\"/><text x=\"70.4\" y=\"212\" text-anchor=\"middle\">2018</text><text x=\"149.1\" y=\"212\" text-anchor=\"middle\">2019</text><text x=\"227.9\" y=\"212\" text-anchor=\"middle\">2020</text><text x=\"306.6\" y=\"212\" text-anchor=\"middle\">2021</text></g><g class=\"op-marks\"><path class=\"op-bar op-c0\" data-i=\"0\" d=\"M58.4 194V164.7H82.4V194Z\"/><path class=\"op-bar op-c1\" data-i=\"0\" d=\"M58.4 162.7V143.4Q58.4 139.4 62.4 139.4H78.4Q82.4 139.4 82.4 143.4V162.7Z\"/><path class=\"op-bar op-c0\" data-i=\"1\" d=\"M137.1 194V134.3H161.1V194Z\"/><path class=\"op-bar op-c1\" data-i=\"1\" d=\"M137.1 132.3V110Q137.1 106 141.1 106H157.1Q161.1 106 161.1 110V132.3Z\"/><path class=\"op-bar op-c0\" data-i=\"2\" d=\"M215.9 194V82.8H239.9V194Z\"/><path class=\"op-bar op-c1\" data-i=\"2\" d=\"M215.9 80.8V61.5Q215.9 57.5 219.9 57.5H235.9Q239.9 57.5 239.9 61.5V80.8Z\"/><path class=\"op-bar op-c0\" data-i=\"3\" d=\"M294.6 194V85.8H318.6V194Z\"/><path class=\"op-bar op-c1\" data-i=\"3\" d=\"M294.6 83.8V70.6Q294.6 66.6 298.6 66.6H314.6Q318.6 66.6 318.6 70.6V83.8Z\"/></g><g class=\"op-hits\"><rect class=\"op-hit\" data-i=\"0\" data-x=\"70.4\" x=\"31\" y=\"12\" width=\"78.8\" height=\"182\"/><rect class=\"op-hit\" data-i=\"1\" data-x=\"149.1\" x=\"109.8\" y=\"12\" width=\"78.8\" height=\"182\"/><rect class=\"op-hit\" data-i=\"2\" data-x=\"227.9\" x=\"188.5\" y=\"12\" width=\"78.8\" height=\"182\"/><rect class=\"op-hit\" data-i=\"3\" data-x=\"306.6\" x=\"267.3\" y=\"12\" width=\"78.8\" height=\"182\"/></g></svg>",
+   "hidden": "<svg class=\"op-plot\" viewBox=\"0 0 680 354\" width=\"680\" height=\"354\" role=\"img\" aria-label=\"Stacked\"><g class=\"op-axis\" aria-hidden=\"true\"><line class=\"op-grid\" x1=\"31\" x2=\"666\" y1=\"328\" y2=\"328\"/><text x=\"23\" y=\"328\" dy=\"0.32em\" text-anchor=\"end\">0</text><line class=\"op-grid\" x1=\"31\" x2=\"666\" y1=\"249\" y2=\"249\"/><text x=\"23\" y=\"249\" dy=\"0.32em\" text-anchor=\"end\">10</text><line class=\"op-grid\" x1=\"31\" x2=\"666\" y1=\"170\" y2=\"170\"/><text x=\"23\" y=\"170\" dy=\"0.32em\" text-anchor=\"end\">20</text><line class=\"op-grid\" x1=\"31\" x2=\"666\" y1=\"91\" y2=\"91\"/><text x=\"23\" y=\"91\" dy=\"0.32em\" text-anchor=\"end\">30</text><line class=\"op-grid\" x1=\"31\" x2=\"666\" y1=\"12\" y2=\"12\"/><text x=\"23\" y=\"12\" dy=\"0.32em\" text-anchor=\"end\">40</text><line class=\"op-base\" x1=\"31\" x2=\"666\" y1=\"328\" y2=\"328\"/><text x=\"110.4\" y=\"346\" text-anchor=\"middle\">2018</text><text x=\"269.1\" y=\"346\" text-anchor=\"middle\">2019</text><text x=\"427.9\" y=\"346\" text-anchor=\"middle\">2020</text><text x=\"586.6\" y=\"346\" text-anchor=\"middle\">2021</text></g><g class=\"op-marks\"><path class=\"op-bar op-c0\" data-i=\"0\" d=\"M98.4 328V253Q98.4 249 102.4 249H118.4Q122.4 249 122.4 253V328Z\"/><path class=\"op-bar op-c0\" data-i=\"1\" d=\"M257.1 328V174Q257.1 170 261.1 170H277.1Q281.1 170 281.1 174V328Z\"/><path class=\"op-bar op-c0\" data-i=\"2\" d=\"M415.9 328V39.7Q415.9 35.7 419.9 35.7H435.9Q439.9 35.7 439.9 39.7V328Z\"/><path class=\"op-bar op-c0\" data-i=\"3\" d=\"M574.6 328V47.6Q574.6 43.6 578.6 43.6H594.6Q598.6 43.6 598.6 47.6V328Z\"/></g><g class=\"op-hits\"><rect class=\"op-hit\" data-i=\"0\" data-x=\"110.4\" x=\"31\" y=\"12\" width=\"158.8\" height=\"316\"/><rect class=\"op-hit\" data-i=\"1\" data-x=\"269.1\" x=\"189.8\" y=\"12\" width=\"158.8\" height=\"316\"/><rect class=\"op-hit\" data-i=\"2\" data-x=\"427.9\" x=\"348.5\" y=\"12\" width=\"158.8\" height=\"316\"/><rect class=\"op-hit\" data-i=\"3\" data-x=\"586.6\" x=\"507.3\" y=\"12\" width=\"158.8\" height=\"316\"/></g></svg>",
+   "table": "<table><thead><tr><th scope=\"col\"></th><th scope=\"col\">Pass</th><th scope=\"col\">Rush</th></tr></thead><tbody><tr><th scope=\"row\">2018</th><td>10</td><td>8</td></tr><tr><th scope=\"row\">2019</th><td>20</td><td>9</td></tr><tr><th scope=\"row\">2020</th><td>37</td><td>8</td></tr><tr><th scope=\"row\">2021</th><td>36</td><td>6</td></tr></tbody></table>"
+  },
+  "big": {
+   "svg680": "<svg class=\"op-plot\" viewBox=\"0 0 680 354\" width=\"680\" height=\"354\" role=\"img\" aria-label=\"Big\"><g class=\"op-axis\" aria-hidden=\"true\"><line class=\"op-grid\" x1=\"39\" x2=\"666\" y1=\"328\" y2=\"328\"/><text x=\"31\" y=\"328\" dy=\"0.32em\" text-anchor=\"end\">0</text><line class=\"op-grid\" x1=\"39\" x2=\"666\" y1=\"222.7\" y2=\"222.7\"/><text x=\"31\" y=\"222.7\" dy=\"0.32em\" text-anchor=\"end\">20K</text><line class=\"op-grid\" x1=\"39\" x2=\"666\" y1=\"117.3\" y2=\"117.3\"/><text x=\"31\" y=\"117.3\" dy=\"0.32em\" text-anchor=\"end\">40K</text><line class=\"op-grid\" x1=\"39\" x2=\"666\" y1=\"12\" y2=\"12\"/><text x=\"31\" y=\"12\" dy=\"0.32em\" text-anchor=\"end\">60K</text><line class=\"op-base\" x1=\"39\" x2=\"666\" y1=\"328\" y2=\"328\"/><text x=\"46.8\" y=\"346\" text-anchor=\"middle\">W0</text><text x=\"93.9\" y=\"346\" text-anchor=\"middle\">W3</text><text x=\"140.9\" y=\"346\" text-anchor=\"middle\">W6</text><text x=\"187.9\" y=\"346\" text-anchor=\"middle\">W9</text><text x=\"234.9\" y=\"346\" text-anchor=\"middle\">W12</text><text x=\"282\" y=\"346\" text-anchor=\"middle\">W15</text><text x=\"329\" y=\"346\" text-anchor=\"middle\">W18</text><text x=\"376\" y=\"346\" text-anchor=\"middle\">W21</text><text x=\"423\" y=\"346\" text-anchor=\"middle\">W24</text><text x=\"470.1\" y=\"346\" text-anchor=\"middle\">W27</text><text x=\"517.1\" y=\"346\" text-anchor=\"middle\">W30</text><text x=\"564.1\" y=\"346\" text-anchor=\"middle\">W33</text><text x=\"611.1\" y=\"346\" text-anchor=\"middle\">W36</text><text x=\"658.2\" y=\"346\" text-anchor=\"middle\">W39</text></g><line class=\"op-cross\" x1=\"0\" x2=\"0\" y1=\"12\" y2=\"328\" visibility=\"hidden\"/><g class=\"op-marks\"><g class=\"op-series op-c0\"><path class=\"op-line\" d=\"M46.8 264.8L62.5 260.1L78.2 255.3L93.9 250.6L109.5 245.8L125.2 241.1L140.9 236.4L156.6 231.6L172.2 226.9L187.9 222.1L203.6 217.4L219.3 212.7L234.9 207.9L250.6 203.2L266.3 198.4L282 193.7L297.6 189L313.3 184.2L329 179.5L344.7 174.7L360.3 170L376 165.3L391.7 160.5L407.4 155.8L423 151L438.7 146.3L454.4 141.6L470.1 136.8L485.7 132.1L501.4 127.3L517.1 122.6L532.8 117.9L548.4 113.1L564.1 108.4L579.8 103.6L595.5 98.9L611.1 94.2L626.8 89.4L642.5 84.7L658.2 79.9\"/><circle class=\"op-dot\" data-i=\"39\" cx=\"658.2\" cy=\"79.9\" r=\"4\"/></g></g><g class=\"op-hits\"><rect class=\"op-hit\" data-i=\"0\" data-x=\"46.8\" x=\"39\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"1\" data-x=\"62.5\" x=\"54.7\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"2\" data-x=\"78.2\" x=\"70.4\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"3\" data-x=\"93.9\" x=\"86\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"4\" data-x=\"109.5\" x=\"101.7\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"5\" data-x=\"125.2\" x=\"117.4\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"6\" data-x=\"140.9\" x=\"133.1\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"7\" data-x=\"156.6\" x=\"148.7\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"8\" data-x=\"172.2\" x=\"164.4\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"9\" data-x=\"187.9\" x=\"180.1\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"10\" data-x=\"203.6\" x=\"195.8\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"11\" data-x=\"219.3\" x=\"211.4\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"12\" data-x=\"234.9\" x=\"227.1\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"13\" data-x=\"250.6\" x=\"242.8\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"14\" data-x=\"266.3\" x=\"258.5\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"15\" data-x=\"282\" x=\"274.1\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"16\" data-x=\"297.6\" x=\"289.8\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"17\" data-x=\"313.3\" x=\"305.5\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"18\" data-x=\"329\" x=\"321.2\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"19\" data-x=\"344.7\" x=\"336.8\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"20\" data-x=\"360.3\" x=\"352.5\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"21\" data-x=\"376\" x=\"368.2\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"22\" data-x=\"391.7\" x=\"383.9\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"23\" data-x=\"407.4\" x=\"399.5\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"24\" data-x=\"423\" x=\"415.2\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"25\" data-x=\"438.7\" x=\"430.9\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"26\" data-x=\"454.4\" x=\"446.6\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"27\" data-x=\"470.1\" x=\"462.2\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"28\" data-x=\"485.7\" x=\"477.9\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"29\" data-x=\"501.4\" x=\"493.6\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"30\" data-x=\"517.1\" x=\"509.3\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"31\" data-x=\"532.8\" x=\"524.9\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"32\" data-x=\"548.4\" x=\"540.6\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"33\" data-x=\"564.1\" x=\"556.3\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"34\" data-x=\"579.8\" x=\"572\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"35\" data-x=\"595.5\" x=\"587.6\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"36\" data-x=\"611.1\" x=\"603.3\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"37\" data-x=\"626.8\" x=\"619\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"38\" data-x=\"642.5\" x=\"634.7\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"39\" data-x=\"658.2\" x=\"650.3\" y=\"12\" width=\"15.7\" height=\"316\"/></g></svg>",
+   "svg360": "<svg class=\"op-plot\" viewBox=\"0 0 360 220\" width=\"360\" height=\"220\" role=\"img\" aria-label=\"Big\"><g class=\"op-axis\" aria-hidden=\"true\"><line class=\"op-grid\" x1=\"39\" x2=\"346\" y1=\"194\" y2=\"194\"/><text x=\"31\" y=\"194\" dy=\"0.32em\" text-anchor=\"end\">0</text><line class=\"op-grid\" x1=\"39\" x2=\"346\" y1=\"133.3\" y2=\"133.3\"/><text x=\"31\" y=\"133.3\" dy=\"0.32em\" text-anchor=\"end\">20K</text><line class=\"op-grid\" x1=\"39\" x2=\"346\" y1=\"72.7\" y2=\"72.7\"/><text x=\"31\" y=\"72.7\" dy=\"0.32em\" text-anchor=\"end\">40K</text><line class=\"op-grid\" x1=\"39\" x2=\"346\" y1=\"12\" y2=\"12\"/><text x=\"31\" y=\"12\" dy=\"0.32em\" text-anchor=\"end\">60K</text><line class=\"op-base\" x1=\"39\" x2=\"346\" y1=\"194\" y2=\"194\"/><text x=\"42.8\" y=\"212\" text-anchor=\"middle\">W0</text><text x=\"81.2\" y=\"212\" text-anchor=\"middle\">W5</text><text x=\"119.6\" y=\"212\" text-anchor=\"middle\">W10</text><text x=\"158\" y=\"212\" text-anchor=\"middle\">W15</text><text x=\"196.3\" y=\"212\" text-anchor=\"middle\">W20</text><text x=\"234.7\" y=\"212\" text-anchor=\"middle\">W25</text><text x=\"273.1\" y=\"212\" text-anchor=\"middle\">W30</text><text x=\"311.5\" y=\"212\" text-anchor=\"middle\">W35</text></g><line class=\"op-cross\" x1=\"0\" x2=\"0\" y1=\"12\" y2=\"194\" visibility=\"hidden\"/><g class=\"op-marks\"><g class=\"op-series op-c0\"><path class=\"op-line\" d=\"M42.8 157.6L50.5 154.9L58.2 152.1L65.9 149.4L73.5 146.7L81.2 144L88.9 141.2L96.6 138.5L104.2 135.8L111.9 133L119.6 130.3L127.3 127.6L134.9 124.8L142.6 122.1L150.3 119.4L158 116.7L165.6 113.9L173.3 111.2L181 108.5L188.7 105.7L196.3 103L204 100.3L211.7 97.5L219.4 94.8L227 92.1L234.7 89.4L242.4 86.6L250.1 83.9L257.7 81.2L265.4 78.4L273.1 75.7L280.8 73L288.4 70.2L296.1 67.5L303.8 64.8L311.5 62.1L319.1 59.3L326.8 56.6L334.5 53.9L342.2 51.1\"/><circle class=\"op-dot\" data-i=\"39\" cx=\"342.2\" cy=\"51.1\" r=\"4\"/></g></g><g class=\"op-hits\"><rect class=\"op-hit\" data-i=\"0\" data-x=\"42.8\" x=\"39\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"1\" data-x=\"50.5\" x=\"46.7\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"2\" data-x=\"58.2\" x=\"54.4\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"3\" data-x=\"65.9\" x=\"62\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"4\" data-x=\"73.5\" x=\"69.7\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"5\" data-x=\"81.2\" x=\"77.4\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"6\" data-x=\"88.9\" x=\"85.1\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"7\" data-x=\"96.6\" x=\"92.7\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"8\" data-x=\"104.2\" x=\"100.4\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"9\" data-x=\"111.9\" x=\"108.1\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"10\" data-x=\"119.6\" x=\"115.8\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"11\" data-x=\"127.3\" x=\"123.4\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"12\" data-x=\"134.9\" x=\"131.1\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"13\" data-x=\"142.6\" x=\"138.8\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"14\" data-x=\"150.3\" x=\"146.5\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"15\" data-x=\"158\" x=\"154.1\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"16\" data-x=\"165.6\" x=\"161.8\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"17\" data-x=\"173.3\" x=\"169.5\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"18\" data-x=\"181\" x=\"177.2\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"19\" data-x=\"188.7\" x=\"184.8\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"20\" data-x=\"196.3\" x=\"192.5\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"21\" data-x=\"204\" x=\"200.2\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"22\" data-x=\"211.7\" x=\"207.9\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"23\" data-x=\"219.4\" x=\"215.5\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"24\" data-x=\"227\" x=\"223.2\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"25\" data-x=\"234.7\" x=\"230.9\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"26\" data-x=\"242.4\" x=\"238.6\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"27\" data-x=\"250.1\" x=\"246.2\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"28\" data-x=\"257.7\" x=\"253.9\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"29\" data-x=\"265.4\" x=\"261.6\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"30\" data-x=\"273.1\" x=\"269.3\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"31\" data-x=\"280.8\" x=\"276.9\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"32\" data-x=\"288.4\" x=\"284.6\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"33\" data-x=\"296.1\" x=\"292.3\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"34\" data-x=\"303.8\" x=\"300\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"35\" data-x=\"311.5\" x=\"307.6\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"36\" data-x=\"319.1\" x=\"315.3\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"37\" data-x=\"326.8\" x=\"323\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"38\" data-x=\"334.5\" x=\"330.7\" y=\"12\" width=\"7.7\" height=\"182\"/><rect class=\"op-hit\" data-i=\"39\" data-x=\"342.2\" x=\"338.3\" y=\"12\" width=\"7.7\" height=\"182\"/></g></svg>",
+   "hidden": "<svg class=\"op-plot\" viewBox=\"0 0 680 354\" width=\"680\" height=\"354\" role=\"img\" aria-label=\"Big\"><g class=\"op-axis\" aria-hidden=\"true\"><line class=\"op-grid\" x1=\"39\" x2=\"666\" y1=\"328\" y2=\"328\"/><text x=\"31\" y=\"328\" dy=\"0.32em\" text-anchor=\"end\">0</text><line class=\"op-grid\" x1=\"39\" x2=\"666\" y1=\"222.7\" y2=\"222.7\"/><text x=\"31\" y=\"222.7\" dy=\"0.32em\" text-anchor=\"end\">20K</text><line class=\"op-grid\" x1=\"39\" x2=\"666\" y1=\"117.3\" y2=\"117.3\"/><text x=\"31\" y=\"117.3\" dy=\"0.32em\" text-anchor=\"end\">40K</text><line class=\"op-grid\" x1=\"39\" x2=\"666\" y1=\"12\" y2=\"12\"/><text x=\"31\" y=\"12\" dy=\"0.32em\" text-anchor=\"end\">60K</text><line class=\"op-base\" x1=\"39\" x2=\"666\" y1=\"328\" y2=\"328\"/><text x=\"46.8\" y=\"346\" text-anchor=\"middle\">W0</text><text x=\"93.9\" y=\"346\" text-anchor=\"middle\">W3</text><text x=\"140.9\" y=\"346\" text-anchor=\"middle\">W6</text><text x=\"187.9\" y=\"346\" text-anchor=\"middle\">W9</text><text x=\"234.9\" y=\"346\" text-anchor=\"middle\">W12</text><text x=\"282\" y=\"346\" text-anchor=\"middle\">W15</text><text x=\"329\" y=\"346\" text-anchor=\"middle\">W18</text><text x=\"376\" y=\"346\" text-anchor=\"middle\">W21</text><text x=\"423\" y=\"346\" text-anchor=\"middle\">W24</text><text x=\"470.1\" y=\"346\" text-anchor=\"middle\">W27</text><text x=\"517.1\" y=\"346\" text-anchor=\"middle\">W30</text><text x=\"564.1\" y=\"346\" text-anchor=\"middle\">W33</text><text x=\"611.1\" y=\"346\" text-anchor=\"middle\">W36</text><text x=\"658.2\" y=\"346\" text-anchor=\"middle\">W39</text></g><line class=\"op-cross\" x1=\"0\" x2=\"0\" y1=\"12\" y2=\"328\" visibility=\"hidden\"/><g class=\"op-marks\"><g class=\"op-series op-c0\"><path class=\"op-line\" d=\"M46.8 264.8L62.5 260.1L78.2 255.3L93.9 250.6L109.5 245.8L125.2 241.1L140.9 236.4L156.6 231.6L172.2 226.9L187.9 222.1L203.6 217.4L219.3 212.7L234.9 207.9L250.6 203.2L266.3 198.4L282 193.7L297.6 189L313.3 184.2L329 179.5L344.7 174.7L360.3 170L376 165.3L391.7 160.5L407.4 155.8L423 151L438.7 146.3L454.4 141.6L470.1 136.8L485.7 132.1L501.4 127.3L517.1 122.6L532.8 117.9L548.4 113.1L564.1 108.4L579.8 103.6L595.5 98.9L611.1 94.2L626.8 89.4L642.5 84.7L658.2 79.9\"/><circle class=\"op-dot\" data-i=\"39\" cx=\"658.2\" cy=\"79.9\" r=\"4\"/></g></g><g class=\"op-hits\"><rect class=\"op-hit\" data-i=\"0\" data-x=\"46.8\" x=\"39\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"1\" data-x=\"62.5\" x=\"54.7\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"2\" data-x=\"78.2\" x=\"70.4\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"3\" data-x=\"93.9\" x=\"86\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"4\" data-x=\"109.5\" x=\"101.7\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"5\" data-x=\"125.2\" x=\"117.4\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"6\" data-x=\"140.9\" x=\"133.1\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"7\" data-x=\"156.6\" x=\"148.7\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"8\" data-x=\"172.2\" x=\"164.4\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"9\" data-x=\"187.9\" x=\"180.1\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"10\" data-x=\"203.6\" x=\"195.8\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"11\" data-x=\"219.3\" x=\"211.4\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"12\" data-x=\"234.9\" x=\"227.1\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"13\" data-x=\"250.6\" x=\"242.8\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"14\" data-x=\"266.3\" x=\"258.5\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"15\" data-x=\"282\" x=\"274.1\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"16\" data-x=\"297.6\" x=\"289.8\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"17\" data-x=\"313.3\" x=\"305.5\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"18\" data-x=\"329\" x=\"321.2\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"19\" data-x=\"344.7\" x=\"336.8\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"20\" data-x=\"360.3\" x=\"352.5\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"21\" data-x=\"376\" x=\"368.2\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"22\" data-x=\"391.7\" x=\"383.9\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"23\" data-x=\"407.4\" x=\"399.5\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"24\" data-x=\"423\" x=\"415.2\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"25\" data-x=\"438.7\" x=\"430.9\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"26\" data-x=\"454.4\" x=\"446.6\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"27\" data-x=\"470.1\" x=\"462.2\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"28\" data-x=\"485.7\" x=\"477.9\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"29\" data-x=\"501.4\" x=\"493.6\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"30\" data-x=\"517.1\" x=\"509.3\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"31\" data-x=\"532.8\" x=\"524.9\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"32\" data-x=\"548.4\" x=\"540.6\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"33\" data-x=\"564.1\" x=\"556.3\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"34\" data-x=\"579.8\" x=\"572\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"35\" data-x=\"595.5\" x=\"587.6\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"36\" data-x=\"611.1\" x=\"603.3\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"37\" data-x=\"626.8\" x=\"619\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"38\" data-x=\"642.5\" x=\"634.7\" y=\"12\" width=\"15.7\" height=\"316\"/><rect class=\"op-hit\" data-i=\"39\" data-x=\"658.2\" x=\"650.3\" y=\"12\" width=\"15.7\" height=\"316\"/></g></svg>",
+   "table": "<table><thead><tr><th scope=\"col\"></th><th scope=\"col\">v</th></tr></thead><tbody><tr><th scope=\"row\">W0</th><td>12,000</td></tr><tr><th scope=\"row\">W1</th><td>12,900</td></tr><tr><th scope=\"row\">W2</th><td>13,800</td></tr><tr><th scope=\"row\">W3</th><td>14,700</td></tr><tr><th scope=\"row\">W4</th><td>15,600</td></tr><tr><th scope=\"row\">W5</th><td>16,500</td></tr><tr><th scope=\"row\">W6</th><td>17,400</td></tr><tr><th scope=\"row\">W7</th><td>18,300</td></tr><tr><th scope=\"row\">W8</th><td>19,200</td></tr><tr><th scope=\"row\">W9</th><td>20,100</td></tr><tr><th scope=\"row\">W10</th><td>21,000</td></tr><tr><th scope=\"row\">W11</th><td>21,900</td></tr><tr><th scope=\"row\">W12</th><td>22,800</td></tr><tr><th scope=\"row\">W13</th><td>23,700</td></tr><tr><th scope=\"row\">W14</th><td>24,600</td></tr><tr><th scope=\"row\">W15</th><td>25,500</td></tr><tr><th scope=\"row\">W16</th><td>26,400</td></tr><tr><th scope=\"row\">W17</th><td>27,300</td></tr><tr><th scope=\"row\">W18</th><td>28,200</td></tr><tr><th scope=\"row\">W19</th><td>29,100</td></tr><tr><th scope=\"row\">W20</th><td>30,000</td></tr><tr><th scope=\"row\">W21</th><td>30,900</td></tr><tr><th scope=\"row\">W22</th><td>31,800</td></tr><tr><th scope=\"row\">W23</th><td>32,700</td></tr><tr><th scope=\"row\">W24</th><td>33,600</td></tr><tr><th scope=\"row\">W25</th><td>34,500</td></tr><tr><th scope=\"row\">W26</th><td>35,400</td></tr><tr><th scope=\"row\">W27</th><td>36,300</td></tr><tr><th scope=\"row\">W28</th><td>37,200</td></tr><tr><th scope=\"row\">W29</th><td>38,100</td></tr><tr><th scope=\"row\">W30</th><td>39,000</td></tr><tr><th scope=\"row\">W31</th><td>39,900</td></tr><tr><th scope=\"row\">W32</th><td>40,800</td></tr><tr><th scope=\"row\">W33</th><td>41,700</td></tr><tr><th scope=\"row\">W34</th><td>42,600</td></tr><tr><th scope=\"row\">W35</th><td>43,500</td></tr><tr><th scope=\"row\">W36</th><td>44,400</td></tr><tr><th scope=\"row\">W37</th><td>45,300</td></tr><tr><th scope=\"row\">W38</th><td>46,200</td></tr><tr><th scope=\"row\">W39</th><td>47,100</td></tr></tbody></table>"
+  },
+  "pie": {
+   "svg680": "<svg class=\"op-plot\" viewBox=\"0 0 680 280\" width=\"680\" height=\"280\" role=\"img\" aria-label=\"Pie\"><g class=\"op-marks\"><path class=\"op-slice op-c0\" data-i=\"0\" d=\"M340 140L340 6A134 134 0 0 1 340 274Z\"/><path class=\"op-slice op-c1\" data-i=\"1\" d=\"M340 140L340 274A134 134 0 0 1 212.6 98.6Z\"/><path class=\"op-slice op-c2\" data-i=\"2\" d=\"M340 140L212.6 98.6A134 134 0 0 1 340 6Z\"/></g></svg>",
+   "svg360": "<svg class=\"op-plot\" viewBox=\"0 0 360 216\" width=\"360\" height=\"216\" role=\"img\" aria-label=\"Pie\"><g class=\"op-marks\"><path class=\"op-slice op-c0\" data-i=\"0\" d=\"M180 108L180 6A102 102 0 0 1 180 210Z\"/><path class=\"op-slice op-c1\" data-i=\"1\" d=\"M180 108L180 210A102 102 0 0 1 83 76.5Z\"/><path class=\"op-slice op-c2\" data-i=\"2\" d=\"M180 108L83 76.5A102 102 0 0 1 180 6Z\"/></g></svg>",
+   "hidden": "<svg class=\"op-plot\" viewBox=\"0 0 680 280\" width=\"680\" height=\"280\" role=\"img\" aria-label=\"Pie\"><g class=\"op-marks\"><path class=\"op-slice op-c0\" data-i=\"0\" d=\"M340 140L340 6A134 134 0 0 1 340 274Z\"/><path class=\"op-slice op-c1\" data-i=\"1\" d=\"M340 140L340 274A134 134 0 0 1 212.6 98.6Z\"/><path class=\"op-slice op-c2\" data-i=\"2\" d=\"M340 140L212.6 98.6A134 134 0 0 1 340 6Z\"/></g></svg>",
+   "table": "<table><thead><tr><th scope=\"col\"></th><th scope=\"col\">s</th></tr></thead><tbody><tr><th scope=\"row\">A</th><td>5</td></tr><tr><th scope=\"row\">B</th><td>3</td></tr><tr><th scope=\"row\">C</th><td>2</td></tr></tbody></table>"
+  },
+  "donut": {
+   "svg680": "<svg class=\"op-plot\" viewBox=\"0 0 680 280\" width=\"680\" height=\"280\" role=\"img\" aria-label=\"Donut. Desc\"><g class=\"op-marks\"><path class=\"op-slice op-c0\" data-i=\"0\" fill-rule=\"evenodd\" d=\"M206 140a134 134 0 1 0 268 0a134 134 0 1 0 -268 0M259.6 140a80.39999999999999 80.39999999999999 0 1 1 160.79999999999998 0a80.39999999999999 80.39999999999999 0 1 1 -160.79999999999998 0Z\"/></g></svg>",
+   "svg360": "<svg class=\"op-plot\" viewBox=\"0 0 360 216\" width=\"360\" height=\"216\" role=\"img\" aria-label=\"Donut. Desc\"><g class=\"op-marks\"><path class=\"op-slice op-c0\" data-i=\"0\" fill-rule=\"evenodd\" d=\"M78 108a102 102 0 1 0 204 0a102 102 0 1 0 -204 0M118.80000000000001 108a61.199999999999996 61.199999999999996 0 1 1 122.39999999999999 0a61.199999999999996 61.199999999999996 0 1 1 -122.39999999999999 0Z\"/></g></svg>",
+   "hidden": "<svg class=\"op-plot\" viewBox=\"0 0 680 280\" width=\"680\" height=\"280\" role=\"img\" aria-label=\"Donut. Desc\"><g class=\"op-marks\"><path class=\"op-slice op-c0\" data-i=\"0\" fill-rule=\"evenodd\" d=\"M206 140a134 134 0 1 0 268 0a134 134 0 1 0 -268 0M259.6 140a80.39999999999999 80.39999999999999 0 1 1 160.79999999999998 0a80.39999999999999 80.39999999999999 0 1 1 -160.79999999999998 0Z\"/></g></svg>",
+   "table": "<table><thead><tr><th scope=\"col\"></th><th scope=\"col\">s</th></tr></thead><tbody><tr><th scope=\"row\">A</th><td>1</td></tr><tr><th scope=\"row\">B</th><td>0</td></tr></tbody></table>"
+  },
+  "fixedAxis": {
+   "svg680": "<svg class=\"op-plot\" viewBox=\"0 0 680 354\" width=\"680\" height=\"354\" role=\"img\" aria-label=\"Fixed\"><g class=\"op-axis\" aria-hidden=\"true\"><line class=\"op-grid\" x1=\"39\" x2=\"666\" y1=\"328\" y2=\"328\"/><text x=\"31\" y=\"328\" dy=\"0.32em\" text-anchor=\"end\">0</text><line class=\"op-grid\" x1=\"39\" x2=\"666\" y1=\"249\" y2=\"249\"/><text x=\"31\" y=\"249\" dy=\"0.32em\" text-anchor=\"end\">2.5</text><line class=\"op-grid\" x1=\"39\" x2=\"666\" y1=\"170\" y2=\"170\"/><text x=\"31\" y=\"170\" dy=\"0.32em\" text-anchor=\"end\">5</text><line class=\"op-grid\" x1=\"39\" x2=\"666\" y1=\"91\" y2=\"91\"/><text x=\"31\" y=\"91\" dy=\"0.32em\" text-anchor=\"end\">7.5</text><line class=\"op-grid\" x1=\"39\" x2=\"666\" y1=\"12\" y2=\"12\"/><text x=\"31\" y=\"12\" dy=\"0.32em\" text-anchor=\"end\">10</text><line class=\"op-base\" x1=\"39\" x2=\"666\" y1=\"328\" y2=\"328\"/><text x=\"195.8\" y=\"346\" text-anchor=\"middle\">a</text><text x=\"509.3\" y=\"346\" text-anchor=\"middle\">b</text></g><line class=\"op-cross\" x1=\"0\" x2=\"0\" y1=\"12\" y2=\"328\" visibility=\"hidden\"/><g class=\"op-marks\"><g class=\"op-series op-c0\"><path class=\"op-line\" d=\"M195.8 170L509.3 138.4\"/><circle class=\"op-dot\" data-i=\"0\" cx=\"195.8\" cy=\"170\" r=\"4\"/><circle class=\"op-dot\" data-i=\"1\" cx=\"509.3\" cy=\"138.4\" r=\"4\"/></g></g><g class=\"op-hits\"><rect class=\"op-hit\" data-i=\"0\" data-x=\"195.8\" x=\"39\" y=\"12\" width=\"313.5\" height=\"316\"/><rect class=\"op-hit\" data-i=\"1\" data-x=\"509.3\" x=\"352.5\" y=\"12\" width=\"313.5\" height=\"316\"/></g></svg>",
+   "svg360": "<svg class=\"op-plot\" viewBox=\"0 0 360 220\" width=\"360\" height=\"220\" role=\"img\" aria-label=\"Fixed\"><g class=\"op-axis\" aria-hidden=\"true\"><line class=\"op-grid\" x1=\"39\" x2=\"346\" y1=\"194\" y2=\"194\"/><text x=\"31\" y=\"194\" dy=\"0.32em\" text-anchor=\"end\">0</text><line class=\"op-grid\" x1=\"39\" x2=\"346\" y1=\"148.5\" y2=\"148.5\"/><text x=\"31\" y=\"148.5\" dy=\"0.32em\" text-anchor=\"end\">2.5</text><line class=\"op-grid\" x1=\"39\" x2=\"346\" y1=\"103\" y2=\"103\"/><text x=\"31\" y=\"103\" dy=\"0.32em\" text-anchor=\"end\">5</text><line class=\"op-grid\" x1=\"39\" x2=\"346\" y1=\"57.5\" y2=\"57.5\"/><text x=\"31\" y=\"57.5\" dy=\"0.32em\" text-anchor=\"end\">7.5</text><line class=\"op-grid\" x1=\"39\" x2=\"346\" y1=\"12\" y2=\"12\"/><text x=\"31\" y=\"12\" dy=\"0.32em\" text-anchor=\"end\">10</text><line class=\"op-base\" x1=\"39\" x2=\"346\" y1=\"194\" y2=\"194\"/><text x=\"115.8\" y=\"212\" text-anchor=\"middle\">a</text><text x=\"269.3\" y=\"212\" text-anchor=\"middle\">b</text></g><line class=\"op-cross\" x1=\"0\" x2=\"0\" y1=\"12\" y2=\"194\" visibility=\"hidden\"/><g class=\"op-marks\"><g class=\"op-series op-c0\"><path class=\"op-line\" d=\"M115.8 103L269.3 84.8\"/><circle class=\"op-dot\" data-i=\"0\" cx=\"115.8\" cy=\"103\" r=\"4\"/><circle class=\"op-dot\" data-i=\"1\" cx=\"269.3\" cy=\"84.8\" r=\"4\"/></g></g><g class=\"op-hits\"><rect class=\"op-hit\" data-i=\"0\" data-x=\"115.8\" x=\"39\" y=\"12\" width=\"153.5\" height=\"182\"/><rect class=\"op-hit\" data-i=\"1\" data-x=\"269.3\" x=\"192.5\" y=\"12\" width=\"153.5\" height=\"182\"/></g></svg>",
+   "hidden": "<svg class=\"op-plot\" viewBox=\"0 0 680 354\" width=\"680\" height=\"354\" role=\"img\" aria-label=\"Fixed\"><g class=\"op-axis\" aria-hidden=\"true\"><line class=\"op-grid\" x1=\"39\" x2=\"666\" y1=\"328\" y2=\"328\"/><text x=\"31\" y=\"328\" dy=\"0.32em\" text-anchor=\"end\">0</text><line class=\"op-grid\" x1=\"39\" x2=\"666\" y1=\"249\" y2=\"249\"/><text x=\"31\" y=\"249\" dy=\"0.32em\" text-anchor=\"end\">2.5</text><line class=\"op-grid\" x1=\"39\" x2=\"666\" y1=\"170\" y2=\"170\"/><text x=\"31\" y=\"170\" dy=\"0.32em\" text-anchor=\"end\">5</text><line class=\"op-grid\" x1=\"39\" x2=\"666\" y1=\"91\" y2=\"91\"/><text x=\"31\" y=\"91\" dy=\"0.32em\" text-anchor=\"end\">7.5</text><line class=\"op-grid\" x1=\"39\" x2=\"666\" y1=\"12\" y2=\"12\"/><text x=\"31\" y=\"12\" dy=\"0.32em\" text-anchor=\"end\">10</text><line class=\"op-base\" x1=\"39\" x2=\"666\" y1=\"328\" y2=\"328\"/><text x=\"195.8\" y=\"346\" text-anchor=\"middle\">a</text><text x=\"509.3\" y=\"346\" text-anchor=\"middle\">b</text></g><line class=\"op-cross\" x1=\"0\" x2=\"0\" y1=\"12\" y2=\"328\" visibility=\"hidden\"/><g class=\"op-marks\"><g class=\"op-series op-c0\"><path class=\"op-line\" d=\"M195.8 170L509.3 138.4\"/><circle class=\"op-dot\" data-i=\"0\" cx=\"195.8\" cy=\"170\" r=\"4\"/><circle class=\"op-dot\" data-i=\"1\" cx=\"509.3\" cy=\"138.4\" r=\"4\"/></g></g><g class=\"op-hits\"><rect class=\"op-hit\" data-i=\"0\" data-x=\"195.8\" x=\"39\" y=\"12\" width=\"313.5\" height=\"316\"/><rect class=\"op-hit\" data-i=\"1\" data-x=\"509.3\" x=\"352.5\" y=\"12\" width=\"313.5\" height=\"316\"/></g></svg>",
+   "table": "<table><thead><tr><th scope=\"col\"></th><th scope=\"col\">x</th></tr></thead><tbody><tr><th scope=\"row\">a</th><td>5</td></tr><tr><th scope=\"row\">b</th><td>6</td></tr></tbody></table>"
+  }
+ }
+}

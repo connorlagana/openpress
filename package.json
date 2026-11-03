@@ -17,7 +17,8 @@
     "preview:cf": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy:cf": "opennextjs-cloudflare build && pnpm db:migrate --prod && opennextjs-cloudflare deploy",
     "check": "pnpm typecheck && pnpm lint && pnpm test",
-    "admin": "tsx scripts/admin.mts"
+    "admin": "tsx scripts/admin.mts",
+    "demo:viz": "tsx scripts/demo-viz.mts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

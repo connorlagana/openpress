@@ -43,6 +43,26 @@ OpenPress is multi-tenant hosting operated by third-party AI agents. We assume: 
 - Operator CLI: list reports, suspend/unsuspend sites and users. Suspended users lose sessions and agent tokens; suspended sites stop rendering and can't publish.
 - Audit log of create/publish/unpublish/delete/permission changes, attributed to dashboard or the specific agent.
 
+## Custom visualizations
+
+Agent-written HTML/CSS/JS (`create_custom_visualization`) is untrusted code. Layers, outermost first:
+
+1. **Feature flag.** `CUSTOM_VIZ` is off by default. While off, the tools aren't registered, the frame route returns 404, and embeds render only the static fallback.
+2. **Publisher approval.** Code runs only after a signed-in site member approves it in the dashboard. Agents can't approve: there is no tool, and the service rejects agent actors even with a confirmation token. Approval is bound to the SHA-256 of `html`+`css`+`js`; any code change resets it, and approving a stale hash fails (`CONFLICT`). Approve/reject/create/update are audit-logged.
+3. **Opaque-origin sandbox.** Post HTML contains only `<iframe sandbox="allow-scripts" referrerpolicy="no-referrer" allow="">` pointing at `VIZ_SANDBOX_ORIGIN`. The response also sends CSP `sandbox allow-scripts`, so the document is sandboxed even if opened directly. No `allow-same-origin`, so no cookies, storage or DOM access to any origin; no popups, forms, top navigation or modals.
+4. **No network.** `default-src 'none'`, `connect-src 'none'`, `img-src`/`font-src`/`media-src` limited to `data:`/`blob:`, `form-action 'none'`, `base-uri 'none'`, no workers or nested frames. Scripts need a per-response nonce, so markup in `html` can't execute. Validation also rejects `<script>`, `<meta>`, `<base>`, `<link>`, `<iframe>`, `<object>`, `<embed>`, `<form>` and CSS `@import`.
+5. **Embedding limits.** `frame-ancestors` is the owning site plus the dashboard; `Permissions-Policy` denies all powerful features; the global `X-Frame-Options` header is excluded for `/viz-frame/*` only.
+6. **Narrow parent channel.** The parent accepts only `{type: "op-viz:resize", height}` from that iframe's own window (clamped 80–2400 px) and sends only theme colors. It sets `src` itself and removes a frame that navigates away (a second `load`).
+7. **Takedown.** Deleted visualizations, suspended sites and suspended owners stop serving immediately (frames are cached ≤ 60 s).
+
+Run the sandbox origin on its **own registrable domain** (e.g. `openpress-usercontent.net`, like `googleusercontent.com`), so the browser treats it as a separate site from both the app and user sites. When `VIZ_SANDBOX_ORIGIN` is set, the route refuses requests for any other host.
+
+Residual risks (why the flag stays off until an external review):
+- A frame can still **navigate itself** (`location = …`) to a third-party URL. CSP can't block that, and it would reveal the reader's IP and the frame URL. The parent detects it and removes the frame, but only after the request was made. Browser-level leaks such as DNS prefetch and WebRTC are similarly outside CSP's reach.
+- Approved code can still display misleading or abusive content in its frame; approval is a human review, not an analysis.
+- CPU/memory abuse (an infinite loop) is limited only by the browser's per-frame process isolation.
+- With the default (unset) `VIZ_SANDBOX_ORIGIN`, frames are served from the app origin. They are still opaque-origin sandboxed, but there is no separate-site boundary.
+
 ## Known limitations (not production-hardened yet)
 
 - **No email verification or password reset.** Needs an email provider. Account recovery is manual.
@@ -57,4 +77,5 @@ OpenPress is multi-tenant hosting operated by third-party AI agents. We assume: 
 - **RLS is tested on PGlite (Postgres 17 engine)**, not yet against a live Supabase instance. Verify the `folio_app` role on first deploy (checklist in DEPLOYMENT.md).
 - **Prompt injection** can still mislead an agent into a *permitted* action (e.g. editing a post). Mitigations: least-privilege grants, "ask before publishing", confirmations for deletes, audit log, revisions.
 - **Abuse review is manual**; no automated spam/phishing classification.
+- **Custom visualizations** are disabled by default pending a sandbox review; see the residual risks above.
 - **Unique visitors** are counted per day via a rotating hash (privacy by design), so multi-day totals overcount returning visitors.

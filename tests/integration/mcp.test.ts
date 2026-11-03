@@ -36,7 +36,7 @@ describe("MCP server over Streamable HTTP", () => {
         "create_post", "get_post", "list_posts", "update_post", "publish_post", "unpublish_post", "delete_post",
         "upload_media", "list_media", "delete_media", "list_templates", "set_template", "update_theme",
         "update_post_seo", "get_site_analytics",
-        "create_chart", "get_chart", "list_charts", "update_chart", "delete_chart",
+        "create_chart", "get_chart", "list_charts", "update_chart", "delete_chart", "get_visualization_capabilities",
       ].sort(),
     );
     for (const t of tools) {

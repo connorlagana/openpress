@@ -29,7 +29,9 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: "/:path*",
+        // Custom visualization frames set their own headers (CSP frame-ancestors
+        // instead of X-Frame-Options, which would block the site embedding them).
+        source: "/:path((?!viz-frame/).*)",
         headers: [
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },

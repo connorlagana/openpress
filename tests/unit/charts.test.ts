@@ -26,7 +26,7 @@ describe("chart spec validation", () => {
 
   it("rejects unknown keys (no smuggled markup or options)", () => {
     expect(chartSpecSchema.safeParse({ ...allen, html: "<svg onload=alert(1)>" }).success).toBe(false);
-    expect(chartSpecSchema.safeParse({ ...allen, series: [{ ...allen.series[0], color: "red" }] }).success).toBe(false);
+    expect(chartSpecSchema.safeParse({ ...allen, series: [{ ...allen.series![0], color: "red" }] }).success).toBe(false);
   });
 
   it("enforces pie rules", () => {
@@ -85,7 +85,7 @@ describe("chart rendering", () => {
   });
 
   it("re-renders at a given width and hides toggled-off series", () => {
-    const two: ChartSpec = { ...allen, series: [allen.series[0], { name: "League avg", data: [60, 62, 63, 64] }] };
+    const two: ChartSpec = { ...allen, series: [allen.series![0], { name: "League avg", data: [60, 62, 63, 64] }] };
     expect(renderChartSvg(two, { width: 360 })).toContain('viewBox="0 0 360 ');
     const hidden = renderChartSvg(two, { hidden: new Set([1]) });
     expect(hidden).not.toContain("op-c1");

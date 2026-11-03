@@ -3,7 +3,7 @@
    order (light and dark steps validated separately), never the site accent,
    so any theme keeps adjacent series distinguishable. */
 
-.op-chart {
+.op-chart, .op-viz {
   --op-bg: var(--fs-bg, #ffffff);
   --op-fg: var(--fs-fg, #1c1c1c);
   --op-muted: color-mix(in srgb, var(--op-fg) 62%, var(--op-bg));
@@ -11,20 +11,27 @@
   --op-axis: color-mix(in srgb, var(--op-fg) 24%, var(--op-bg));
   --op-c0: #2a78d6; --op-c1: #eb6834; --op-c2: #1baf7a; --op-c3: #eda100;
   --op-c4: #e87ba4; --op-c5: #008300; --op-c6: #6250d6; --op-c7: #e34948;
+  /* Default ("theme") color scales for heatmaps: near-background → strong. */
+  --op-seq-lo: color-mix(in oklab, #2a78d6 7%, var(--op-bg)); --op-seq-hi: #0b3d91; --op-seq-ink: #ffffff;
+  --op-div-lo: #c2410c; --op-div-mid: color-mix(in oklab, var(--op-fg) 6%, var(--op-bg)); --op-div-hi: #1d4ed8;
   margin: 2em 0 0;
   padding: 0;
   font-family: var(--fs-body-font, system-ui, sans-serif);
   color: var(--op-fg);
 }
-.fs-prose .op-chart { margin: 2em 0; }
-.fs-dark .op-chart, .dark .op-chart {
+.fs-prose :is(.op-chart, .op-viz) { margin: 2em 0; }
+.fs-dark :is(.op-chart, .op-viz), .dark :is(.op-chart, .op-viz) {
   --op-c0: #3987e5; --op-c1: #d95926; --op-c2: #199e70; --op-c3: #c98500;
   --op-c4: #d55181; --op-c5: #008300; --op-c6: #9085e9; --op-c7: #e66767;
+  --op-seq-lo: color-mix(in oklab, #3987e5 12%, var(--op-bg)); --op-seq-hi: #9cc9ff; --op-seq-ink: #0b1220;
+  --op-div-lo: #fb923c; --op-div-hi: #60a5fa;
 }
 @media (prefers-color-scheme: dark) {
-  .fs-auto .op-chart {
+  .fs-auto :is(.op-chart, .op-viz) {
     --op-c0: #3987e5; --op-c1: #d95926; --op-c2: #199e70; --op-c3: #c98500;
-    --op-c4: #d55181; --op-c5: #008300; --op-c6: #9085e9; --op-c7: #e66767;
+  --op-c4: #d55181; --op-c5: #008300; --op-c6: #9085e9; --op-c7: #e66767;
+    --op-seq-lo: color-mix(in oklab, #3987e5 12%, var(--op-bg)); --op-seq-hi: #9cc9ff; --op-seq-ink: #0b1220;
+    --op-div-lo: #fb923c; --op-div-hi: #60a5fa;
   }
 }
 .op-c0 { --c: var(--op-c0); } .op-c1 { --c: var(--op-c1); } .op-c2 { --c: var(--op-c2); } .op-c3 { --c: var(--op-c3); }
@@ -81,9 +88,78 @@
 .op-chart-data[open] { flex-basis: 100%; }
 .op-chart-data summary { cursor: pointer; color: var(--op-muted); text-align: right; }
 .op-chart-table { margin-top: 0.5rem; overflow-x: auto; }
-.op-chart .op-chart-table table { width: 100%; border-collapse: collapse; font-size: 0.85rem; color: var(--op-fg); display: table; }
-.op-chart .op-chart-table th, .op-chart .op-chart-table td { border-bottom: 1px solid var(--op-grid); padding: 0.35em 0.6em; text-align: right; font-variant-numeric: tabular-nums; }
-.op-chart .op-chart-table th[scope="row"], .op-chart .op-chart-table thead th:first-child { text-align: left; }
+.op-chart-table table { width: 100%; border-collapse: collapse; font-size: 0.85rem; color: var(--op-fg); display: table; }
+.op-chart-table th, .op-chart-table td { border-bottom: 1px solid var(--op-grid); padding: 0.35em 0.6em; text-align: right; font-variant-numeric: tabular-nums; }
+.op-chart-table th[scope="row"], .op-chart-table thead th:first-child { text-align: left; }
+
+/* ---- v2: legends, filters, new marks ---- */
+.op-legend-title { font-weight: 600; color: var(--op-muted); margin-right: 0.25rem; }
+.op-legend-bottom .op-legend-slot { margin-top: 0.6rem; }
+.op-legend-bottom .op-legend { margin-bottom: 0; }
+.op-key-dot { width: 9px; height: 9px; border-radius: 50%; }
+.op-scale { display: inline-grid; gap: 0.2rem; min-width: 10rem; max-width: 18rem; margin: 0 0 0.6rem; font-size: 0.8rem; color: var(--op-muted); }
+.op-scale-title { color: var(--op-fg); font-weight: 600; }
+.op-scale-bar { display: block; height: 10px; border-radius: 3px; box-shadow: inset 0 0 0 1px var(--op-grid); }
+.op-scale-ticks { display: flex; justify-content: space-between; gap: 0.5rem; font-variant-numeric: tabular-nums; }
+.op-legend-slot > .op-legend + .op-scale { margin-top: -0.2rem; }
+
+.op-filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.6rem 1rem; margin: 0 0 0.85rem; font-size: 0.85rem; }
+.op-filter { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; max-width: 100%; }
+.op-filter-label { color: var(--op-muted); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.01em; }
+.op-filters select, .op-filters input {
+  font: inherit; color: var(--op-fg); background: var(--op-bg); min-height: 2.5rem; max-width: 100%;
+  border: 1px solid var(--op-axis); border-radius: 8px; padding: 0.35rem 0.6rem;
+}
+.op-filters select { min-width: 8rem; padding-right: 1.6rem; }
+.op-filters input[type="number"] { width: 7rem; }
+.op-filters :is(select, input, button):focus-visible { outline: 2px solid var(--fs-primary, currentColor); outline-offset: 2px; }
+.op-filters :disabled { opacity: 0.6; cursor: default; }
+.op-filter-range { display: grid; grid-template-columns: auto auto; column-gap: 0.5rem; }
+.op-filter-range > .op-filter-label { grid-column: 1 / -1; }
+.op-filter-range label { display: flex; flex-direction: column; gap: 0.15rem; font-size: 0.75rem; color: var(--op-muted); }
+.op-chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.op-chip {
+  font: inherit; color: var(--op-fg); background: var(--op-bg); cursor: pointer; min-height: 2.25rem;
+  border: 1px solid var(--op-axis); border-radius: 999px; padding: 0.25rem 0.8rem;
+}
+.op-chip[aria-pressed="true"] { background: color-mix(in oklab, var(--op-fg) 10%, var(--op-bg)); border-color: color-mix(in oklab, var(--op-fg) 45%, var(--op-bg)); }
+.op-chip[aria-pressed="false"] { color: var(--op-muted); }
+.op-chart-note { margin: 0.45rem 0 0; font-size: 0.8rem; color: var(--op-muted); }
+.op-chart-note[hidden] { display: none; }
+.op-table-note { margin: 0.4rem 0 0; font-size: 0.78rem; color: var(--op-muted); }
+
+.op-pt { fill: var(--c); fill-opacity: var(--op-pt-opacity, 0.85); stroke: var(--op-bg); stroke-width: 1; transition: opacity 120ms; }
+.op-active .op-pt:not(.op-on) { opacity: 0.35; }
+.op-pt.op-on { fill-opacity: 1; stroke: var(--op-fg); stroke-width: 2; }
+.op-plot .op-pt-label { fill: var(--op-fg); font-size: 11px; paint-order: stroke; stroke: var(--op-bg); stroke-width: 3px; stroke-linejoin: round; }
+.op-ref { stroke: var(--op-muted); stroke-width: 1; stroke-dasharray: 4 3; }
+.op-plot .op-ref-label { font-size: 11px; paint-order: stroke; stroke: var(--op-bg); stroke-width: 3px; }
+
+.op-cell { stroke: none; transition: opacity 120ms; }
+.op-cell-empty { fill: none; stroke: var(--op-grid); stroke-dasharray: 2 2; }
+.op-active .op-cell:not(.op-on):not(.op-cell-empty) { opacity: 0.7; }
+.op-cell.op-on { stroke: var(--op-fg); stroke-width: 2; }
+.op-plot .op-cell-v { font-size: 11px; font-weight: 600; pointer-events: none; }
+.op-plot .op-ink-soft { fill: var(--op-fg); } .op-plot .op-ink-strong { fill: var(--op-seq-ink); }
+.op-plot .op-ink-light { fill: #ffffff; } .op-plot .op-ink-dark { fill: #111111; }
+.op-bin { fill: transparent; }
+.op-bin.op-on { stroke: var(--op-fg); stroke-width: 2; }
+
+.op-field path { fill: none; stroke: var(--op-axis); stroke-width: 1.5; stroke-linejoin: round; }
+.op-field .op-mk-thin { stroke-width: 1; }
+.op-field .op-mk-fill { fill: color-mix(in oklab, var(--op-fg) 5%, transparent); }
+.op-plot .op-mk-num { fill: var(--op-muted); opacity: 0.55; font-weight: 600; }
+.op-field-turf path { stroke: rgb(255 255 255 / 0.85); }
+.op-field-turf .op-mk-fill { fill: rgb(255 255 255 / 0.12); }
+.op-plot .op-field-turf .op-mk-num { fill: #fff; opacity: 0.75; }
+.op-turf-football, .op-turf-soccer, .op-turf-baseball { fill: #3d7a3a; }
+.op-turf-basketball { fill: #d8b07c; }
+
+/* ---- Custom visualizations (sandboxed iframes) ---- */
+.op-viz { margin: 2em 0 0; padding: 0; font-family: var(--fs-body-font, system-ui, sans-serif); color: var(--op-fg); }
+.op-viz-frame { position: relative; width: 100%; border-radius: 6px; overflow: hidden; transition: height 120ms; }
+.op-viz-frame iframe { display: block; width: 100%; height: 100%; border: 0; background: transparent; color-scheme: normal; }
+.op-viz-notice { margin: 0.5rem 0 0; padding: 0.6rem 0.8rem; border: 1px dashed var(--op-axis); border-radius: 8px; font-size: 0.85rem; color: var(--op-muted); }
 
 @media (forced-colors: active) {
   .op-line { stroke: CanvasText; } .op-bar, .op-slice, .op-key { fill: CanvasText; background: CanvasText; }

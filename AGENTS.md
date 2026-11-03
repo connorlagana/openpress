@@ -26,6 +26,7 @@ MCP-native website hosting: users connect their own AI agent (Claude, ChatGPT, C
 | New migration from schema change | edit `src/db/schema.ts` → `pnpm db:generate` |
 | Apply migrations to Postgres | `DATABASE_URL=postgres://… pnpm db:migrate`; production: `pnpm db:migrate --prod` (reads `PROD_DATABASE_URL` from `.env.production.local`) |
 | Abuse tooling | `pnpm admin reports`, `pnpm admin suspend-site <sub> "<reason>"` |
+| Demo visualization gallery (synthetic data) | `DATABASE_URL=… pnpm demo:viz <email>` |
 | Activation funnel (signup → site → agent → publish, by source) | `DATABASE_URL=… pnpm admin funnel [days]` |
 | Cloudflare build / preview / deploy | `pnpm preview:cf`, `pnpm deploy:cf` (build → migrate production → deploy; aborts if `PROD_DATABASE_URL` is missing or a migration fails, so keep migrations additive) |
 
@@ -41,6 +42,8 @@ MCP-native website hosting: users connect their own AI agent (Claude, ChatGPT, C
 - `src/server/public/*` — privileged, read-only queries for public site rendering. Must only ever return published, non-deleted, non-suspended content.
 - `src/server/indexnow.ts` — IndexNow pings (Bing, Yandex…) after a published post is published, updated or deleted; per-site key served at `/indexnow-key.txt`. Google discovery is via Search Console: owners set `settings.searchVerification` (rendered as verification meta tags) and submit `/sitemap.xml`.
 - `src/lib/charts/*` + `src/server/services/charts.ts` — charts as content objects (`create_chart`/`update_chart`/…). Posts embed them with a `{{chart:<id>}}` token on its own line; the token survives Markdown rendering and is swapped for server-drawn SVG + data table **at read time** (`withCharts` in `src/server/public/data.ts`), so chart edits go live without touching posts. `src/templates/chart-enhancer.tsx` adds tooltips, toggles and real-width redraws on the client. Specs are strict Zod data, never markup.
+- `src/lib/charts/*` v2 (`docs/VISUALIZATIONS.md`): `data.ts` (dataset filtering/derivation), `plots.ts` (scatter, heatmap, spatial heatmap), `fields.ts` (football/basketball/soccer/baseball presets), `color.ts` (scales), `capabilities.ts` (`get_visualization_capabilities`). v1 specs must keep rendering byte-identically (`tests/unit/fixtures/v1-charts.json`); add new options as optional keys.
+- `src/lib/viz/*` + `src/server/services/custom-viz.ts` + `src/app/viz-frame/[id]` — custom (agent-coded) visualizations behind `CUSTOM_VIZ=on`: `{{viz:<id>}}` embeds, dashboard-only approval bound to a code hash, served as a CSP-sandboxed opaque-origin document. See `docs/SECURITY.md#custom-visualizations` before touching it.
 - `src/app/site/[subdomain]/**` — public sites. Reached through a host-based rewrite in `next.config.ts` (`<sub>.<ROOT_DOMAIN>/x` → `/site/<sub>/x`).
 - `src/templates/` — template registry (default theme + homepage blocks) and React components. Add a template = add a registry entry + homepage component in `HOMEPAGES`.
 - `src/app/(platform)/**` — marketing, auth, onboarding, dashboard.

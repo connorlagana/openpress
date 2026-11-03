@@ -11,6 +11,7 @@ import { changePassword, updateProfile } from "@/server/services/account";
 import { onboardingStatus, revokeConnection, updateConnection } from "@/server/services/agents";
 import { setTemplate, updateTheme } from "@/server/services/appearance";
 import { previewPostHtml } from "@/server/services/charts";
+import { reviewCustomViz } from "@/server/services/custom-viz";
 import { deleteMedia } from "@/server/services/media";
 import { createPost, deletePost, setPublished, updatePost } from "@/server/services/posts";
 import { checkSubdomain, createSite, deleteSite, updateSiteSettings } from "@/server/services/sites";
@@ -115,6 +116,14 @@ export async function deleteMediaAction(siteId: string, mediaId: string) {
   const actor = await requireActor();
   const res = await attempt(() => deleteMedia(actor, mediaId));
   if (res.ok) revalidatePath(`/dashboard/sites/${siteId}/media`);
+  return res;
+}
+
+// ---------- Custom visualizations ----------
+export async function reviewCustomVizAction(siteId: string, vizId: string, decision: "approve" | "reject", codeHash: string, note: string) {
+  const actor = await requireActor();
+  const res = await attempt(() => reviewCustomViz(actor, vizId, { decision, codeHash, note: note.trim() || undefined }).then(() => undefined));
+  if (res.ok) revalidatePath(`/dashboard/sites/${siteId}/visualizations`, "layout");
   return res;
 }
 

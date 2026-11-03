@@ -2,8 +2,10 @@ import { and, count, desc, eq, ilike, inArray, isNull } from "drizzle-orm";
 import { z } from "zod";
 import { withUser, type Tx } from "@/db/client";
 import { charts, posts, type Chart, type Site } from "@/db/schema";
-import { chartIdsInHtml, chartIdsInMarkdown, chartToken, embedCharts, type ChartSpec } from "@/lib/charts/render";
-import { chartSpecSchema, parseStoredSpec } from "@/lib/charts/spec";
+import { chartIdsInHtml, chartIdsInMarkdown, chartToken, embedCharts, type ChartSpec, type EmbedMode } from "@/lib/charts/render";
+import { MAX_SPEC_BYTES, chartSpecSchema, parseStoredSpec } from "@/lib/charts/spec";
+import { CHART_SCHEMA_VERSION } from "@/lib/charts/types";
+import { embedViz, vizIdsInHtml, vizIdsInMarkdown } from "@/lib/viz/embed";
 import { config } from "@/lib/config";
 import { AppError, notFound } from "@/lib/errors";
 import { renderMarkdown } from "@/lib/markdown";
@@ -11,6 +13,7 @@ import { requireScope, type Actor } from "../actor";
 import { requireConfirmation } from "../confirm";
 import { notifyIndexNow } from "../indexnow";
 import { audit } from "./audit";
+import { assertVizOnSite, vizEmbedsFor } from "./custom-viz";
 import { assertUserActive } from "./limits";
 import { loadSite } from "./sites";
 
@@ -21,23 +24,41 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
 export type CreateChartInput = { siteId: string } & z.input<typeof chartSpecSchema>;
 
-/** Fields replace the stored ones; null clears an optional field. The merged chart is re-validated. */
+/**
+ * Fields replace the stored ones; null clears an optional field. The merged
+ * chart is re-validated as a whole, so a patch can't leave it inconsistent.
+ */
 export const updateChartPatch = z
   .object({
-    type: z.enum(["line", "area", "bar", "pie", "donut"]),
+    type: chartSpecSchema.shape.type,
     title: z.string(),
     subtitle: z.string().nullable(),
     source: z.string().nullable(),
     description: z.string().nullable(),
-    labels: z.array(z.string()).describe("Replaces all labels. When the number of labels changes, also send series"),
-    series: z.array(z.object({ name: z.string(), data: z.array(z.number().nullable()) })).describe("Replaces all series"),
+    labels: z.array(z.string()).nullable().describe("Replaces all labels. When the number of labels changes, also send series. null switches to dataset data"),
+    series: z.array(z.object({ name: z.string(), data: z.array(z.number().nullable()) })).nullable().describe("Replaces all series"),
+    dataset: chartSpecSchema.shape.dataset.unwrap().nullable().describe("Replaces the whole dataset (fields + rows)"),
+    encoding: chartSpecSchema.shape.encoding.unwrap().nullable(),
+    filters: chartSpecSchema.shape.filters.unwrap().nullable(),
     stacked: z.boolean().nullable(),
-    xAxis: z.object({ title: z.string().optional() }).nullable(),
-    yAxis: z.object({ title: z.string().optional(), min: z.number().optional(), max: z.number().optional() }).nullable(),
+    xAxis: chartSpecSchema.shape.xAxis.unwrap().nullable(),
+    yAxis: chartSpecSchema.shape.yAxis.unwrap().nullable(),
     valueFormat: z.object({ prefix: z.string().optional(), suffix: z.string().optional(), decimals: z.number().optional() }).nullable(),
+    style: chartSpecSchema.shape.style.unwrap().nullable().describe("Replaces the whole style object"),
+    field: chartSpecSchema.shape.field.unwrap().nullable(),
+    spatial: chartSpecSchema.shape.spatial.unwrap().nullable(),
+    annotations: chartSpecSchema.shape.annotations.unwrap().nullable(),
   })
   .partial()
   .strict();
+
+/** Validate a full spec, stamp the current schema version and bound its stored size. */
+export function parseChartSpec(raw: unknown): ChartSpec {
+  const spec = { ...chartSpecSchema.parse(raw), version: CHART_SCHEMA_VERSION } as ChartSpec;
+  const bytes = JSON.stringify(spec).length;
+  if (bytes > MAX_SPEC_BYTES) throw new AppError("VALIDATION", `Chart is too large (${Math.round(bytes / 1000)} KB; max ${MAX_SPEC_BYTES / 1000} KB). Aggregate the data or split it into several charts.`);
+  return spec;
+}
 
 type UsedIn = { id: string; title: string; kind: "post" | "page"; status: "draft" | "published"; url: string };
 
@@ -81,7 +102,7 @@ export async function createChart(actor: Actor, input: CreateChartInput) {
   requireScope(actor, "content:write");
   const { siteId: rawSiteId, ...rest } = input;
   const siteId = z.string().min(1).max(64).parse(rawSiteId);
-  const spec = chartSpecSchema.parse(rest);
+  const spec = parseChartSpec(rest);
   return withUser(actor.userId, async (tx) => {
     await assertUserActive(tx, actor.userId);
     const site = await loadSite(tx, actor, siteId);
@@ -141,7 +162,8 @@ export async function updateChart(actor: Actor, chartId: string, input: z.input<
       if (v === null) delete merged[k];
       else if (v !== undefined) merged[k] = v;
     }
-    const spec = chartSpecSchema.parse(merged);
+    delete merged.version;
+    const spec = parseChartSpec(merged);
     const [row] = await tx.update(charts).set({ spec, title: spec.title, updatedAt: new Date() }).where(eq(charts.id, chart.id)).returning();
     await audit(tx, actor, "chart.update", { siteId: site.id, targetType: "chart", targetId: chart.id, metadata: { fields: Object.keys(patch) } });
     const usedIn = await postsUsing(tx, site, chart.id);
@@ -174,8 +196,9 @@ export async function deleteChart(actor: Actor, chartId: string, confirmationTok
 
 // ---------- Used by posts ----------
 
-/** Reject content that embeds charts which don't exist on this site, with a fix the agent can act on. */
+/** Reject content that embeds charts or visualizations which don't exist on this site, with a fix the agent can act on. */
 export async function assertChartsOnSite(tx: Tx, siteId: string, md: string) {
+  await assertVizOnSite(tx, siteId, vizIdsInMarkdown(md));
   const ids = chartIdsInMarkdown(md);
   if (!ids.length) return;
   const found = await tx.select({ id: charts.id }).from(charts).where(and(eq(charts.siteId, siteId), isNull(charts.deletedAt), inArray(charts.id, ids)));
@@ -184,6 +207,15 @@ export async function assertChartsOnSite(tx: Tx, siteId: string, md: string) {
   if (missing.length) {
     throw new AppError("VALIDATION", `Content embeds chart${missing.length > 1 ? "s" : ""} not found on this site: ${missing.join(", ")}. Create one with create_chart and use the embed it returns.`, { missingChartIds: missing });
   }
+}
+
+/** Swap chart and visualization tokens in rendered post HTML. Only this site's live objects are used. */
+export async function embedVisuals(db: Pick<Tx, "select">, siteId: string, html: string, mode: EmbedMode): Promise<string> {
+  const chartIds = chartIdsInHtml(html);
+  const vizIds = vizIdsInHtml(html);
+  if (chartIds.length) html = embedCharts(html, await chartSpecsFor(db, siteId, chartIds), mode);
+  if (vizIds.length) html = embedViz(html, await vizEmbedsFor(db, siteId, vizIds, mode), mode);
+  return html;
 }
 
 export async function chartSpecsFor(tx: Pick<Tx, "select">, siteId: string, ids: string[]): Promise<Map<string, ChartSpec>> {
@@ -197,14 +229,13 @@ export async function chartSpecsFor(tx: Pick<Tx, "select">, siteId: string, ids:
   return map;
 }
 
-/** Dashboard editor preview, with the site's charts drawn in. */
+/** Dashboard editor preview, with the site's charts and visualizations drawn in. */
 export async function previewPostHtml(actor: Actor, siteId: string, md: string) {
   requireScope(actor, "sites:read");
   const html = renderMarkdown(md);
-  const ids = chartIdsInHtml(html);
-  if (!ids.length) return html;
+  if (!chartIdsInHtml(html).length && !vizIdsInHtml(html).length) return html;
   return withUser(actor.userId, async (tx) => {
     const site = await loadSite(tx, actor, siteId);
-    return embedCharts(html, await chartSpecsFor(tx, site.id, ids), "preview");
+    return embedVisuals(tx, site.id, html, "preview");
   });
 }

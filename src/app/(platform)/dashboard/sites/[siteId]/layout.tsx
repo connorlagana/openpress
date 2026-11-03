@@ -21,6 +21,7 @@ export default async function SiteLayout({ children, params }: LayoutProps<"/das
           </TabLink>
           <TabLink href={`${base}/pages`}>Pages</TabLink>
           <TabLink href={`${base}/media`}>Media</TabLink>
+          <TabLink href={`${base}/visualizations`}>Visualizations</TabLink>
           <TabLink href={`${base}/appearance`}>Appearance</TabLink>
           <TabLink href={`${base}/analytics`}>Analytics</TabLink>
           <TabLink href={`${base}/settings`}>Settings</TabLink>

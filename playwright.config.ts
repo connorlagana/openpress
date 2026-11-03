@@ -24,6 +24,10 @@ export default defineConfig({
       APP_SECRET: "e2e-secret",
       PASSWORD_ITERATIONS: "1000",
       NEXT_DIST_DIR: ".next-e2e",
+      // The e2e suite verifies the custom visualization sandbox in a real browser.
+      CUSTOM_VIZ: "on",
+      // Every spec signs up from the same IP; keep the production limit (5/hour) out of the way.
+      SIGNUP_RATE_LIMIT_PER_HOUR: "100",
       // Fake credentials: enough to render the buttons and start the flow (tests never reach the providers).
       GOOGLE_CLIENT_ID: "e2e-google-client",
       GOOGLE_CLIENT_SECRET: "e2e-google-secret",

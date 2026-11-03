@@ -175,6 +175,42 @@ export const charts = pgTable(
   (t) => [index("charts_site_idx").on(t.siteId, t.updatedAt)],
 );
 
+// Custom visualizations: agent-written HTML/CSS/JS for chart types OpenPress
+// doesn't draw itself. Posts embed them with {{viz:<id>}}. The code only ever
+// runs inside a sandboxed, opaque-origin iframe (src/app/viz-frame), only when
+// the CUSTOM_VIZ flag is on, and only after a site member approved exactly this
+// code in the dashboard (approved_hash = code_hash). Changing the code resets
+// approval; changing `data` does not.
+export const customVisualizations = pgTable(
+  "custom_visualizations",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    siteId: uuid("site_id").notNull().references(() => sites.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    description: text("description"),
+    html: text("html").notNull().default(""),
+    css: text("css").notNull().default(""),
+    js: text("js").notNull().default(""),
+    data: jsonb("data"),
+    // Accessible fallback / "View data" table: a validated chart dataset.
+    dataTable: jsonb("data_table"),
+    height: integer("height").notNull().default(420),
+    codeHash: text("code_hash").notNull(),
+    status: text("status", { enum: ["pending", "approved", "rejected"] }).notNull().default("pending"),
+    approvedHash: text("approved_hash"),
+    reviewedBy: uuid("reviewed_by").references(() => users.id, { onDelete: "set null" }),
+    reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+    reviewNote: text("review_note"),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    createdVia: text("created_via", { enum: ["dashboard", "agent"] }).notNull().default("dashboard"),
+    agentConnectionId: uuid("agent_connection_id"),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
+  },
+  (t) => [index("custom_viz_site_idx").on(t.siteId, t.updatedAt)],
+);
+
 // Posts and static pages share one table (kind) because they share every
 // lifecycle concern: drafts, publishing, SEO, revisions, redirects.
 export const posts = pgTable(
@@ -365,6 +401,7 @@ export type Site = typeof sites.$inferSelect;
 export type Post = typeof posts.$inferSelect;
 export type Media = typeof media.$inferSelect;
 export type Chart = typeof charts.$inferSelect;
+export type CustomVisualization = typeof customVisualizations.$inferSelect;
 export type NavItem = typeof navItems.$inferSelect;
 export type Plan = typeof plans.$inferSelect;
 export type AgentConnection = typeof agentConnections.$inferSelect;

@@ -1,47 +1,21 @@
 // Chart renderer: spec -> SVG/HTML strings. Pure and dependency-free so the
 // same code draws the server render (no JS needed, crawlable, accessible) and
-// the client re-render at the reader's real width (see chart-enhancer.tsx).
-// Every string that came from a spec goes through esc(); numbers are finite by
-// validation. Colors, fonts and surfaces come from CSS (site.css, .op-chart).
+// the client re-render at the reader's real width and filter state (see
+// chart-enhancer.tsx). Every string that came from a spec goes through esc();
+// numbers are finite by validation; colors are validated hex or values
+// computed here. Fonts and surfaces come from CSS (site.css, .op-chart).
 
-export const MAX_SERIES = 8;
+import { buildColorScale } from "./color";
+import { cellText, defaultFilterState, distinctValues, fieldIndex, fieldLabel, filterControl, formatCell, pointsOf, resolveView, type FilterState, type View } from "./data";
+import { colorStyle, esc, formatValue, r1, truncate } from "./format";
+import { heatmapPlot, scaleValues, scatterPlot, spatialBins, spatialPlot } from "./plots";
+import { MAX_SERIES, isRound, type ChartSpec, type ChartType, type Plot, type PlotItem, type ResolvedSpec, type Tip, type ValueFormat } from "./types";
 
-export type ChartType = "line" | "area" | "bar" | "pie" | "donut";
-export type ValueFormat = { prefix?: string; suffix?: string; decimals?: number };
-export type ChartSpec = {
-  type: ChartType;
-  title: string;
-  subtitle?: string;
-  source?: string;
-  description?: string;
-  labels: string[];
-  series: { name: string; data: (number | null)[] }[];
-  stacked?: boolean;
-  xAxis?: { title?: string };
-  yAxis?: { title?: string; min?: number; max?: number };
-  valueFormat?: ValueFormat;
-};
+export { MAX_SERIES, esc, formatValue, resolveView, defaultFilterState };
+export type { ChartSpec, ChartType, ValueFormat, View, FilterState, Plot, Tip };
 
 export const DEFAULT_WIDTH = 680;
-
-export function esc(s: string): string {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-}
-
-const r1 = (n: number) => Math.round(n * 10) / 10;
-const isRound = (s: Pick<ChartSpec, "type">) => s.type === "pie" || s.type === "donut";
-
-export function formatValue(fmt: ValueFormat | undefined, v: number | null, opts: { compact?: boolean } = {}): string {
-  if (v === null || !Number.isFinite(v)) return "–";
-  const abs = Math.abs(v);
-  const nf =
-    opts.compact && abs >= 10_000
-      ? new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 })
-      : fmt?.decimals !== undefined
-        ? new Intl.NumberFormat("en-US", { minimumFractionDigits: fmt.decimals, maximumFractionDigits: fmt.decimals })
-        : new Intl.NumberFormat("en-US", { maximumFractionDigits: opts.compact ? 1 : 2 });
-  return `${v < 0 ? "−" : ""}${fmt?.prefix ?? ""}${nf.format(abs)}${fmt?.suffix ?? ""}`;
-}
+export const MAX_TABLE_ROWS = 500;
 
 function niceStep(raw: number): number {
   const mag = 10 ** Math.floor(Math.log10(raw));
@@ -49,16 +23,20 @@ function niceStep(raw: number): number {
   return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * mag;
 }
 
+type Inline = Pick<ResolvedSpec, "type" | "labels" | "series" | "stacked" | "yAxis" | "annotations">;
+
 /** Y domain + clean tick values. Bars and areas always include zero. */
-export function yScale(spec: ChartSpec, visible: number[]) {
+export function yScale(spec: Inline | ChartSpec, visible: number[]) {
+  const labels = spec.labels ?? [];
+  const series = spec.series ?? [];
   let lo = Infinity;
   let hi = -Infinity;
   if (spec.type === "bar" && spec.stacked) {
-    spec.labels.forEach((_, i) => {
+    labels.forEach((_, i) => {
       let pos = 0;
       let neg = 0;
       for (const s of visible) {
-        const v = spec.series[s].data[i] ?? 0;
+        const v = series[s].data[i] ?? 0;
         if (v >= 0) pos += v;
         else neg += v;
       }
@@ -67,12 +45,17 @@ export function yScale(spec: ChartSpec, visible: number[]) {
     });
   } else {
     for (const s of visible) {
-      for (const v of spec.series[s].data) {
+      for (const v of series[s].data) {
         if (v === null) continue;
         lo = Math.min(lo, v);
         hi = Math.max(hi, v);
       }
     }
+  }
+  for (const l of spec.annotations?.lines ?? []) {
+    if (l.axis !== "y") continue;
+    lo = Math.min(lo, l.value);
+    hi = Math.max(hi, l.value);
   }
   if (!Number.isFinite(lo)) {
     lo = 0;
@@ -110,19 +93,34 @@ function barPath(x: number, w: number, y0: number, y1: number, round: boolean): 
   );
 }
 
-function truncate(s: string, max: number) {
-  return s.length > max ? s.slice(0, max - 1) + "…" : s;
-}
+export type RenderOpts = { width?: number; hidden?: ReadonlySet<number>; state?: FilterState };
 
-export type RenderOpts = { width?: number; hidden?: ReadonlySet<number> };
+const ariaLabelOf = (spec: ChartSpec) => esc(spec.title + (spec.description ? `. ${spec.description}` : ""));
+
+/** Draw the plot for an already-resolved view (labels/series filled in for the current filters). */
+export function renderPlot(view: View, opts: Omit<RenderOpts, "state"> = {}): Plot {
+  const W = Math.max(240, Math.round(opts.width ?? DEFAULT_WIDTH));
+  const label = ariaLabelOf(view.spec);
+  switch (view.spec.type) {
+    case "scatter":
+      return scatterPlot(view, W, label, opts.hidden);
+    case "heatmap":
+      return heatmapPlot(view, W, label);
+    case "spatial_heatmap":
+      return spatialPlot(view, W, label);
+    case "pie":
+    case "donut":
+      return piePlot(view.spec, W, label);
+    default:
+      return cartesianPlot(view.spec, W, label, opts.hidden);
+  }
+}
 
 export function renderChartSvg(spec: ChartSpec, opts: RenderOpts = {}): string {
-  const W = Math.max(240, Math.round(opts.width ?? DEFAULT_WIDTH));
-  const label = esc(spec.title + (spec.description ? `. ${spec.description}` : ""));
-  return isRound(spec) ? pieSvg(spec, W, label) : cartesianSvg(spec, W, label, opts.hidden);
+  return renderPlot(resolveView(spec, opts.state), opts).svg;
 }
 
-function cartesianSvg(spec: ChartSpec, W: number, ariaLabel: string, hidden?: ReadonlySet<number>): string {
+function cartesianPlot(spec: ResolvedSpec, W: number, ariaLabel: string, hidden?: ReadonlySet<number>): Plot {
   let visible = spec.series.map((_, i) => i).filter((i) => !hidden?.has(i));
   if (!visible.length) visible = spec.series.map((_, i) => i);
   const H = Math.round(Math.min(360, Math.max(220, W * 0.52)));
@@ -141,14 +139,16 @@ function cartesianSvg(spec: ChartSpec, W: number, ariaLabel: string, hidden?: Re
   const plotW = W - left - right;
   const plotH = H - top - bottom;
   const n = spec.labels.length;
-  const band = plotW / n;
+  const band = plotW / Math.max(1, n);
   const y = (v: number) => top + plotH - ((v - min) / (max - min)) * plotH;
   const cx = (i: number) => left + (i + 0.5) * band;
   const baseV = Math.min(Math.max(0, min), max);
   const y0 = y(baseV);
+  const colors = spec.style?.colors;
   const out: string[] = [];
 
   out.push(`<svg class="op-plot" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="${ariaLabel}">`);
+  if (spec.style?.background) out.push(`<rect class="op-bg" x="${left}" y="${top}" width="${r1(plotW)}" height="${r1(plotH)}" fill="${spec.style.background}"/>`);
   out.push(`<g class="op-axis" aria-hidden="true">`);
   ticks.forEach((t, k) => {
     const ty = r1(y(t));
@@ -182,7 +182,7 @@ function cartesianSvg(spec: ChartSpec, W: number, ariaLabel: string, hidden?: Re
             let b = y(acc);
             if (k > 0) a -= sign; // 2px surface gap between stacked segments
             if (k < part.length - 1) b += sign;
-            out.push(`<path class="op-bar op-c${seg.s}" data-i="${i}" d="${barPath(cx(i) - bw / 2, bw, a, b, k === part.length - 1)}"/>`);
+            out.push(`<path class="op-bar op-c${seg.s}" data-i="${i}"${colorStyle(colors, seg.s)} d="${barPath(cx(i) - bw / 2, bw, a, b, k === part.length - 1)}"/>`);
           });
         }
       });
@@ -196,7 +196,7 @@ function cartesianSvg(spec: ChartSpec, W: number, ariaLabel: string, hidden?: Re
           const v = spec.series[s].data[i];
           if (v === null) return;
           const x = cx(i) - groupW / 2 + j * (bw + gap);
-          out.push(`<path class="op-bar op-c${s}" data-i="${i}" d="${barPath(x, bw, y0, y(Math.min(Math.max(v, min), max)), true)}"/>`);
+          out.push(`<path class="op-bar op-c${s}" data-i="${i}"${colorStyle(colors, s)} d="${barPath(x, bw, y0, y(Math.min(Math.max(v, min), max)), true)}"/>`);
         });
       });
     }
@@ -215,7 +215,7 @@ function cartesianSvg(spec: ChartSpec, W: number, ariaLabel: string, hidden?: Re
         } else run.push({ i, v });
       });
       if (run.length) runs.push(run);
-      out.push(`<g class="op-series op-c${s}">`);
+      out.push(`<g class="op-series op-c${s}"${colorStyle(colors, s)}>`);
       for (const r of runs) {
         const pts = r.map((p) => `${r1(cx(p.i))} ${r1(y(p.v))}`);
         if (spec.type === "area" && r.length > 1) {
@@ -230,13 +230,32 @@ function cartesianSvg(spec: ChartSpec, W: number, ariaLabel: string, hidden?: Re
     out.push(`</g>`);
   }
 
+  const refs = (spec.annotations?.lines ?? []).filter((l) => l.axis === "y" && l.value >= min && l.value <= max);
+  if (refs.length) {
+    out.push(`<g class="op-refs" aria-hidden="true">`);
+    for (const l of refs) {
+      const ly = r1(y(l.value));
+      out.push(`<line class="op-ref" x1="${left}" x2="${W - right}" y1="${ly}" y2="${ly}"/>`);
+      if (l.label) out.push(`<text class="op-ref-label" x="${W - right}" y="${r1(ly - 5)}" text-anchor="end">${esc(l.label)}</text>`);
+    }
+    out.push(`</g>`);
+  }
+
+  const items: PlotItem[] = [];
   out.push(`<g class="op-hits">`);
-  spec.labels.forEach((_, i) => out.push(`<rect class="op-hit" data-i="${i}" data-x="${r1(cx(i))}" x="${r1(left + i * band)}" y="${top}" width="${r1(band)}" height="${r1(plotH)}"/>`));
+  spec.labels.forEach((_, i) => {
+    items.push({ i, x: r1(cx(i)), y: top });
+    out.push(`<rect class="op-hit" data-i="${i}" data-x="${r1(cx(i))}" x="${r1(left + i * band)}" y="${top}" width="${r1(band)}" height="${r1(plotH)}"/>`);
+  });
   out.push(`</g></svg>`);
-  return out.join("");
+  const tip = (i: number): Tip => ({
+    head: spec.labels[i] ?? "",
+    rows: visible.map((k) => ({ cls: `op-c${k}`, color: colors?.[k], value: formatValue(fmt, spec.series[k].data[i] ?? null), name: spec.series[k].name })),
+  });
+  return { svg: out.join(""), W, H, mode: "band", items, tip };
 }
 
-function pieSvg(spec: ChartSpec, W: number, ariaLabel: string): string {
+function piePlot(spec: ResolvedSpec, W: number, ariaLabel: string): Plot {
   const H = Math.round(Math.min(280, Math.max(200, W * 0.6)));
   const R = H / 2 - 6;
   const cx = W / 2;
@@ -244,15 +263,18 @@ function pieSvg(spec: ChartSpec, W: number, ariaLabel: string): string {
   const inner = spec.type === "donut" ? R * 0.6 : 0;
   const data = spec.series[0].data;
   const total = data.reduce<number>((a, v) => a + (v ?? 0), 0);
+  const colors = spec.style?.colors;
   const out: string[] = [`<svg class="op-plot" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="${ariaLabel}"><g class="op-marks">`];
   const pt = (a: number, rad: number) => `${r1(cx + rad * Math.cos(a))} ${r1(cy + rad * Math.sin(a))}`;
+  const items: PlotItem[] = [];
   let a0 = -Math.PI / 2;
   data.forEach((v, i) => {
     if (!v || total <= 0) return;
     const frac = v / total;
     if (frac >= 0.9999) {
       const ring = inner ? `M${cx - R} ${cy}a${R} ${R} 0 1 0 ${2 * R} 0a${R} ${R} 0 1 0 ${-2 * R} 0M${cx - inner} ${cy}a${inner} ${inner} 0 1 1 ${2 * inner} 0a${inner} ${inner} 0 1 1 ${-2 * inner} 0Z` : `M${cx - R} ${cy}a${R} ${R} 0 1 0 ${2 * R} 0a${R} ${R} 0 1 0 ${-2 * R} 0Z`;
-      out.push(`<path class="op-slice op-c${i}" data-i="${i}" fill-rule="evenodd" d="${ring}"/>`);
+      out.push(`<path class="op-slice op-c${i}" data-i="${i}"${colorStyle(colors, i)} fill-rule="evenodd" d="${ring}"/>`);
+      items.push({ i, x: cx, y: cy - R });
       return;
     }
     const a1 = a0 + frac * 2 * Math.PI;
@@ -260,51 +282,172 @@ function pieSvg(spec: ChartSpec, W: number, ariaLabel: string): string {
     const d = inner
       ? `M${pt(a0, R)}A${r1(R)} ${r1(R)} 0 ${large} 1 ${pt(a1, R)}L${pt(a1, inner)}A${r1(inner)} ${r1(inner)} 0 ${large} 0 ${pt(a0, inner)}Z`
       : `M${cx} ${cy}L${pt(a0, R)}A${r1(R)} ${r1(R)} 0 ${large} 1 ${pt(a1, R)}Z`;
-    out.push(`<path class="op-slice op-c${i}" data-i="${i}" d="${d}"/>`);
+    out.push(`<path class="op-slice op-c${i}" data-i="${i}"${colorStyle(colors, i)} d="${d}"/>`);
+    const mid = (a0 + a1) / 2;
+    items.push({ i, x: r1(cx + R * 0.8 * Math.cos(mid)), y: r1(cy + R * 0.8 * Math.sin(mid)) });
     a0 = a1;
   });
   out.push(`</g></svg>`);
-  return out.join("");
+  const tip = (i: number): Tip => {
+    const pct = total > 0 ? ` · ${Math.round(((data[i] ?? 0) / total) * 100)}%` : "";
+    return { head: spec.labels[i] ?? "", rows: [{ cls: `op-c${i}`, color: colors?.[i], value: formatValue(spec.valueFormat, data[i] ?? null) + pct, name: spec.series[0].name }] };
+  };
+  return { svg: out.join(""), W, H, mode: "slice", items, tip };
 }
 
-function legendHtml(spec: ChartSpec): string {
+// ---------- Legend ----------
+
+function scaleLegendHtml(view: View): string {
+  const sv = scaleValues(view);
+  if (!sv) return "";
+  const scale = buildColorScale(sv.scheme?.colorScale, sv.values);
+  const fmt = view.spec.valueFormat;
+  const ticks = scale.domain.map((v) => `<span>${esc(formatValue(fmt, r1(v * 100) / 100, { compact: true }))}</span>`).join("");
+  const title = view.spec.style?.legend?.title ?? (view.spec.type === "spatial_heatmap" ? (spatialBins(view.spec, []).how === "count" ? "Density" : "Value") : "");
+  return `<div class="op-scale"${title ? "" : ' aria-hidden="true"'}>${title ? `<span class="op-scale-title">${esc(title)}</span>` : ""}<span class="op-scale-bar" aria-hidden="true" style="background:${scale.gradient()}"></span><span class="op-scale-ticks" aria-hidden="true">${ticks}</span></div>`;
+}
+
+export function legendHtml(view: View): string {
+  const spec = view.spec;
+  if (spec.style?.legend?.show === false) return "";
+  const colors = spec.style?.colors;
+  const title = spec.style?.legend?.title && spec.type !== "heatmap" && spec.type !== "spatial_heatmap" ? `<span class="op-legend-title">${esc(spec.style.legend.title)}</span>` : "";
   if (isRound(spec)) {
-    const data = spec.series[0].data;
+    const data = spec.series[0]?.data ?? [];
     const total = data.reduce<number>((a, v) => a + (v ?? 0), 0);
-    return `<ul class="op-legend">${spec.labels
-      .map((l, i) => `<li><span class="op-key op-key-rect op-c${i}" aria-hidden="true"></span>${esc(l)} <span class="op-legend-v">${total > 0 ? Math.round(((data[i] ?? 0) / total) * 100) : 0}%</span></li>`)
+    return `<ul class="op-legend">${title ? `<li>${title}</li>` : ""}${spec.labels
+      .map((l, i) => `<li><span class="op-key op-key-rect op-c${i}" aria-hidden="true"${colorStyle(colors, i)}></span>${esc(l)} <span class="op-legend-v">${total > 0 ? Math.round(((data[i] ?? 0) / total) * 100) : 0}%</span></li>`)
       .join("")}</ul>`;
   }
-  if (spec.series.length < 2) return "";
-  const shape = spec.type === "bar" ? "rect" : "line";
+  if (spec.type === "heatmap" || spec.type === "spatial_heatmap") return scaleLegendHtml(view);
+  let names = spec.series.map((s) => s.name);
+  let shape = spec.type === "bar" ? "rect" : "line";
+  let extra = "";
+  if (spec.type === "scatter") {
+    names = pointsOf(spec, view.rows).seriesNames;
+    shape = "dot";
+    extra = scaleLegendHtml(view);
+  }
+  if (names.length < 2) return extra;
   // Toggles start disabled; the enhancer enables them once it can re-render.
-  return `<div class="op-legend" role="group" aria-label="Series">${spec.series
-    .map((s, i) => `<button type="button" class="op-toggle" data-s="${i}" aria-pressed="true" disabled><span class="op-key op-key-${shape} op-c${i}" aria-hidden="true"></span>${esc(s.name)}</button>`)
-    .join("")}</div>`;
+  return `<div class="op-legend" role="group" aria-label="${title ? esc(spec.style!.legend!.title!) : "Series"}">${title}${names
+    .map((name, i) => `<button type="button" class="op-toggle" data-s="${i}" aria-pressed="true" disabled><span class="op-key op-key-${shape} op-c${i}" aria-hidden="true"${colorStyle(colors, i)}></span>${esc(name)}</button>`)
+    .join("")}</div>${extra}`;
 }
 
-export function chartTableHtml(spec: ChartSpec): string {
+// ---------- Filters ----------
+
+export function filtersHtml(spec: ChartSpec, state: FilterState, enabled = false): string {
+  const ds = spec.dataset;
+  if (!ds || !spec.filters?.length) return "";
+  const dis = enabled ? "" : " disabled";
+  const parts = spec.filters.map((f, i) => {
+    const col = fieldIndex(ds, f.field);
+    const field = ds.fields[col];
+    const label = esc(f.label ?? (field ? fieldLabel(field) : f.field));
+    const control = filterControl(f, field);
+    const st = state[i];
+    if (control === "range") {
+      const vals = distinctValues(ds, col);
+      const isDate = field?.type === "date";
+      const v = (x: unknown) => (x === undefined || x === null ? "" : esc(isDate ? String(x).slice(0, 10) : String(x)));
+      const lo = v(vals[0]);
+      const hi = v(vals[vals.length - 1]);
+      const cur = st?.kind === "range" ? st : { min: undefined, max: undefined };
+      const input = (b: "min" | "max", text: string) =>
+        `<label><span>${text}</span><input type="${isDate ? "date" : "number"}" data-f="${i}" data-b="${b}" min="${lo}" max="${hi}" value="${v(cur[b])}" placeholder="${b === "min" ? lo : hi}"${isDate ? "" : ' step="any"'}${dis}></label>`;
+      return `<div class="op-filter op-filter-range" role="group" aria-label="${label}"><span class="op-filter-label" aria-hidden="true">${label}</span>${input("min", "From")}${input("max", "To")}</div>`;
+    }
+    const vals = distinctValues(ds, col);
+    const selected = st?.kind === "set" ? st.values : null;
+    const on = (x: unknown) => (selected ? selected.includes(x as never) : true);
+    if (control === "buttons") {
+      return `<div class="op-filter" role="group" aria-label="${label}"><span class="op-filter-label" aria-hidden="true">${label}</span><span class="op-chips">${vals
+        .map((x, k) => `<button type="button" class="op-chip" data-f="${i}" data-k="${k}" aria-pressed="${on(x)}"${dis}>${esc(truncate(cellText(x), 40))}</button>`)
+        .join("")}</span></div>`;
+    }
+    const all = f.allowAll === false ? "" : `<option value="*"${selected ? "" : " selected"}>All</option>`;
+    const opts = vals.map((x, k) => `<option value="${k}"${selected && selected.length === 1 && selected[0] === x ? " selected" : ""}>${esc(truncate(cellText(x), 60))}</option>`).join("");
+    return `<label class="op-filter"><span class="op-filter-label">${label}</span><select data-f="${i}"${dis}>${all}${opts}</select></label>`;
+  });
+  return `<div class="op-filters" role="group" aria-label="Filter the chart">${parts.join("")}</div>`;
+}
+
+export function filterStatusText(view: View, spec: ChartSpec): string {
+  if (!spec.filters?.length || !spec.dataset) return "";
+  return `Showing ${view.rows.length.toLocaleString("en-US")} of ${view.total.toLocaleString("en-US")} records`;
+}
+
+// ---------- Data table ----------
+
+export function chartTableHtml(spec: Pick<ChartSpec, "type" | "labels" | "series" | "xAxis" | "valueFormat">): string {
   const fmt = spec.valueFormat;
-  const head = isRound(spec) ? [spec.xAxis?.title ?? "", spec.series[0].name] : [spec.xAxis?.title ?? "", ...spec.series.map((s) => s.name)];
-  const rows = spec.labels.map(
-    (l, i) => `<tr><th scope="row">${esc(l)}</th>${spec.series.map((s) => `<td>${esc(formatValue(fmt, s.data[i] ?? null))}</td>`).join("")}</tr>`,
-  );
+  const labels = spec.labels ?? [];
+  const series = spec.series ?? [];
+  const head = isRound(spec) ? [spec.xAxis?.title ?? "", series[0]?.name ?? ""] : [spec.xAxis?.title ?? "", ...series.map((s) => s.name)];
+  const rows = labels.map((l, i) => `<tr><th scope="row">${esc(l)}</th>${series.map((s) => `<td>${esc(formatValue(fmt, s.data[i] ?? null))}</td>`).join("")}</tr>`);
   return `<table><thead><tr>${head.map((h) => `<th scope="col">${esc(h)}</th>`).join("")}</tr></thead><tbody>${rows.join("")}</tbody></table>`;
 }
 
+function table(head: string[], body: string[][], rowHeader = true): string {
+  return `<table><thead><tr>${head.map((h) => `<th scope="col">${esc(h)}</th>`).join("")}</tr></thead><tbody>${body
+    .map((r) => `<tr>${r.map((c, k) => (k === 0 && rowHeader ? `<th scope="row">${esc(c)}</th>` : `<td>${esc(c)}</td>`)).join("")}</tr>`)
+    .join("")}</tbody></table>`;
+}
+
+/** The accessible data behind the current view. */
+export function viewTableHtml(view: View): string {
+  const spec = view.spec;
+  const fmt = spec.valueFormat;
+  if (spec.type === "heatmap") {
+    return table([spec.yAxis?.title ?? "", ...spec.labels], spec.series.map((s) => [s.name, ...s.data.map((v) => formatValue(fmt, v))]));
+  }
+  if (spec.type === "spatial_heatmap") {
+    const grid = spatialBins(spec, pointsOf(spec, view.rows).points);
+    const bins = [...grid.bins].sort((a, b) => b.value - a.value).slice(0, 200);
+    const valueHead = grid.how === "count" ? [] : [spec.style?.legend?.title ?? (grid.how === "mean" ? "Average" : "Total")];
+    const note = grid.bins.length > bins.length ? `<p class="op-table-note">Top ${bins.length} of ${grid.bins.length} zones.</p>` : "";
+    return (
+      table(
+        ["X range", "Y range", "Records", ...valueHead],
+        bins.map((b) => [`${r1(b.x0)}–${r1(b.x1)}`, `${r1(b.y0)}–${r1(b.y1)}`, String(b.n), ...(grid.how === "count" ? [] : [formatValue(fmt, b.value)])]),
+        false,
+      ) + note
+    );
+  }
+  if (spec.type === "scatter" && spec.dataset) {
+    const ds = spec.dataset;
+    const rows = view.rows.slice(0, MAX_TABLE_ROWS);
+    const labelCol = fieldIndex(ds, spec.encoding?.label);
+    const order = labelCol >= 0 ? [labelCol, ...ds.fields.map((_, i) => i).filter((i) => i !== labelCol)] : ds.fields.map((_, i) => i);
+    const note = view.rows.length > rows.length ? `<p class="op-table-note">First ${rows.length} of ${view.rows.length} rows.</p>` : "";
+    return table(order.map((i) => fieldLabel(ds.fields[i])), rows.map((r) => order.map((i) => formatCell(ds.fields[i], r[i]))), labelCol >= 0) + note;
+  }
+  return chartTableHtml(spec);
+}
+
+// ---------- Figure ----------
+
 /** Serialize for an inline JSON <script>; escapes anything that could end the element. */
-export function specJson(spec: ChartSpec): string {
+export function specJson(spec: unknown): string {
   return JSON.stringify(spec).replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026").replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
 }
 
-/** The full embed: caption, legend, SVG, source, data table, spec for the enhancer. */
+/** The full embed: caption, filters, legend, SVG, source, data table, spec for the enhancer. */
 export function chartFigureHtml(id: string, spec: ChartSpec): string {
+  const view = resolveView(spec);
+  const bottom = spec.style?.legend?.position === "bottom";
+  const legend = `<div class="op-legend-slot">${legendHtml(view)}</div>`;
+  const status = filterStatusText(view, spec);
   return [
-    `<figure class="op-chart" data-chart="${esc(id)}" data-type="${spec.type}">`,
+    `<figure class="op-chart${bottom ? " op-legend-bottom" : ""}" data-chart="${esc(id)}" data-type="${spec.type}">`,
     `<figcaption class="op-chart-head"><span class="op-chart-title">${esc(spec.title)}</span>${spec.subtitle ? `<span class="op-chart-sub">${esc(spec.subtitle)}</span>` : ""}</figcaption>`,
-    legendHtml(spec),
-    `<div class="op-chart-body">${renderChartSvg(spec)}<div class="op-tip" role="status" hidden></div></div>`,
-    `<div class="op-chart-foot">${spec.source ? `<span class="op-chart-source">Source: ${esc(spec.source)}</span>` : "<span></span>"}<details class="op-chart-data"><summary>View data</summary><div class="op-chart-table">${chartTableHtml(spec)}</div></details></div>`,
+    filtersHtml(spec, defaultFilterState(spec)),
+    bottom ? "" : legend,
+    `<div class="op-chart-body">${renderPlot(view).svg}<div class="op-tip" role="status" hidden></div></div>`,
+    bottom ? legend : "",
+    `<p class="op-chart-note"${view.note || status ? "" : " hidden"} aria-live="polite">${esc([status, view.note].filter(Boolean).join(". "))}</p>`,
+    `<div class="op-chart-foot">${spec.source ? `<span class="op-chart-source">Source: ${esc(spec.source)}</span>` : "<span></span>"}<details class="op-chart-data"><summary>View data</summary><div class="op-chart-table">${viewTableHtml(view)}</div></details></div>`,
     `<script type="application/json" class="op-chart-spec">${specJson(spec)}</script>`,
     `</figure>`,
   ].join("");
@@ -312,7 +455,7 @@ export function chartFigureHtml(id: string, spec: ChartSpec): string {
 
 /** Charts in feeds: readers strip SVG and scripts, so send the title and the data. */
 export function chartFeedHtml(spec: ChartSpec): string {
-  return `<figure><figcaption><strong>${esc(spec.title)}</strong>${spec.subtitle ? ` · ${esc(spec.subtitle)}` : ""}</figcaption>${chartTableHtml(spec)}${spec.source ? `<p><small>Source: ${esc(spec.source)}</small></p>` : ""}</figure>`;
+  return `<figure><figcaption><strong>${esc(spec.title)}</strong>${spec.subtitle ? ` · ${esc(spec.subtitle)}` : ""}</figcaption>${viewTableHtml(resolveView(spec))}${spec.source ? `<p><small>Source: ${esc(spec.source)}</small></p>` : ""}</figure>`;
 }
 
 // ---------- Embedding in posts ----------

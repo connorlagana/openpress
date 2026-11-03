@@ -47,6 +47,7 @@ Content: `create_post` (drafts; `kind: post|page`), `get_post`, `list_posts`, `u
 Media: `upload_media` (`sourceUrl` or `dataBase64`), `list_media`, `delete_media`
 Appearance: `list_templates`, `set_template`, `update_theme`
 SEO/analytics: `update_post_seo`, `get_site_analytics`
+Visualizations: `get_visualization_capabilities`, `create_chart`, `get_chart`, `list_charts`, `update_chart`, `delete_chart`; with `CUSTOM_VIZ=on` also `create_custom_visualization`, `get_custom_visualization`, `list_custom_visualizations`, `update_custom_visualization`, `delete_custom_visualization` (see [VISUALIZATIONS.md](./VISUALIZATIONS.md))
 
 Every tool has a JSON Schema for input and output and MCP annotations (`readOnlyHint`, `destructiveHint`, `idempotentHint`). The full live reference is at `/docs/mcp`.
 

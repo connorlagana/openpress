@@ -169,8 +169,8 @@ export function Article({ site, post }: { site: PublicSite; post: PublicPost }) 
       ) : null}
       {/* contentHtml is sanitized with an allow-list when saved. */}
       <div className="fs-prose" dangerouslySetInnerHTML={{ __html: post.contentHtml }} />
-      {/* Charts are drawn by OpenPress from validated data (lib/charts/render.ts) and enhanced on the client. */}
-      {post.contentHtml.includes('class="op-chart"') ? <ChartEnhancer /> : null}
+      {/* Charts are drawn by OpenPress from validated data (lib/charts/render.ts) and enhanced on the client; custom visualizations are sandboxed iframes (lib/viz). */}
+      {post.contentHtml.includes('class="op-chart') || post.contentHtml.includes('class="op-viz') ? <ChartEnhancer /> : null}
       {isPost ? (
         <footer className="fs-article-footer">
           {post.tags.length ? (
