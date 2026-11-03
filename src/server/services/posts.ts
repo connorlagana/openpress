@@ -39,7 +39,11 @@ export const createPostInput = z
   })
   .merge(seoInput);
 
+// Zod 4's .partial() keeps .default() values, so `content` must be redefined
+// without its create-time default: otherwise a patch that omits it (e.g. only
+// coverMediaId or SEO fields) parses to content: "" and wipes the body.
 export const updatePostInput = createPostInput.omit({ siteId: true, kind: true }).partial().extend({
+  content: createPostInput.shape.content.removeDefault().optional().describe("New Markdown body. Omit to keep the current body."),
   slug: slugSchema.optional().describe("Changing the slug of a published post creates a 301 redirect from the old URL."),
 });
 

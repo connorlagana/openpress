@@ -10,7 +10,7 @@ import { createPost, setPublished, updatePost } from "@/server/services/posts";
 import { rateLimit } from "@/server/services/ratelimit";
 import { createSite, updateSiteSettings } from "@/server/services/sites";
 import * as storage from "@/server/storage";
-import { makeUser } from "../helpers";
+import { call, connectWithApiKey, makeUser } from "../helpers";
 
 const PNG = Buffer.from("89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000d4944415478da63f8cfc0f01f0005000201a5d4c5ba0000000049454e44ae426082", "hex");
 
@@ -61,6 +61,27 @@ describe("content lifecycle", () => {
     const db = await getDb();
     const revs = await db.execute(sql`select count(*)::int as n from post_revisions where post_id = ${p.id}`);
     expect(Number((Array.isArray(revs) ? revs : (revs as any).rows)[0].n)).toBe(3);
+  });
+
+  it("keeps the body when an update only changes the cover image or SEO fields", async () => {
+    // Regression: update_post / update_post_seo without `content` used to wipe the body.
+    const { user } = await makeUser("cover");
+    const site = await createSite({ kind: "user", userId: user.id }, { name: "Cover Site" });
+    const { client } = await connectWithApiKey(user.id);
+    const body = "First paragraph.\n\nSecond paragraph.";
+    const post = (await call(client, "create_post", { siteId: site.id, title: "Has a body", content: body })).structuredContent!.post;
+    const media = (await call(client, "upload_media", { siteId: site.id, dataBase64: PNG.toString("base64"), filename: "cover.png", altText: "Cover" })).structuredContent!.media;
+
+    const withCover = await call(client, "update_post", { postId: post.id, coverMediaId: media.id });
+    expect(withCover.isError, withCover.content[0]?.text).toBeFalsy();
+    await call(client, "update_post_seo", { postId: post.id, seoTitle: "Better title" });
+    await call(client, "update_post", { postId: post.id, coverMediaId: null });
+
+    const got = (await call(client, "get_post", { postId: post.id })).structuredContent!.post;
+    expect(got.content).toBe(body);
+    // Explicitly sending content still replaces it, including with an empty body.
+    await call(client, "update_post", { postId: post.id, content: "" });
+    expect((await call(client, "get_post", { postId: post.id })).structuredContent!.post.content).toBe("");
   });
 
   it("excludes noindex posts from the sitemap", async () => {
