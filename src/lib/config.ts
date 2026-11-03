@@ -36,14 +36,12 @@ export const config = {
   },
   /**
    * Custom visualizations (agent-written HTML/CSS/JS in a sandboxed iframe).
-   * OFF unless CUSTOM_VIZ=on: until the sandbox has had an independent security
-   * review, no custom code is stored or executed. VIZ_SANDBOX_ORIGIN should be a
-   * separate registrable domain (e.g. https://openpress-usercontent.net) routed
-   * to this app; unset = the app origin (still an opaque-origin sandbox).
+   * VIZ_SANDBOX_ORIGIN should be a separate registrable domain (e.g.
+   * https://openpress-usercontent.net) routed to this app; unset = the app
+   * origin (still an opaque-origin sandbox).
    */
   get customViz() {
-    const origin = (process.env.VIZ_SANDBOX_ORIGIN || this.appUrl).replace(/\/+$/, "");
-    return { enabled: process.env.CUSTOM_VIZ === "on", origin };
+    return { origin: (process.env.VIZ_SANDBOX_ORIGIN || this.appUrl).replace(/\/+$/, "") };
   },
   /** Sign-ups per IP per hour. Override only for test servers that sign up many accounts. */
   get signupRateLimitPerHour() {

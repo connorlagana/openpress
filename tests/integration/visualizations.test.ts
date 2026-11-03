@@ -1,5 +1,5 @@
 import { eq, sql } from "drizzle-orm";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { GET as frameRoute } from "@/app/viz-frame/[id]/route";
 import { GET as rss } from "@/app/site/[subdomain]/rss.xml/route";
 import { getDb, withUser } from "@/db/client";
@@ -34,7 +34,7 @@ describe("declarative visualizations over MCP", () => {
     expect(res.isError).toBeFalsy();
     expect(res.structuredContent!.schemaVersion).toBe(2);
     expect(res.structuredContent!.chartTypes.map((t: { type: string }) => t.type)).toContain("spatial_heatmap");
-    expect(res.structuredContent!.customVisualizations.enabled).toBe(false);
+    expect(res.structuredContent!.customVisualizations.enabled).toBe(true);
     const full = await call(client, "get_visualization_capabilities", { includeJsonSchema: true });
     expect(full.structuredContent!.jsonSchema.properties.filters).toBeTruthy();
   });
@@ -115,184 +115,160 @@ describe("declarative visualizations over MCP", () => {
 });
 
 describe("custom visualizations", () => {
-  const prev = { flag: process.env.CUSTOM_VIZ, origin: process.env.VIZ_SANDBOX_ORIGIN };
-  const on = () => (process.env.CUSTOM_VIZ = "on");
-  const off = () => delete process.env.CUSTOM_VIZ;
-  afterAll(() => {
-    if (prev.flag === undefined) delete process.env.CUSTOM_VIZ;
-    else process.env.CUSTOM_VIZ = prev.flag;
-  });
+  const prev = { origin: process.env.VIZ_SANDBOX_ORIGIN };
 
-  it("are unavailable while the feature flag is off", async () => {
-    off();
-    const { user, actor } = await makeUser("cviz-off");
+  it("are always available to agents", async () => {
+    const { user } = await makeUser("cviz-tools");
     const { client } = await connectWithApiKey(user.id);
     const names = (await client.listTools()).tools.map((t) => t.name);
-    expect(names).not.toContain("create_custom_visualization");
-    const site = await createSite(actor, { name: "Flag Off" });
-    await expect(createCustomViz(actor, { siteId: site.id, ...DEMO_CUSTOM_VIZ })).rejects.toMatchObject({ code: "FORBIDDEN" });
-
-    // Even an approved row (e.g. from before the flag was turned off) never runs.
-    on();
-    const viz = await createCustomViz(actor, { siteId: site.id, ...DEMO_CUSTOM_VIZ });
-    await reviewCustomViz(actor, viz.id, { decision: "approve", codeHash: viz.codeHash });
-    const post = await createPost(actor, { siteId: site.id, title: "Flagged", content: viz.embed });
-    await call(client, "publish_post", { postId: post.id });
-    off();
-    const html = (await getPublishedPost(site.subdomain, "post", post.slug))!.post.contentHtml;
-    expect(html).not.toContain("<iframe");
-    expect(html).toContain("Win probability clock");
-    expect(html).toContain("<table>");
-    expect((await frame(`${config.appUrl}/viz-frame/${viz.id}`)).status).toBe(404);
+    expect(names).toEqual(expect.arrayContaining(["create_custom_visualization", "get_custom_visualization", "list_custom_visualizations", "update_custom_visualization", "delete_custom_visualization"]));
   });
 
-  describe("with the flag on", () => {
-    beforeAll(on);
 
-    it("runs only after a person approves the exact code, and re-locks on code changes", async () => {
-      const { user, actor } = await makeUser("cviz");
-      const { client } = await connectWithApiKey(user.id);
-      const site = (await call(client, "create_site", { name: "Viz Lab" })).structuredContent!.site;
-      const created = await call(client, "create_custom_visualization", { siteId: site.id, ...DEMO_CUSTOM_VIZ });
-      expect(created.isError, created.content[0]?.text).toBeFalsy();
-      const viz = created.structuredContent!.visualization;
-      expect(viz.status).toBe("pending_approval");
-      expect(viz.embed).toBe(`{{viz:${viz.id}}}`);
-      expect(viz.approvalUrl).toBe(`${config.appUrl}/dashboard/sites/${site.id}/visualizations/${viz.id}`);
 
-      const post = await publishWith(client, site.id, "Clock", `Intro\n\n${viz.embed}`);
-      const read = async () => (await getPublishedPost(site.subdomain, "post", post.slug))!.post.contentHtml;
+  it("runs only after a person approves the exact code, and re-locks on code changes", async () => {
+    const { user, actor } = await makeUser("cviz");
+    const { client } = await connectWithApiKey(user.id);
+    const site = (await call(client, "create_site", { name: "Viz Lab" })).structuredContent!.site;
+    const created = await call(client, "create_custom_visualization", { siteId: site.id, ...DEMO_CUSTOM_VIZ });
+    expect(created.isError, created.content[0]?.text).toBeFalsy();
+    const viz = created.structuredContent!.visualization;
+    expect(viz.status).toBe("pending_approval");
+    expect(viz.embed).toBe(`{{viz:${viz.id}}}`);
+    expect(viz.approvalUrl).toBe(`${config.appUrl}/dashboard/sites/${site.id}/visualizations/${viz.id}`);
 
-      // Pending: fallback only, frame refuses to serve.
-      expect(await read()).not.toContain("<iframe");
-      expect(await read()).not.toContain("Awaiting approval"); // previews only
+    const post = await publishWith(client, site.id, "Clock", `Intro\n\n${viz.embed}`);
+    const read = async () => (await getPublishedPost(site.subdomain, "post", post.slug))!.post.contentHtml;
+
+    // Pending: fallback only, frame refuses to serve.
+    expect(await read()).not.toContain("<iframe");
+    expect(await read()).not.toContain("Awaiting approval"); // previews only
+    expect((await frame(`${config.appUrl}/viz-frame/${viz.id}`)).status).toBe(404);
+
+    // Agents can't approve: there is no tool, and the service refuses agent actors.
+    expect((await client.listTools()).tools.map((t) => t.name)).not.toContain("approve_custom_visualization");
+    const agentActor: Actor = { kind: "agent", userId: user.id, connectionId: "00000000-0000-4000-8000-000000000001", clientName: "x", scopes: new Set(["content:write", "sites:read"]), siteIds: "all", confirmPublish: false };
+    await expect(reviewCustomViz(agentActor, viz.id, { decision: "approve", codeHash: viz.codeHash })).rejects.toMatchObject({ code: "FORBIDDEN" });
+
+    // The reviewer's preview link runs the pending code, bound to that code.
+    const preview = await previewFrameUrl(actor, viz.id);
+    const pres = await frame(preview);
+    expect(pres.status).toBe(200);
+    expect(pres.headers.get("cache-control")).toBe("no-store");
+    const tampered = new URL(preview);
+    tampered.searchParams.set("preview", tampered.searchParams.get("preview")!.replace(/.$/, (c) => (c === "0" ? "1" : "0")));
+    expect((await frame(tampered.toString())).status).toBe(404);
+
+    // Approving a stale hash fails; the right one works.
+    await expect(reviewCustomViz(actor, viz.id, { decision: "approve", codeHash: "0".repeat(64) })).rejects.toMatchObject({ code: "CONFLICT" });
+    const approved = await reviewCustomViz(actor, viz.id, { decision: "approve", codeHash: viz.codeHash });
+    expect(approved.status).toBe("approved");
+
+    const html = await read();
+    const src = html.match(/<iframe data-src="([^"]+)"/)![1].replace(/&amp;/g, "&");
+    expect(html).toContain('sandbox="allow-scripts"');
+    expect(html).not.toContain("allow-same-origin");
+    expect(src.startsWith(`${config.customViz.origin}/viz-frame/${viz.id}?v=`)).toBe(true);
+
+    const res = await frame(src);
+    expect(res.status).toBe(200);
+    const csp = res.headers.get("content-security-policy")!;
+    expect(csp).toContain("sandbox allow-scripts");
+    expect(csp).toContain("connect-src 'none'");
+    expect(csp).toContain(`frame-ancestors ${config.siteUrl(site.subdomain)} ${config.appUrl}`);
+    expect(res.headers.get("x-frame-options")).toBeNull();
+    expect(res.headers.get("permissions-policy")).toContain("camera=()");
+    const body = await res.text();
+    expect(body).toContain("window.OpenPress");
+    expect(body).toContain('"home":"Hawks"');
+
+    // Data-only update: stays approved, new data is served, page URL changes (cache bust).
+    const dataOnly = await call(client, "update_custom_visualization", { vizId: viz.id, data: { home: "Owls", samples: [{ minute: 1, p: 0.5 }] } });
+    expect(dataOnly.structuredContent!.visualization.status).toBe("approved");
+    const src2 = (await read()).match(/<iframe data-src="([^"]+)"/)![1].replace(/&amp;/g, "&");
+    expect(src2).not.toBe(src);
+    expect(await (await frame(src2)).text()).toContain('"home":"Owls"');
+
+    // Code change: approval resets, the iframe disappears, the frame stops serving.
+    const codeChange = await call(client, "update_custom_visualization", { vizId: viz.id, js: "document.body.textContent = 'changed'" });
+    expect(codeChange.structuredContent!.visualization.status).toBe("pending_approval");
+    expect(codeChange.structuredContent!.visualization.next).toContain("approval was reset");
+    expect(await read()).not.toContain("<iframe");
+    expect((await frame(src2)).status).toBe(404);
+    // An old preview token is bound to the old code.
+    expect((await frame(preview)).status).toBe(404);
+  });
+
+  it("validates code and enforces site isolation", async () => {
+    const a = await makeUser("cviz-a");
+    const b = await makeUser("cviz-b");
+    const siteA = await createSite(a.actor, { name: "Viz Owner" });
+    const siteB = await createSite(b.actor, { name: "Viz Thief" });
+    const { client } = await connectWithApiKey(a.user.id);
+    const bad = await call(client, "create_custom_visualization", { siteId: siteA.id, title: "x", js: "1", html: "<script src=//evil.example/x.js></script>" });
+    expect(bad.isError).toBe(true);
+    expect(bad.content[0].text).toContain("html may not contain <script>");
+
+    const viz = await createCustomViz(a.actor, { siteId: siteA.id, ...DEMO_CUSTOM_VIZ });
+    await expect(getCustomViz(b.actor, viz.id)).rejects.toMatchObject({ code: "NOT_FOUND" });
+    await expect(updateCustomViz(b.actor, viz.id, { js: "steal()" })).rejects.toMatchObject({ code: "NOT_FOUND" });
+    await expect(reviewCustomViz(b.actor, viz.id, { decision: "approve", codeHash: viz.codeHash })).rejects.toMatchObject({ code: "NOT_FOUND" });
+    await expect(createCustomViz(b.actor, { siteId: siteA.id, ...DEMO_CUSTOM_VIZ })).rejects.toMatchObject({ code: "NOT_FOUND" });
+    await expect(createPost(b.actor, { siteId: siteB.id, title: "steal", content: viz.embed })).rejects.toMatchObject({ code: "VALIDATION" });
+    await withUser(b.user.id, async (tx) => {
+      expect(await tx.select().from(customVisualizations).where(eq(customVisualizations.id, viz.id))).toEqual([]);
+      expect(await tx.update(customVisualizations).set({ status: "approved" }).where(eq(customVisualizations.id, viz.id)).returning()).toEqual([]);
+    });
+
+    // Read-only connections can't create; site-restricted ones can't reach other sites.
+    const ro = await connectWithApiKey(a.user.id, { scopes: ["sites:read"] });
+    expect((await call(ro.client, "create_custom_visualization", { siteId: siteA.id, ...DEMO_CUSTOM_VIZ })).structuredContent!.error.code).toBe("FORBIDDEN");
+    const restricted = await connectWithApiKey(a.user.id, { siteIds: [siteB.id] });
+    expect((await call(restricted.client, "get_custom_visualization", { vizId: viz.id })).structuredContent!.error.code).toBe("FORBIDDEN");
+  });
+
+  it("stops serving for suspended accounts and requires confirmation to delete", async () => {
+    const { user, actor } = await makeUser("cviz-susp");
+    const site = await createSite(actor, { name: "Suspend Viz" });
+    const viz = await createCustomViz(actor, { siteId: site.id, ...DEMO_CUSTOM_VIZ });
+    await reviewCustomViz(actor, viz.id, { decision: "approve", codeHash: viz.codeHash });
+    const url = `${config.appUrl}/viz-frame/${viz.id}`;
+    expect((await frame(url)).status).toBe(200);
+
+    const { client } = await connectWithApiKey(user.id);
+    const first = await call(client, "delete_custom_visualization", { vizId: viz.id });
+    expect(first.structuredContent!.status).toBe("confirmation_required");
+    expect((await frame(url)).status).toBe(200);
+
+    await (await getDb()).execute(sql`update users set suspended_at = now() where id = ${user.id}`);
+    expect((await frame(url)).status).toBe(404);
+  });
+
+  it("only serves frames from the configured sandbox origin", async () => {
+    const { actor } = await makeUser("cviz-origin");
+    const site = await createSite(actor, { name: "Origin Viz" });
+    const viz = await createCustomViz(actor, { siteId: site.id, ...DEMO_CUSTOM_VIZ });
+    await reviewCustomViz(actor, viz.id, { decision: "approve", codeHash: viz.codeHash });
+    process.env.VIZ_SANDBOX_ORIGIN = "https://usercontent.example";
+    try {
       expect((await frame(`${config.appUrl}/viz-frame/${viz.id}`)).status).toBe(404);
+      expect((await frame(`https://usercontent.example/viz-frame/${viz.id}`)).status).toBe(200);
+    } finally {
+      if (prev.origin === undefined) delete process.env.VIZ_SANDBOX_ORIGIN;
+      else process.env.VIZ_SANDBOX_ORIGIN = prev.origin;
+    }
+  });
 
-      // Agents can't approve: there is no tool, and the service refuses agent actors.
-      expect((await client.listTools()).tools.map((t) => t.name)).not.toContain("approve_custom_visualization");
-      const agentActor: Actor = { kind: "agent", userId: user.id, connectionId: "00000000-0000-4000-8000-000000000001", clientName: "x", scopes: new Set(["content:write", "sites:read"]), siteIds: "all", confirmPublish: false };
-      await expect(reviewCustomViz(agentActor, viz.id, { decision: "approve", codeHash: viz.codeHash })).rejects.toMatchObject({ code: "FORBIDDEN" });
-
-      // The reviewer's preview link runs the pending code, bound to that code.
-      const preview = await previewFrameUrl(actor, viz.id);
-      const pres = await frame(preview);
-      expect(pres.status).toBe(200);
-      expect(pres.headers.get("cache-control")).toBe("no-store");
-      const tampered = new URL(preview);
-      tampered.searchParams.set("preview", tampered.searchParams.get("preview")!.replace(/.$/, (c) => (c === "0" ? "1" : "0")));
-      expect((await frame(tampered.toString())).status).toBe(404);
-
-      // Approving a stale hash fails; the right one works.
-      await expect(reviewCustomViz(actor, viz.id, { decision: "approve", codeHash: "0".repeat(64) })).rejects.toMatchObject({ code: "CONFLICT" });
-      const approved = await reviewCustomViz(actor, viz.id, { decision: "approve", codeHash: viz.codeHash });
-      expect(approved.status).toBe("approved");
-
-      const html = await read();
-      const src = html.match(/<iframe data-src="([^"]+)"/)![1].replace(/&amp;/g, "&");
-      expect(html).toContain('sandbox="allow-scripts"');
-      expect(html).not.toContain("allow-same-origin");
-      expect(src.startsWith(`${config.customViz.origin}/viz-frame/${viz.id}?v=`)).toBe(true);
-
-      const res = await frame(src);
-      expect(res.status).toBe(200);
-      const csp = res.headers.get("content-security-policy")!;
-      expect(csp).toContain("sandbox allow-scripts");
-      expect(csp).toContain("connect-src 'none'");
-      expect(csp).toContain(`frame-ancestors ${config.siteUrl(site.subdomain)} ${config.appUrl}`);
-      expect(res.headers.get("x-frame-options")).toBeNull();
-      expect(res.headers.get("permissions-policy")).toContain("camera=()");
-      const body = await res.text();
-      expect(body).toContain("window.OpenPress");
-      expect(body).toContain('"home":"Hawks"');
-
-      // Data-only update: stays approved, new data is served, page URL changes (cache bust).
-      const dataOnly = await call(client, "update_custom_visualization", { vizId: viz.id, data: { home: "Owls", samples: [{ minute: 1, p: 0.5 }] } });
-      expect(dataOnly.structuredContent!.visualization.status).toBe("approved");
-      const src2 = (await read()).match(/<iframe data-src="([^"]+)"/)![1].replace(/&amp;/g, "&");
-      expect(src2).not.toBe(src);
-      expect(await (await frame(src2)).text()).toContain('"home":"Owls"');
-
-      // Code change: approval resets, the iframe disappears, the frame stops serving.
-      const codeChange = await call(client, "update_custom_visualization", { vizId: viz.id, js: "document.body.textContent = 'changed'" });
-      expect(codeChange.structuredContent!.visualization.status).toBe("pending_approval");
-      expect(codeChange.structuredContent!.visualization.next).toContain("approval was reset");
-      expect(await read()).not.toContain("<iframe");
-      expect((await frame(src2)).status).toBe(404);
-      // An old preview token is bound to the old code.
-      expect((await frame(preview)).status).toBe(404);
-    });
-
-    it("validates code and enforces site isolation", async () => {
-      const a = await makeUser("cviz-a");
-      const b = await makeUser("cviz-b");
-      const siteA = await createSite(a.actor, { name: "Viz Owner" });
-      const siteB = await createSite(b.actor, { name: "Viz Thief" });
-      const { client } = await connectWithApiKey(a.user.id);
-      const bad = await call(client, "create_custom_visualization", { siteId: siteA.id, title: "x", js: "1", html: "<script src=//evil.example/x.js></script>" });
-      expect(bad.isError).toBe(true);
-      expect(bad.content[0].text).toContain("html may not contain <script>");
-
-      const viz = await createCustomViz(a.actor, { siteId: siteA.id, ...DEMO_CUSTOM_VIZ });
-      await expect(getCustomViz(b.actor, viz.id)).rejects.toMatchObject({ code: "NOT_FOUND" });
-      await expect(updateCustomViz(b.actor, viz.id, { js: "steal()" })).rejects.toMatchObject({ code: "NOT_FOUND" });
-      await expect(reviewCustomViz(b.actor, viz.id, { decision: "approve", codeHash: viz.codeHash })).rejects.toMatchObject({ code: "NOT_FOUND" });
-      await expect(createCustomViz(b.actor, { siteId: siteA.id, ...DEMO_CUSTOM_VIZ })).rejects.toMatchObject({ code: "NOT_FOUND" });
-      await expect(createPost(b.actor, { siteId: siteB.id, title: "steal", content: viz.embed })).rejects.toMatchObject({ code: "VALIDATION" });
-      await withUser(b.user.id, async (tx) => {
-        expect(await tx.select().from(customVisualizations).where(eq(customVisualizations.id, viz.id))).toEqual([]);
-        expect(await tx.update(customVisualizations).set({ status: "approved" }).where(eq(customVisualizations.id, viz.id)).returning()).toEqual([]);
-      });
-
-      // Read-only connections can't create; site-restricted ones can't reach other sites.
-      const ro = await connectWithApiKey(a.user.id, { scopes: ["sites:read"] });
-      expect((await call(ro.client, "create_custom_visualization", { siteId: siteA.id, ...DEMO_CUSTOM_VIZ })).structuredContent!.error.code).toBe("FORBIDDEN");
-      const restricted = await connectWithApiKey(a.user.id, { siteIds: [siteB.id] });
-      expect((await call(restricted.client, "get_custom_visualization", { vizId: viz.id })).structuredContent!.error.code).toBe("FORBIDDEN");
-    });
-
-    it("stops serving for suspended accounts and requires confirmation to delete", async () => {
-      const { user, actor } = await makeUser("cviz-susp");
-      const site = await createSite(actor, { name: "Suspend Viz" });
-      const viz = await createCustomViz(actor, { siteId: site.id, ...DEMO_CUSTOM_VIZ });
-      await reviewCustomViz(actor, viz.id, { decision: "approve", codeHash: viz.codeHash });
-      const url = `${config.appUrl}/viz-frame/${viz.id}`;
-      expect((await frame(url)).status).toBe(200);
-
-      const { client } = await connectWithApiKey(user.id);
-      const first = await call(client, "delete_custom_visualization", { vizId: viz.id });
-      expect(first.structuredContent!.status).toBe("confirmation_required");
-      expect((await frame(url)).status).toBe(200);
-
-      await (await getDb()).execute(sql`update users set suspended_at = now() where id = ${user.id}`);
-      expect((await frame(url)).status).toBe(404);
-    });
-
-    it("only serves frames from the configured sandbox origin", async () => {
-      const { actor } = await makeUser("cviz-origin");
-      const site = await createSite(actor, { name: "Origin Viz" });
-      const viz = await createCustomViz(actor, { siteId: site.id, ...DEMO_CUSTOM_VIZ });
-      await reviewCustomViz(actor, viz.id, { decision: "approve", codeHash: viz.codeHash });
-      process.env.VIZ_SANDBOX_ORIGIN = "https://usercontent.example";
-      try {
-        expect((await frame(`${config.appUrl}/viz-frame/${viz.id}`)).status).toBe(404);
-        expect((await frame(`https://usercontent.example/viz-frame/${viz.id}`)).status).toBe(200);
-      } finally {
-        if (prev.origin === undefined) delete process.env.VIZ_SANDBOX_ORIGIN;
-        else process.env.VIZ_SANDBOX_ORIGIN = prev.origin;
-      }
-    });
-
-    it("sends the accessible table, not the frame, in RSS", async () => {
-      const { user, actor } = await makeUser("cviz-rss");
-      const site = await createSite(actor, { name: "Viz Feed" });
-      const viz = await createCustomViz(actor, { siteId: site.id, ...DEMO_CUSTOM_VIZ });
-      await reviewCustomViz(actor, viz.id, { decision: "approve", codeHash: viz.codeHash });
-      const { client } = await connectWithApiKey(user.id);
-      await publishWith(client, site.id, "Feed viz", viz.embed);
-      const xml = await (await rss(new Request("https://x.test/rss.xml"), { params: Promise.resolve({ subdomain: site.subdomain }) })).text();
-      expect(xml).toContain("Win probability clock");
-      expect(xml).toContain("<table>");
-      expect(xml).not.toContain("<iframe");
-    });
+  it("sends the accessible table, not the frame, in RSS", async () => {
+    const { user, actor } = await makeUser("cviz-rss");
+    const site = await createSite(actor, { name: "Viz Feed" });
+    const viz = await createCustomViz(actor, { siteId: site.id, ...DEMO_CUSTOM_VIZ });
+    await reviewCustomViz(actor, viz.id, { decision: "approve", codeHash: viz.codeHash });
+    const { client } = await connectWithApiKey(user.id);
+    await publishWith(client, site.id, "Feed viz", viz.embed);
+    const xml = await (await rss(new Request("https://x.test/rss.xml"), { params: Promise.resolve({ subdomain: site.subdomain }) })).text();
+    expect(xml).toContain("Win probability clock");
+    expect(xml).toContain("<table>");
+    expect(xml).not.toContain("<iframe");
   });
 });

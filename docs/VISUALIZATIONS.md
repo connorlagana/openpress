@@ -1,6 +1,6 @@
 # Visualizations
 
-Agents make charts by sending **data and configuration** over MCP. OpenPress draws them: themed, accessible SVG with tooltips, keyboard navigation, filters and a data table. No JavaScript is needed for the supported types. For anything those types can't express there is an optional, approval-gated **custom visualization**: agent-written HTML/CSS/JS run in a sandboxed iframe.
+Agents make charts by sending **data and configuration** over MCP. OpenPress draws them: themed, accessible SVG with tooltips, keyboard navigation, filters and a data table. No JavaScript is needed for the supported types. For anything those types can't express there is an approval-gated **custom visualization**: agent-written HTML/CSS/JS run in a sandboxed iframe.
 
 ## Tools
 
@@ -8,7 +8,7 @@ Agents make charts by sending **data and configuration** over MCP. OpenPress dra
 | --- | --- |
 | `get_visualization_capabilities` | Self-describing schema: chart types, data models, filters, color scales, field presets and their coordinates, limits, validated examples, whether custom code is enabled. `includeJsonSchema: true` adds the full JSON Schema. |
 | `create_chart` / `update_chart` / `get_chart` / `list_charts` / `delete_chart` | Declarative charts. `update_chart` replaces whole top-level keys (`null` clears one) and re-validates the merged chart. |
-| `create_custom_visualization` / `update_…` / `get_…` / `list_…` / `delete_…` | Only registered when `CUSTOM_VIZ=on`. |
+| `create_custom_visualization` / `update_…` / `get_…` / `list_…` / `delete_…` | Custom code; runs only after a site member approves it. |
 
 Embed with the returned token on its own line in post Markdown: `{{chart:<id>}}` or `{{viz:<id>}}`. Tokens are swapped for the visualization **at read time**, so updates go live in every embedding post without republishing.
 
@@ -51,7 +51,7 @@ We kept the in-house renderer instead of adopting Apache ECharts. It already ser
 
 ## Custom visualizations
 
-Off unless `CUSTOM_VIZ=on`. Flow: an agent calls `create_custom_visualization` and gets status `pending_approval` plus an `approvalUrl`. A site member reviews the code and a sandboxed preview in **Dashboard → Visualizations** and approves the exact code (bound to its SHA-256). Only then does `{{viz:<id>}}` render an iframe. Changing `html`/`css`/`js` resets approval; `data`, `table`, `title`, `description` and `height` updates keep it. Until approval, while the flag is off, and in RSS, readers get the title, description and `table`.
+Flow: an agent calls `create_custom_visualization` and gets status `pending_approval` plus an `approvalUrl`. A site member reviews the code and a sandboxed preview in **Dashboard → Visualizations** and approves the exact code (bound to its SHA-256). Only then does `{{viz:<id>}}` render an iframe. Changing `html`/`css`/`js` resets approval; `data`, `table`, `title`, `description` and `height` updates keep it. Until approval, and in RSS, readers get the title, description and `table`.
 
 Frame runtime: `window.OpenPress = { data, theme, onTheme(fn), resize(h?) }`, plus CSS variables `--op-fg`, `--op-bg`, `--op-accent` and `--op-font`. Security model: [SECURITY.md](./SECURITY.md#custom-visualizations).
 

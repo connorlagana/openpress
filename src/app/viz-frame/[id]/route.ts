@@ -6,14 +6,12 @@ import { FRAME_PERMISSIONS_POLICY, frameCsp, frameDocument } from "@/lib/viz/fra
 import { frameViz } from "@/server/services/custom-viz";
 
 // Serves a custom visualization's code as a sandboxed document. 404 unless the
-// CUSTOM_VIZ flag is on, the request is for the sandbox origin, and the code is
-// approved exactly as stored (or carries a reviewer's preview token). See
+// request is for the sandbox origin and the code is approved exactly as stored (or carries a reviewer's preview token). See
 // lib/viz/frame.ts for the CSP and docs/SECURITY.md for the threat model.
 
 const notFound = () => new Response("Not found", { status: 404, headers: { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" } });
 
 export async function GET(req: Request, ctx: RouteContext<"/viz-frame/[id]">) {
-  if (!config.customViz.enabled) return notFound();
   const url = new URL(req.url);
   const sandboxHost = new URL(config.customViz.origin).host;
   // With a dedicated sandbox origin configured, never serve user code from the

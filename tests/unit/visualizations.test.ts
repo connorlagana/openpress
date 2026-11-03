@@ -316,14 +316,14 @@ describe("custom visualization input and sandbox document", () => {
 });
 
 describe("capabilities", () => {
-  it("describes types, presets and the custom viz switch", () => {
-    const c = visualizationCapabilities({ customVizEnabled: false });
+  it("describes types, presets and custom visualizations", () => {
+    const c = visualizationCapabilities();
     expect(c.chartTypes.map((t) => t.type)).toEqual(["line", "area", "bar", "pie", "donut", "scatter", "heatmap", "spatial_heatmap"]);
     expect(Object.keys(c.customization.fieldPresets)).toEqual(["football", "basketball", "soccer", "baseball"]);
-    expect(c.customVisualizations.enabled).toBe(false);
-    expect(c.customVisualizations.tools).toEqual([]);
+    expect(c.customVisualizations.enabled).toBe(true);
+    expect(c.customVisualizations.tools).toContain("create_custom_visualization");
     expect("jsonSchema" in c).toBe(false);
-    const withSchema = visualizationCapabilities({ customVizEnabled: true, includeJsonSchema: true }) as { jsonSchema: { properties: Record<string, unknown> } };
+    const withSchema = visualizationCapabilities({ includeJsonSchema: true }) as { jsonSchema: { properties: Record<string, unknown> } };
     expect(Object.keys(withSchema.jsonSchema.properties)).toEqual(expect.arrayContaining(["type", "dataset", "encoding", "filters", "style", "field"]));
   });
 });

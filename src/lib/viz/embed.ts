@@ -23,7 +23,7 @@ export type VizEmbed = {
   description: string | null;
   height: number;
   table: Dataset | null;
-  /** Sandbox frame URL when the code may run (flag on + approved), else null. */
+  /** Sandbox frame URL when the code may run (approved), else null. */
   frameUrl: string | null;
   /** Why it isn't running, for previews only. */
   notice?: string;

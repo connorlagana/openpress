@@ -18,12 +18,6 @@ import { loadSite } from "./sites";
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const PREVIEW_TTL_MS = 30 * 60 * 1000;
 
-export function requireCustomVizEnabled() {
-  if (!config.customViz.enabled) {
-    throw new AppError("FORBIDDEN", "Custom visualizations are disabled on this server. Use create_chart (see get_visualization_capabilities for supported types).", { feature: "custom_visualizations" });
-  }
-}
-
 export const codeHashOf = (c: { html: string; css: string; js: string }) => sha256Hex(`v1\0${c.html}\0${c.css}\0${c.js}`);
 
 const isApproved = (v: Pick<CustomVisualization, "status" | "approvedHash" | "codeHash">) => v.status === "approved" && v.approvedHash === v.codeHash;
@@ -78,7 +72,6 @@ async function loadViz(tx: Tx, actor: Actor, id: string): Promise<{ viz: CustomV
 const NEXT_STEP = "It will not run until a site member reviews and approves the code in the dashboard (approvalUrl). Embed it now with `embed`; readers see the title, description and data table until then.";
 
 export async function createCustomViz(actor: Actor, input: { siteId: string } & z.input<typeof customVizInput>) {
-  requireCustomVizEnabled();
   requireScope(actor, "content:write");
   const { siteId: rawSiteId, ...rest } = input;
   const siteId = z.string().min(1).max(64).parse(rawSiteId);
@@ -136,7 +129,6 @@ export async function listCustomViz(actor: Actor, siteId: string, limit = 50, of
 }
 
 export async function updateCustomViz(actor: Actor, id: string, input: z.input<typeof customVizPatch>) {
-  requireCustomVizEnabled();
   requireScope(actor, "content:write");
   const patch = customVizPatch.parse(input);
   return withUser(actor.userId, async (tx) => {
@@ -197,7 +189,6 @@ export async function deleteCustomViz(actor: Actor, id: string, confirmationToke
  */
 export async function reviewCustomViz(actor: Actor, id: string, input: { decision: "approve" | "reject"; codeHash: string; note?: string }) {
   if (actor.kind !== "user") throw forbidden("Only a site member can approve custom code, in the OpenPress dashboard. Share the approvalUrl with the user.");
-  requireCustomVizEnabled();
   const { decision, codeHash, note } = z.object({ decision: z.enum(["approve", "reject"]), codeHash: z.string().regex(/^[0-9a-f]{64}$/), note: z.string().trim().max(500).optional() }).parse(input);
   return withUser(actor.userId, async (tx) => {
     await assertUserActive(tx, actor.userId);
@@ -221,7 +212,6 @@ const previewMessage = (id: string, codeHash: string, exp: number) => `viz-previ
 /** A short-lived frame URL that runs the current (possibly unapproved) code, for the reviewer only. */
 export async function previewFrameUrl(actor: Actor, id: string) {
   if (actor.kind !== "user") throw forbidden();
-  requireCustomVizEnabled();
   return withUser(actor.userId, async (tx) => {
     const { viz } = await loadViz(tx, actor, id);
     const exp = Date.now() + PREVIEW_TTL_MS;
@@ -241,7 +231,7 @@ async function previewValid(id: string, codeHash: string, token: string) {
 
 /** The code for the sandbox frame: live site, not deleted, approved exactly as stored (or a valid preview token). */
 export async function frameViz(id: string, previewToken?: string | null) {
-  if (!config.customViz.enabled || !UUID_RE.test(id)) return null;
+  if (!UUID_RE.test(id)) return null;
   const db = await getDb();
   const [row] = await db
     .select({ viz: customVisualizations, subdomain: sites.subdomain, siteSuspended: sites.suspendedAt, siteDeleted: sites.deletedAt, ownerSuspended: users.suspendedAt })
@@ -255,7 +245,7 @@ export async function frameViz(id: string, previewToken?: string | null) {
   return { viz: row.viz, subdomain: row.subdomain, preview: !!previewToken };
 }
 
-/** Embeds for post rendering. Only this site's visualizations; code runs only when enabled + approved. */
+/** Embeds for post rendering. Only this site's visualizations; code runs only once approved. */
 export async function vizEmbedsFor(db: Pick<Tx, "select">, siteId: string, ids: string[], mode: EmbedMode): Promise<Map<string, VizEmbed>> {
   const map = new Map<string, VizEmbed>();
   if (!ids.length) return map;
@@ -263,9 +253,8 @@ export async function vizEmbedsFor(db: Pick<Tx, "select">, siteId: string, ids: 
     .select()
     .from(customVisualizations)
     .where(and(eq(customVisualizations.siteId, siteId), isNull(customVisualizations.deletedAt), inArray(customVisualizations.id, ids)));
-  const enabled = config.customViz.enabled;
   for (const v of rows) {
-    const runs = enabled && isApproved(v) && mode !== "feed";
+    const runs = isApproved(v) && mode !== "feed";
     map.set(v.id, {
       id: v.id,
       title: v.title,
@@ -273,9 +262,8 @@ export async function vizEmbedsFor(db: Pick<Tx, "select">, siteId: string, ids: 
       height: v.height,
       table: v.dataTable ? (datasetSchema.safeParse(v.dataTable).data ?? null) : null,
       frameUrl: runs ? frameUrl(v) : null,
-      notice: !enabled
-        ? "Custom visualizations are disabled on this server, so readers see the title, description and data table."
-        : v.status === "rejected"
+      notice:
+        v.status === "rejected"
           ? "This visualization was rejected in review and does not run."
           : !isApproved(v)
             ? "Awaiting approval: a site member must approve this code under Visualizations before it runs. Readers see the title, description and data table until then."

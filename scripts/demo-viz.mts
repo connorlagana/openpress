@@ -1,8 +1,8 @@
 // Seed a demo site with every synthetic visualization (src/lib/charts/demo.ts)
 // in one published post, through the same services agents use.
 //   DATABASE_URL=pglite://./.data/dev pnpm demo:viz <email-of-existing-user>
-// With CUSTOM_VIZ=on it also adds the demo custom visualization (pending
-// approval: approve it in Dashboard → Visualizations to see it run).
+// Also adds the demo custom visualization (pending approval: approve it in
+// Dashboard → Visualizations to see it run).
 import { eq, sql } from "drizzle-orm";
 import { getDb } from "../src/db/client";
 import { sites, users } from "../src/db/schema";
@@ -27,11 +27,9 @@ for (const d of DEMO_CHARTS) {
   const chart = await createChart(actor, { siteId: site.id, ...d.build() } as never);
   parts.push(`## ${chart.title}\n\n${chart.embed}`);
 }
-if (config.customViz.enabled) {
-  const viz = await createCustomViz(actor, { siteId: site.id, ...DEMO_CUSTOM_VIZ });
-  parts.push(`## Custom visualization\n\n${viz.embed}`);
-  console.log(`Approve the custom visualization at ${viz.approvalUrl}`);
-}
+const viz = await createCustomViz(actor, { siteId: site.id, ...DEMO_CUSTOM_VIZ });
+parts.push(`## Custom visualization\n\n${viz.embed}`);
+console.log(`Approve the custom visualization at ${viz.approvalUrl}`);
 const post = await createPost(actor, { siteId: site.id, title: "Visualization gallery", content: parts.join("\n\n") });
 await setPublished(actor, post.id, true);
 console.log(`Published ${config.siteUrl(site.subdomain)}/blog/${post.slug}`);

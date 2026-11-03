@@ -177,8 +177,8 @@ export const charts = pgTable(
 
 // Custom visualizations: agent-written HTML/CSS/JS for chart types OpenPress
 // doesn't draw itself. Posts embed them with {{viz:<id>}}. The code only ever
-// runs inside a sandboxed, opaque-origin iframe (src/app/viz-frame), only when
-// the CUSTOM_VIZ flag is on, and only after a site member approved exactly this
+// runs inside a sandboxed, opaque-origin iframe (src/app/viz-frame), and only
+// after a site member approved exactly this
 // code in the dashboard (approved_hash = code_hash). Changing the code resets
 // approval; changing `data` does not.
 export const customVisualizations = pgTable(

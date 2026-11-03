@@ -92,7 +92,7 @@ export const CHART_EXAMPLES: Record<string, ChartSpec> = {
   },
 };
 
-export function visualizationCapabilities(opts: { customVizEnabled: boolean; includeJsonSchema?: boolean }) {
+export function visualizationCapabilities(opts: { includeJsonSchema?: boolean } = {}) {
   return {
     schemaVersion: CHART_SCHEMA_VERSION,
     summary:
@@ -136,9 +136,9 @@ export function visualizationCapabilities(opts: { customVizEnabled: boolean; inc
     limits: { maxRows: MAX_ROWS, maxFields: MAX_FIELDS, maxCells: MAX_CELLS, maxSpecBytes: MAX_SPEC_BYTES, maxSeries: MAX_SERIES, maxHeatmapRows: 60, maxFilters: 4, chartsPerSite: 200 },
     examples: CHART_EXAMPLES,
     customVisualizations: {
-      enabled: opts.customVizEnabled,
+      enabled: true,
       when: "Only for visualization types the declarative charts can't express. Prefer create_chart.",
-      tools: opts.customVizEnabled ? ["create_custom_visualization", "get_custom_visualization", "list_custom_visualizations", "update_custom_visualization", "delete_custom_visualization"] : [],
+      tools: ["create_custom_visualization", "get_custom_visualization", "list_custom_visualizations", "update_custom_visualization", "delete_custom_visualization"],
       approval: "New or changed code runs only after a site member approves it in the dashboard (the tool result's approvalUrl). Agents cannot approve. Data-only updates keep the approval.",
       sandbox: [
         "Runs in a cross-origin, opaque-origin sandboxed iframe (scripts only: no same-origin access, cookies, storage, popups, forms or top navigation)",

@@ -48,7 +48,6 @@ export default async function VisualizationsPage({ params }: PageProps<"/dashboa
           <h2 className="op-h2">Custom visualizations {pending ? <Badge variant="outline" className="ml-2 align-middle">{pending} to review</Badge> : null}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Code written by an agent for visualizations charts can’t draw. It runs in an isolated sandbox, and only after you approve it here.
-            {config.customViz.enabled ? null : " Custom visualizations are turned off on this server."}
           </p>
         </div>
         {custom.items.length ? (
@@ -67,7 +66,7 @@ export default async function VisualizationsPage({ params }: PageProps<"/dashboa
             ))}
           </ul>
         ) : (
-          <EmptyState title="None">{config.customViz.enabled ? "Agents can create one with create_custom_visualization." : "Charts cover most needs."}</EmptyState>
+          <EmptyState title="None">Agents can create one with create_custom_visualization.</EmptyState>
         )}
       </section>
     </div>
