@@ -124,6 +124,26 @@ describe("custom visualizations", () => {
     expect(names).toEqual(expect.arrayContaining(["create_custom_visualization", "get_custom_visualization", "list_custom_visualizations", "update_custom_visualization", "delete_custom_visualization"]));
   });
 
+  it("lists a site's custom visualizations, empty or not", async () => {
+    const { user } = await makeUser("cviz-list");
+    const { client } = await connectWithApiKey(user.id);
+    const site = (await call(client, "create_site", { name: "List Lab" })).structuredContent!.site;
+    let res = await call(client, "list_custom_visualizations", { siteId: site.id });
+    expect(res.isError, res.content[0]?.text).toBeFalsy();
+    expect(res.structuredContent).toEqual({ items: [], hasMore: false });
+
+    const viz = (await call(client, "create_custom_visualization", { siteId: site.id, ...DEMO_CUSTOM_VIZ })).structuredContent!.visualization;
+    res = await call(client, "list_custom_visualizations", { siteId: site.id });
+    expect(res.isError, res.content[0]?.text).toBeFalsy();
+    expect(res.structuredContent!.items.map((v: { id: string }) => v.id)).toEqual([viz.id]);
+    expect(res.structuredContent!.items[0]).toMatchObject({ status: "pending_approval", embed: viz.embed });
+    expect(res.structuredContent!.items[0].js).toBeUndefined();
+
+    // Another user can't list this site's visualizations.
+    const other = await connectWithApiKey((await makeUser("cviz-list-other")).user.id);
+    expect((await call(other.client, "list_custom_visualizations", { siteId: site.id })).isError).toBe(true);
+  });
+
 
 
   it("runs only after a person approves the exact code, and re-locks on code changes", async () => {
