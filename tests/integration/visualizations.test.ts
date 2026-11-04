@@ -14,9 +14,12 @@ import { createPost } from "@/server/services/posts";
 import { createSite } from "@/server/services/sites";
 import { call, connectWithApiKey, makeUser } from "../helpers";
 
+// Built the way `next start` behind a proxy (Railway) hands it over: req.url
+// carries the server's listen address, only the Host header has the public host.
 const frame = (url: string) => {
-  const id = new URL(url).pathname.split("/").pop()!;
-  return frameRoute(new Request(url), { params: Promise.resolve({ id }) });
+  const u = new URL(url);
+  const id = u.pathname.split("/").pop()!;
+  return frameRoute(new Request(`http://0.0.0.0:8080${u.pathname}${u.search}`, { headers: { host: u.host } }), { params: Promise.resolve({ id }) });
 };
 
 async function publishWith(client: Awaited<ReturnType<typeof connectWithApiKey>>["client"], siteId: string, title: string, content: string) {

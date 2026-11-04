@@ -171,6 +171,10 @@ fetch("${baseURL}/should-not-load-fetch").then(() => { res.fetch = "OK"; done();
     await expect(page.getByRole("heading", { name: v.title })).toBeVisible();
     await expect(page.getByText("Needs review")).toBeVisible();
     await expect(page.locator("iframe[sandbox='allow-scripts']")).toHaveCount(1);
+    // The preview actually runs the pending code (not the frame route's 404).
+    const preview = page.frameLocator("iframe[sandbox='allow-scripts']");
+    await expect(preview.locator("body")).not.toHaveText("Not found");
+    await expect(v === probe ? preview.locator("#r") : preview.locator("path")).toHaveCount(1);
     if (v === clock) await shot(page, "viz-review");
     await page.getByRole("button", { name: "Approve this code" }).click();
     await expect(page.getByText("Approved", { exact: true }).first()).toBeVisible();

@@ -15,8 +15,12 @@ export async function GET(req: Request, ctx: RouteContext<"/viz-frame/[id]">) {
   const url = new URL(req.url);
   const sandboxHost = new URL(config.customViz.origin).host;
   // With a dedicated sandbox origin configured, never serve user code from the
-  // app origin. (req.url's host, not a client-settable forwarding header.)
-  if (url.host !== sandboxHost) return notFound();
+  // app origin. Use the Host header: under `next start` behind a proxy
+  // (Railway), req.url carries the server's listen address (0.0.0.0:$PORT), not
+  // the public host. Host is what the browser requested and the proxy routed
+  // on; X-Forwarded-Host is client-settable, so it's not used.
+  const host = (req.headers.get("host") ?? url.host).toLowerCase();
+  if (host !== sandboxHost) return notFound();
 
   const found = await frameViz((await ctx.params).id, url.searchParams.get("preview"));
   if (!found) return notFound();
