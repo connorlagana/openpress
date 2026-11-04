@@ -4,10 +4,12 @@
 //   pnpm db:migrate --prod                          production: PROD_DATABASE_URL from the
 //                                                   environment or .env.production.local
 //
-// `pnpm deploy:cf` runs the --prod form between the build and the deploy, so new code
-// never goes live against a schema that lacks its tables. Migrations must therefore be
-// additive (the old Worker keeps serving until the deploy finishes).
-// Use the direct (non-pooled) connection string.
+// Railway runs `pnpm db:migrate` as the pre-deploy command (railway.json) with the
+// service's DATABASE_URL, and `pnpm deploy:cf` runs the --prod form between build and
+// deploy, so new code never goes live against a schema that lacks its tables. A failed
+// migration aborts the deploy. Migrations must be additive (the old version keeps
+// serving until the new one is up).
+// Migrations need a direct connection: a Neon pooled host (-pooler) is swapped for its direct host.
 import { existsSync } from "node:fs";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
@@ -16,7 +18,7 @@ import postgres from "postgres";
 const prod = process.argv.includes("--prod");
 if (prod && existsSync(".env.production.local")) process.loadEnvFile(".env.production.local");
 const name = prod ? "PROD_DATABASE_URL" : "DATABASE_URL";
-const url = process.env[name];
+const url = directUrl(process.env[name]);
 
 if (!url || !url.startsWith("postgres")) {
   console.error(
@@ -39,6 +41,15 @@ try {
   process.exitCode = 1;
 } finally {
   await client.end();
+}
+
+/** Neon's pooled host (`ep-…-pooler.…neon.tech`) is pgbouncer in transaction mode; migrate over the direct host. */
+function directUrl(raw: string | undefined): string | undefined {
+  if (!raw?.startsWith("postgres")) return raw;
+  const u = new URL(raw);
+  if (!/-pooler\.[^.]+.*\.neon\.tech$/.test(u.hostname)) return raw;
+  u.hostname = u.hostname.replace("-pooler.", ".");
+  return u.toString();
 }
 
 async function applied(sql: postgres.Sql): Promise<number> {

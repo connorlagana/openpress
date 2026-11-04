@@ -28,6 +28,7 @@ MCP-native website hosting: users connect their own AI agent (Claude, ChatGPT, C
 | Abuse tooling | `pnpm admin reports`, `pnpm admin suspend-site <sub> "<reason>"` |
 | Demo visualization gallery (synthetic data) | `DATABASE_URL=… pnpm demo:viz <email>` |
 | Activation funnel (signup → site → agent → publish, by source) | `DATABASE_URL=… pnpm admin funnel [days]` |
+| Production deploy (Railway) | push to `main`; Railway builds with Railpack, runs `pnpm db:migrate` as the pre-deploy command (`railway.json`, service `DATABASE_URL`), then `next start`. A failed migration aborts the deploy, so keep migrations additive |
 | Cloudflare build / preview / deploy | `pnpm preview:cf`, `pnpm deploy:cf` (build → migrate production → deploy; aborts if `PROD_DATABASE_URL` is missing or a migration fails, so keep migrations additive) |
 
 ## Architecture (where things live)
