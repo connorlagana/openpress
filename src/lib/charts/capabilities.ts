@@ -96,7 +96,19 @@ export function visualizationCapabilities(opts: { includeJsonSchema?: boolean } 
   return {
     schemaVersion: CHART_SCHEMA_VERSION,
     summary:
-      "Declarative charts: send data + configuration to create_chart / update_chart; OpenPress draws accessible, themed, interactive SVG. No JavaScript needed for these types. Embed with the returned token on its own line; later updates show up in every embedding post without republishing.",
+      "Choose a presentation suited to the content: prose, a declarative chart, or a custom HTML/CSS/JavaScript component. Charts provide accessible, themed SVG; custom components support bespoke reader interactions. Embed either with its returned token on its own line; later updates show up in every embedding post without republishing, subject to code approval.",
+    editorialGuidance: {
+      prose: "Use for explanation, instructions and storytelling when interaction adds little. A recipe need not include a widget.",
+      chart: "Use create_chart for patterns and comparisons adequately served by standard plots, tooltips and filters.",
+      custom: "Use create_custom_visualization when readers benefit from playback, changing assumptions, simulations, calculators, draggable elements or linked views. Preserve the requested behavior instead of reducing it to a standard chart merely because a matching chart type exists.",
+      evidence: "Use supplied data or sources you can actually access, cite sources and describe material limitations. Never invent observations or derive precise trajectories from aggregate statistics. Clearly label simulations, assumptions and illustrative data. When necessary data is unavailable, explain the gap and choose a supported presentation.",
+      examples: [
+        { request: "Publish a recipe", presentation: "Clear prose and ingredients; add scaling only if useful to the reader or requested." },
+        { request: "Compare weekly totals", presentation: "A declarative bar or line chart using available observations." },
+        { request: "Explore passes play by play", presentation: "A custom field with selectable passes, playback and linked details, only when the data supports those locations and events." },
+        { request: "Explain how changing assumptions affects an outcome", presentation: "A custom calculator or simulation with labeled assumptions, explicit rules and controls; no external dataset is required when the model itself supplies the results." },
+      ],
+    },
     embedSyntax: { chart: "{{chart:<id>}}", customVisualization: "{{viz:<id>}}", rule: "Put the token alone on its own line in post Markdown." },
     dataModels: {
       inline: "labels (x categories) + series [{name, data[]}] with one value per label. line/area/bar/pie/donut/heatmap.",
@@ -137,7 +149,7 @@ export function visualizationCapabilities(opts: { includeJsonSchema?: boolean } 
     examples: CHART_EXAMPLES,
     customVisualizations: {
       enabled: true,
-      when: "Only for visualization types the declarative charts can't express. Prefer create_chart.",
+      when: "When bespoke interaction helps readers explore or understand the content: playback, simulations, calculators, draggable controls, linked views or custom spatial exploration. Choose by the intended reader experience, not just the chart type. Use prose or declarative charts when they adequately serve that experience.",
       tools: ["create_custom_visualization", "get_custom_visualization", "list_custom_visualizations", "update_custom_visualization", "delete_custom_visualization"],
       approval: "New or changed code runs only after a site member approves it in the dashboard (the tool result's approvalUrl). Agents cannot approve. Data-only updates keep the approval.",
       sandbox: [

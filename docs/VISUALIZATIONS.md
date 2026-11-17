@@ -1,6 +1,10 @@
 # Visualizations
 
-Agents make charts by sending **data and configuration** over MCP. OpenPress draws them: themed, accessible SVG with tooltips, keyboard navigation, filters and a data table. No JavaScript is needed for the supported types. For anything those types can't express there is an approval-gated **custom visualization**: agent-written HTML/CSS/JS run in a sandboxed iframe.
+Agents choose a presentation suited to the conversation, content and audience. Prose is often enough: a recipe or explanation does not automatically need an interactive component. Charts help communicate patterns and comparisons; custom components help readers explore observations, replay events or change assumptions. Interaction should have a purpose.
+
+Agents make charts by sending **data and configuration** over MCP. OpenPress draws them: themed, accessible SVG with tooltips, keyboard navigation, filters and a data table. For bespoke interactions, agents use **custom visualizations**: HTML/CSS/JS run in an approval-gated sandboxed iframe. These are a first-class option for simulations, calculators, playback, draggable controls and linked views. Choose by requested behavior, not just plot type: a field with tooltips does not fulfill a request for play-by-play exploration.
+
+Factual displays must use supplied data or sources the agent can actually access, with source attribution and material limitations explained. Never invent observations or infer precise pass locations from season totals. If necessary data is unavailable, explain the gap and choose a supported presentation. Calculators and simulations can work from explicit rules and assumptions without an external dataset; modeled or illustrative results must be clearly labeled.
 
 ## Tools
 
